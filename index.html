@@ -12,12 +12,12 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Neelaxmi">
-<link rel="apple-touch-icon" href="/pictures/neelaxmi.jpg"> 
+<link rel="apple-touch-icon" href="/pictures/neelaxmi.png"> 
 
-<link rel="icon" type="image/jpeg" href="/pictures/neelaxmi.jpg">
+<link rel="icon" type="image/jpeg" href="/pictures/neelaxmi.png">
 
     <meta name="google-site-verification" content="iatylsdA3ilcUEyKshZLLZmpDIh6TMUdj7qjgoLTWxw" />
-    <link rel="icon" type="image/jpeg" href="/pictures/neelaxmi.jpg">
+    <link rel="icon" type="image/jpeg" href="/pictures/neelaxmi.png">
     
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -323,6 +323,118 @@ body {
     text-shadow: 0 2px 10px rgba(0,0,0,0.7);
     animation: pulseIcon 2s infinite;
 }
+
+/* DOWNLOAD HUB */
+.download-hub {
+    margin-top: 5rem;
+    padding: 3rem 1.5rem;
+    background: rgba(0, 210, 255, 0.03);
+    border-top: 1px solid rgba(0, 210, 255, 0.2);
+    text-align: center;
+}
+
+.sci-fi-header {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 3rem;
+}
+
+.scanner-line {
+    position: absolute;
+    top: -10px; left: 0; width: 100%; height: 2px;
+    background: #00d2ff;
+    box-shadow: 0 0 15px #00d2ff;
+    animation: scanMove 3s infinite linear;
+}
+
+.download-options {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.dl-card {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(0, 210, 255, 0.2);
+    padding: 2rem;
+    width: 200px;
+    cursor: pointer;
+    position: relative;
+    transition: 0.3s;
+    overflow: hidden;
+}
+
+.dl-card:hover {
+    background: rgba(0, 210, 255, 0.1);
+    transform: translateY(-5px);
+    border-color: #00d2ff;
+}
+
+.corner-t-l { position: absolute; top: 0; left: 0; width: 15px; height: 15px; border-top: 2px solid #00d2ff; border-left: 2px solid #00d2ff; }
+.corner-b-r { position: absolute; bottom: 0; right: 0; width: 15px; height: 15px; border-bottom: 2px solid #00d2ff; border-right: 2px solid #00d2ff; }
+
+.dl-icon { font-size: 2.5rem; color: #00d2ff; margin-bottom: 1rem; display: block; }
+
+/* JARVIS MODAL */
+.jarvis-modal {
+    position: fixed; inset: 0; background: rgba(0, 10, 20, 0.95);
+    z-index: 3000; display: none; align-items: center; justify-content: center;
+    backdrop-filter: blur(15px); padding: 20px;
+}
+
+.jarvis-container {
+    background: rgba(30, 41, 59, 0.8);
+    border: 1px solid #00d2ff;
+    max-width: 900px; width: 100%;
+    padding: 2rem; border-radius: 5px;
+    position: relative; box-shadow: 0 0 50px rgba(0, 210, 255, 0.2);
+}
+
+.jarvis-grid {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 40px;
+}
+
+@media (max-width: 768px) {
+    .jarvis-grid { grid-template-columns: 1fr; }
+    .jarvis-visual { order: -1; }
+}
+
+.jarvis-info { text-align: left; }
+.system-tag { font-size: 0.6rem; letter-spacing: 2px; color: #00d2ff; border: 1px solid #00d2ff; padding: 2px 8px; display: inline-block; margin-bottom: 1rem; }
+
+.video-frame {
+    margin: 20px 0; border: 1px solid rgba(255,255,255,0.1); padding: 5px; background: #000;
+}
+.video-frame iframe { width: 100%; aspect-ratio: 16/9; }
+.frame-label { font-size: 0.6rem; color: #94a3b8; padding-bottom: 5px; }
+
+.jarvis-dl-btn {
+    display: flex; align-items: center; justify-content: space-between;
+    background: #00d2ff; color: #000; padding: 15px 25px;
+    text-decoration: none; font-weight: 800; clip-path: polygon(0 0, 90% 0, 100% 30%, 100% 100%, 10% 100%, 0 70%);
+    transition: 0.3s;
+}
+
+.jarvis-dl-btn:hover { filter: brightness(1.2); transform: scale(1.02); }
+
+/* LOGO ORBIT */
+.jarvis-visual { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.logo-orbit { position: relative; width: 200px; height: 200px; }
+.jarvis-logo { width: 100px; height: 100px; border-radius: 50%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); border: 2px solid #00d2ff; }
+.orbit-ring {
+    position: absolute; inset: 0; border: 1px dashed #00d2ff; border-radius: 50%;
+    animation: rotate 10s linear infinite;
+}
+.orbit-ring:nth-child(2) { inset: 20px; animation-direction: reverse; border-style: solid; border-width: 1px; border-color: rgba(0, 210, 255, 0.3); }
+
+@keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+@keyframes scanMove { 0% { top: 0%; } 50% { top: 100%; } 100% { top: 0%; } }
+
+.modal-exit { position: absolute; top: -15px; right: -15px; background: #ff4757; border: none; color: white; width: 35px; height: 35px; border-radius: 50%; cursor: pointer; }
+
 </style>
 </head>
 <body>
@@ -377,10 +489,12 @@ body {
             © <span id="year"></span> TEAM SAKSEN
         </div>
     </nav>
+    
+    
 
     <main class="main-wrapper" id="mainContent">
        <header class="header-content">
-         <img src="/pictures/neelaxmi.jpg" alt="Logo" class="header-logo">
+         <img src="/pictures/neelaxmi.png" alt="Logo" class="header-logo">
              <div>
                 <h1 class="title">NEELAXMI : THE HELPER </h1>
                 <p class="subtitle">Curated by <span style="color: #00d2ff; font-weight: 600;">NEELAXMI & SAKEN</span></p>
@@ -393,7 +507,69 @@ body {
         </div>
 
         <div class="notifications-grid" id="notificationsContainer"></div>
+        
+        <section class="download-hub">
+    <div class="sci-fi-header">
+        <div class="scanner-line"></div>
+        <h2><i class="fas fa-microchip"></i> DOWNLOAD OUR APP </h2>
+        <p>Access the Neelaxmi  Interface across devices.</p>
+    </div>
+    
+    <div class="download-options">
+        <div class="dl-card" onclick="openDownloadModal('apk')">
+            <div class="corner-t-l"></div><div class="corner-b-r"></div>
+            <i class="fab fa-android dl-icon"></i>
+            <span>DOWNLOAD APK</span>
+            <small>v2.4.0 - Android OS</small>
+        </div>
+        <div class="dl-card" onclick="openDownloadModal('exe')">
+            <div class="corner-t-l"></div><div class="corner-b-r"></div>
+            <i class="fab fa-windows dl-icon"></i>
+            <span>DOWNLOAD EXE</span>
+            <small>v1.0.2 - Windows x64</small>
+        </div>
+    </div>
+</section>
+
+<div id="downloadModal" class="jarvis-modal">
+    <div class="modal-scanner"></div>
+    <div class="jarvis-container">
+        <button class="modal-exit" onclick="closeDownloadModal()"><i class="fas fa-times"></i></button>
+        
+        <div class="jarvis-grid">
+            <div class="jarvis-info">
+                <div class="system-tag">DOWNLOAD OUR APP </div>
+                <h2 id="modalAppName">NEELAXMI MOBILE</h2>
+                <p class="app-desc">Synchronizing educator databases with real-time notification protocols. Experience the full power of NEELAXMI tools with zero latency.</p>
+                
+                <div class="video-frame">
+                    <div class="frame-label">SYSTEM_TUTORIAL.mp4</div>
+                    <iframe src="https://www.youtube.com/embed/0emvAqFTlaE" frameborder="0" allowfullscreen></iframe>
+                </div>
+
+                <a href="#" class="jarvis-dl-btn">
+                    <span class="btn-glitch">INITIALIZE DOWNLOAD</span>
+                    <i class="fas fa-download"></i>
+                </a>
+            </div>
+
+            <div class="jarvis-visual">
+                <div class="logo-orbit">
+                    <div class="orbit-ring"></div>
+                    <div class="orbit-ring"></div>
+                    <img src="/pictures/neelaxmi.png" alt="App Logo" class="jarvis-logo">
+                </div>
+                <div class="status-bars">
+                    <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
     </main>
+    
+    
 
     <div id="telegramModal" class="modal-backdrop">
         <div class="modal-card">
@@ -474,7 +650,7 @@ if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.
             { name: "SEEP MAM", subject: "BIOLOGY", rank: "QUEEN", description: "Beauty is not the only reason for fame sometimes it's just a free version of the brain.", imgUrl: "/pictures/seep.jpg" },
             { name: "Ramesh sharda", subject: "CHEMISTRY", rank: "SMART DADU", description: "AGE WITH EXPERIENCE NEVER GONNA FAIL.", imgUrl: "/pictures/rssir2.jpeg" },
             { name: "AMIT GUPTA SIR", subject: "BIOLOGY", rank: "PG IN UG", description: "The master of Zoology with years of legacy.", imgUrl: "/pictures/AGsir2.jpeg" },
-            { name: "TEST SERIES", subject: "TEST SERIES", rank: "CHECK YOUR CAPACITY", description: "IF YOU ARE FLYING THEN IT HAVE POWER TO TAKE DOWN YOU TO EARTH.", imgUrl: "/pictures/neelaxmi.jpg" },
+            { name: "TEST SERIES", subject: "TEST SERIES", rank: "CHECK YOUR CAPACITY", description: "IF YOU ARE FLYING THEN IT HAVE POWER TO TAKE DOWN YOU TO EARTH.", imgUrl: "/pictures/neelaxmi.png" },
         ];
 
         // ==========================================
@@ -707,6 +883,41 @@ if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.
                 }, 3000);
             }
         });
+        
+        // ==========================================
+        // Download modal 
+        // ==========================================
+
+
+function openDownloadModal(type) {
+    const modal = document.getElementById('downloadModal');
+    const nameText = document.getElementById('modalAppName');
+    const dlBtn = document.querySelector('.jarvis-dl-btn'); // Select the download button
+
+    modal.style.display = 'flex';
+
+    if(type === 'apk') {
+        nameText.innerText = "NEELAXMI ANDROID INTERFACE";
+        dlBtn.href = "/downloads/neelaxmi_v2.4.apk"; // Path to your APK
+    } else {
+        nameText.innerText = "NEELAXMI DESKTOP CORE";
+        dlBtn.href = "/downloads/neelaxmi_setup.exe"; // Path to your EXE
+    }
+}
+        
+        
+        function closeDownloadModal() {
+            document.getElementById('downloadModal').style.display = 'none';
+            
+        }
+        
+        window.onclick = function(event) {
+            const modal = document.getElementById('downloadModal');
+            if (event.target == modal) {
+                closeDownloadModal();
+            }
+}
+
     </script>
 </body>
 </html>
