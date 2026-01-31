@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="en" class="transition-colors duration-300">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard | NEELAXMI QUIZ CENTER</title>
+    <link rel="icon" type="image/jpeg" href="/pictures/neelaxmi.jpg">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { 
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif']
+                    },
+                    colors: {
+                        primary: '#6366f1',
+                        primaryHover: '#4f46e5',
+                        darkBg: '#0f172a',
+                        gold: '#fbbf24'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <style>
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+        .dark .glass-panel {
+            background: rgba(30, 41, 59, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            color: #f1f5f9;
+        }
+        /* Scrollbar for modal lists */
+        .custom-scroll::-webkit-scrollbar { width: 6px; }
+        .custom-scroll::-webkit-scrollbar-track { background: transparent; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        .dark .custom-scroll::-webkit-scrollbar-thumb { background: #475569; }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-darkBg text-slate-800 dark:text-slate-100 min-h-screen relative">
+
+    <div id="loading-screen" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-white dark:bg-darkBg transition-opacity duration-300">
+        <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-primary mb-4"></div>
+        <h2 id="loading-text" class="text-xl font-semibold animate-pulse">Loading Your Journey...</h2>
+    </div>
+
+    <div id="mandatory-profile-modal" class="fixed inset-0 z-[70] bg-slate-900/90 backdrop-blur-md flex items-center justify-center p-4 hidden">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-md w-full p-8 border border-red-500 relative">
+            <h3 class="text-2xl font-bold text-red-500 mb-2"><i class="fa-solid fa-triangle-exclamation mr-2"></i> Action Required</h3>
+            <p class="text-slate-600 dark:text-slate-400 mb-6">Please complete your profile to access the dashboard.</p>
+            
+            <form id="mandatory-form" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-bold mb-1">Full Name</label>
+                    <input type="text" id="req-name" class="w-full p-3 rounded-lg bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold mb-1">Username</label>
+                    <input type="text" id="req-username" class="w-full p-3 rounded-lg bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold mb-1">Class / Standard</label>
+                    <select id="req-class" class="w-full p-3 rounded-lg bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600" required>
+                        <option value="" disabled selected>Select Class</option>
+                        <option value="9">Class 9</option>
+                        <option value="10">Class 10</option>
+                        <option value="11">Class 11</option>
+                        <option value="12">Class 12</option>
+                        <option value="12+">Class 12+ (Dropper)</option>
+                    </select>
+                </div>
+                <button type="submit" class="w-full py-3 bg-primary text-white font-bold rounded-lg shadow-lg hover:bg-primaryHover transition">Update Profile</button>
+            </form>
+        </div>
+    </div>
+
+    <nav class="fixed top-0 w-full z-50 glass-panel border-b border-gray-200 dark:border-gray-700">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <img src="/pictures/neelaxmi.jpg" alt="Logo" class="h-8 w-8 rounded-full mr-3 border border-slate-300">
+                    <span class="font-bold text-xl tracking-tight text-primary">NEELAXMI DASHBOARD</span>
+                </div>
+                <div class="flex items-center gap-4">
+                    <button onclick="window.location.href='/index.html'" class="text-sm font-medium hover:text-primary transition"><i class="fa-solid fa-house mr-1"></i> Home</button>
+                    <button id="theme-toggle" class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 transition">
+                        <i class="fa-solid fa-moon dark:hidden"></i>
+                        <i class="fa-solid fa-sun hidden dark:inline"></i>
+                    </button>
+                    <button id="logout-btn" class="text-sm font-bold text-red-500 hover:text-red-600 transition"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="pt-24 pb-12 px-4 max-w-7xl mx-auto space-y-8">
+        
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="glass-panel rounded-2xl p-6 relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-bl-full -mr-8 -mt-8"></div>
+                <div class="flex items-start justify-between relative z-10">
+                    <div>
+                        <h1 class="text-2xl font-bold mb-1">Welcome, <span id="disp-name" class="text-primary">Student</span>!</h1>
+                        <p class="text-slate-500 dark:text-slate-400 text-sm mb-4" id="disp-email">loading...</p>
+                        <span id="disp-badge" class="px-3 py-1 bg-indigo-100 dark:bg-indigo-900/30 text-primary text-xs font-bold rounded-full uppercase tracking-wider">Class --</span>
+                    </div>
+                    <button onclick="toggleEditProfile()" class="text-slate-400 hover:text-primary transition"><i class="fa-solid fa-pen-to-square"></i></button>
+                </div>
+                
+                <div class="mt-6 flex flex-col gap-2">
+                    <div class="flex justify-between text-sm border-b border-slate-100 dark:border-slate-700 pb-2">
+                        <span class="text-slate-500">Username:</span>
+                        <span class="font-mono font-medium" id="disp-username">--</span>
+                    </div>
+                    <div class="flex justify-between text-sm items-center pt-1">
+                        <span class="text-slate-500">Gemini AI:</span>
+                        <span id="gemini-status" class="text-xs font-bold">Checking...</span>
+                    </div>
+                    <button onclick="document.getElementById('gemini-modal').classList.remove('hidden')" class="text-xs text-primary underline mt-1 text-left">Update Key</button>
+                </div>
+            </div>
+
+            <div class="glass-panel rounded-2xl p-6 lg:col-span-2 flex flex-col justify-center relative overflow-hidden">
+                <div class="absolute inset-0 bg-gradient-to-r from-indigo-500/5 to-purple-500/5"></div>
+                <div class="relative z-10">
+                    <h3 class="text-lg font-bold text-slate-700 dark:text-slate-300 mb-4 flex items-center justify-center lg:justify-start">
+                        <i class="fa-solid fa-bullseye mr-2 text-primary"></i> 
+                        <span id="countdown-label">Target Exam</span>
+                    </h3>
+                    <div class="grid grid-cols-4 gap-4 text-center">
+                        <div class="bg-white dark:bg-slate-800 p-3 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700">
+                            <span class="block text-2xl md:text-4xl font-bold text-primary" id="cd-days">00</span>
+                            <span class="text-xs text-slate-500 uppercase">Days</span>
+                        </div>
+                        <div class="bg-white dark:bg-slate-800 p-3 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700">
+                            <span class="block text-2xl md:text-4xl font-bold text-primary" id="cd-hours">00</span>
+                            <span class="text-xs text-slate-500 uppercase">Hours</span>
+                        </div>
+                        <div class="bg-white dark:bg-slate-800 p-3 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700">
+                            <span class="block text-2xl md:text-4xl font-bold text-primary" id="cd-mins">00</span>
+                            <span class="text-xs text-slate-500 uppercase">Mins</span>
+                        </div>
+                        <div class="bg-white dark:bg-slate-800 p-3 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700">
+                            <span class="block text-2xl md:text-4xl font-bold text-primary" id="cd-secs">00</span>
+                            <span class="text-xs text-slate-500 uppercase">Secs</span>
+                        </div>
+                    </div>
+                    <p class="text-center text-xs text-slate-400 mt-4 italic">"Time flows. Make it count."</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="glass-panel p-5 rounded-xl border-l-4 border-blue-500">
+                <p class="text-xs text-slate-500 uppercase font-bold">Total Attempts</p>
+                <p class="text-2xl font-bold mt-1" id="stat-total-tests">0</p>
+            </div>
+            <div class="glass-panel p-5 rounded-xl border-l-4 border-green-500">
+                <p class="text-xs text-slate-500 uppercase font-bold">Overall Accuracy</p>
+                <p class="text-2xl font-bold mt-1" id="stat-accuracy">0%</p>
+            </div>
+            <div class="glass-panel p-5 rounded-xl border-l-4 border-purple-500">
+                <p class="text-xs text-slate-500 uppercase font-bold">Questions Solved</p>
+                <p class="text-2xl font-bold mt-1" id="stat-questions">0</p>
+            </div>
+            <div class="glass-panel p-5 rounded-xl border-l-4 border-orange-500">
+                <p class="text-xs text-slate-500 uppercase font-bold">Avg Time/Q</p>
+                <p class="text-2xl font-bold mt-1" id="stat-time">0s</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="glass-panel p-6 rounded-2xl lg:col-span-2">
+                <h3 class="font-bold text-lg mb-4">Overall Performance History</h3>
+                <div class="h-64 w-full">
+                    <canvas id="scoreChart"></canvas>
+                </div>
+            </div>
+            <div class="glass-panel p-6 rounded-2xl">
+                <h3 class="font-bold text-lg mb-4">Accuracy Split</h3>
+                <div class="h-64 w-full flex items-center justify-center">
+                    <canvas id="accuracyChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="glass-panel p-8 rounded-2xl bg-gradient-to-r from-slate-900 to-indigo-900 text-white relative overflow-hidden">
+            <div class="absolute top-0 right-0 p-10 opacity-10"><i class="fa-solid fa-certificate text-9xl"></i></div>
+            <div class="relative z-10">
+                <h2 class="text-2xl font-bold mb-2">Claim Your Progress Certificate</h2>
+                <p class="text-slate-300 mb-6 max-w-2xl">Generate an official certificate acknowledging your hard work, total questions attempted, and dedication.</p>
+                <button onclick="generateCertificate()" class="px-6 py-3 bg-gold hover:bg-yellow-500 text-slate-900 font-bold rounded-lg shadow-lg transition transform hover:-translate-y-1">
+                    <i class="fa-solid fa-file-pdf mr-2"></i> Open Certificate (PDF)
+                </button>
+            </div>
+        </div>
+
+        <div class="glass-panel rounded-2xl overflow-hidden">
+            <div class="p-6 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50">
+                <h3 class="font-bold text-lg"><i class="fa-solid fa-list-check mr-2 text-primary"></i>Chapter-wise Performance</h3>
+                <p class="text-xs text-slate-500 mt-1">Your attempts are grouped by chapter. Click 'View History' to see specific graphs and details.</p>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm">
+                    <thead class="bg-slate-100 dark:bg-slate-700/50 text-slate-500 dark:text-slate-300 uppercase font-bold text-xs">
+                        <tr>
+                            <th class="p-4">Chapter / Quiz Title</th>
+                            <th class="p-4">Attempts</th>
+                            <th class="p-4">Latest Score</th>
+                            <th class="p-4">Best Score</th>
+                            <th class="p-4 text-right">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-table-body" class="divide-y divide-slate-100 dark:divide-slate-700">
+                        </tbody>
+                </table>
+                <div id="no-history-msg" class="p-8 text-center text-slate-400 hidden">No test history found. Go take a quiz!</div>
+            </div>
+        </div>
+
+    </main>
+
+    <div id="chapter-history-modal" class="fixed inset-0 z-[85] bg-slate-900/95 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden border border-slate-700">
+            <div class="bg-slate-100 dark:bg-slate-900 p-4 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center shrink-0">
+                <div>
+                    <h3 class="text-lg font-bold text-primary" id="ch-modal-title">Chapter Title</h3>
+                    <p class="text-xs text-slate-500">Detailed Analysis</p>
+                </div>
+                <button onclick="closeChapterModal()" class="text-slate-400 hover:text-white transition bg-slate-200 dark:bg-slate-700 rounded-full w-8 h-8 flex items-center justify-center">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="p-6 overflow-y-auto custom-scroll flex-grow">
+                
+                <div class="mb-6 h-64 w-full bg-slate-50 dark:bg-slate-900/50 rounded-xl p-4 border border-slate-200 dark:border-slate-700">
+                    <canvas id="chapterChart"></canvas>
+                </div>
+
+                <h4 class="font-bold text-sm uppercase text-slate-500 mb-3">All Attempts</h4>
+                <div class="overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700">
+                    <table class="w-full text-sm text-left">
+                        <thead class="bg-slate-100 dark:bg-slate-700 text-xs font-bold uppercase text-slate-500">
+                            <tr>
+                                <th class="p-3">Date</th>
+                                <th class="p-3">Score</th>
+                                <th class="p-3">Accuracy</th>
+                                <th class="p-3 text-right">Details</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ch-modal-list" class="divide-y divide-slate-100 dark:divide-slate-700 bg-white dark:bg-slate-800">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="result-modal" class="fixed inset-0 z-[90] bg-slate-900/95 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-2xl w-full p-0 overflow-hidden border border-slate-700">
+            <div class="bg-slate-100 dark:bg-slate-900 p-6 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
+                <div>
+                    <h3 class="text-xl font-bold text-primary" id="modal-quiz-title">Quiz Result</h3>
+                    <p class="text-xs text-slate-500" id="modal-date">Date</p>
+                </div>
+                <button onclick="closeResultModal()" class="text-slate-400 hover:text-white transition"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            
+            <div class="p-8 grid grid-cols-2 gap-6">
+                <div class="col-span-2 flex flex-col items-center justify-center mb-4">
+                    <div class="relative w-32 h-32 flex items-center justify-center rounded-full border-8 border-slate-200 dark:border-slate-700">
+                        <div class="text-center">
+                            <span class="block text-3xl font-bold text-primary" id="modal-score">0</span>
+                            <span class="text-xs uppercase text-slate-500">Score</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-green-500/10 p-4 rounded-xl border border-green-500/20 text-center">
+                    <i class="fa-solid fa-check text-green-500 text-xl mb-2"></i>
+                    <div class="text-2xl font-bold text-green-500" id="modal-correct">0</div>
+                    <div class="text-xs text-slate-400 uppercase">Correct</div>
+                </div>
+                <div class="bg-red-500/10 p-4 rounded-xl border border-red-500/20 text-center">
+                    <i class="fa-solid fa-xmark text-red-500 text-xl mb-2"></i>
+                    <div class="text-2xl font-bold text-red-500" id="modal-incorrect">0</div>
+                    <div class="text-xs text-slate-400 uppercase">Incorrect</div>
+                </div>
+                <div class="bg-blue-500/10 p-4 rounded-xl border border-blue-500/20 text-center">
+                    <i class="fa-solid fa-clock text-blue-500 text-xl mb-2"></i>
+                    <div class="text-2xl font-bold text-blue-500" id="modal-time">0s</div>
+                    <div class="text-xs text-slate-400 uppercase">Time Taken</div>
+                </div>
+                <div class="bg-purple-500/10 p-4 rounded-xl border border-purple-500/20 text-center">
+                    <i class="fa-solid fa-percent text-purple-500 text-xl mb-2"></i>
+                    <div class="text-2xl font-bold text-purple-500" id="modal-accuracy">0%</div>
+                    <div class="text-xs text-slate-400 uppercase">Accuracy</div>
+                </div>
+            </div>
+            <div class="bg-slate-50 dark:bg-slate-900/50 p-6 flex justify-end gap-3 border-t border-slate-200 dark:border-slate-700">
+                <button onclick="closeResultModal()" class="px-5 py-2 text-slate-500 hover:text-slate-700 dark:hover:text-slate-200">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="certificate-container" style="display: none; position: absolute; left: -9999px; top: -9999px; width: 1123px; height: 794px; background: white;">
+        <div class="w-full h-full border-[20px] border-double border-indigo-900 p-12 relative flex flex-col items-center justify-center bg-slate-50" style="font-family: serif;">
+            <img src="/pictures/neelaxmi.jpg" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 400px; opacity: 0.04; filter: grayscale(100%); pointer-events: none;">
+            
+            <div style="text-align: center; margin-bottom: 2rem; position: relative; z-index: 10;">
+                <img src="/pictures/neelaxmi.jpg" style="width: 100px; height: 100px; border-radius: 50%; border: 2px solid #312e81; margin: 0 auto 1rem auto; display: block;">
+                <h1 style="font-size: 3.5rem; color: #312e81; font-weight: bold; margin-bottom: 0.5rem; letter-spacing: 2px;">CERTIFICATE</h1>
+                <h2 style="font-family: sans-serif; font-size: 1.5rem; color: #d97706; font-weight: bold; letter-spacing: 5px; text-transform: uppercase;">Of Achievement</h2>
+            </div>
+            
+            <p style="font-size: 1.25rem; color: #475569; margin-bottom: 0.5rem; font-style: italic;">This is to certify that</p>
+            <h3 id="cert-name" style="font-size: 2.5rem; font-weight: bold; color: #1e293b; border-bottom: 2px solid #cbd5e1; padding: 0 40px 10px 40px; margin-bottom: 2rem; display: inline-block;">Student Name</h3>
+            
+            <p style="font-family: sans-serif; font-size: 1.1rem; line-height: 1.8; color: #334155; max-width: 800px; text-align: center; margin-bottom: 3rem;">
+                Has demonstrated exceptional dedication and consistency at <strong style="color: #312e81;">NEELAXMI & SAKSEN</strong>.
+                They have successfully attempted <strong id="cert-questions">0</strong> questions across <strong id="cert-tests">0</strong> assessment sessions,
+                achieving a cumulative accuracy of <strong id="cert-accuracy">0%</strong>.
+            </p>
+            
+            <div style="display: flex; justify-content: space-between; width: 100%; padding: 0 80px; margin-top: 2rem;">
+                <div style="text-align: center;">
+                    <p id="cert-date" style="font-family: sans-serif; font-weight: bold; color: #475569; border-top: 1px solid #94a3b8; padding-top: 10px; min-width: 150px;">Date</p>
+                </div>
+                <div style="text-align: center;">
+                    <div style="font-family: 'Playfair Display', serif; font-size: 1.8rem; color: #312e81; margin-bottom: 5px; font-weight: bold;">Saksen Owner</div>
+                    <p style="font-family: sans-serif; font-weight: bold; color: #475569; border-top: 1px solid #94a3b8; padding-top: 10px; min-width: 150px;">Signature</p>
+                </div>
+            </div>
+            
+            <div style="position: absolute; bottom: 20px; left: 0; width: 100%; text-align: center; font-size: 0.8rem; color: #94a3b8; font-family: sans-serif;">
+                Verified ID: <span id="cert-id">UNKNOWN</span> • Generated via Neelaxmi Quiz Center
+            </div>
+        </div>
+    </div>
+
+    <div id="edit-profile-modal" class="fixed inset-0 z-[80] bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl max-w-sm w-full p-6">
+            <h3 class="text-xl font-bold mb-4">Edit Profile</h3>
+            <div class="space-y-3">
+                <input type="text" id="edit-name" placeholder="Full Name" class="w-full p-2 border rounded dark:bg-slate-700 dark:border-slate-600">
+                <select id="edit-class" class="w-full p-2 border rounded dark:bg-slate-700 dark:border-slate-600">
+                     <option value="11">Class 11</option>
+                     <option value="12">Class 12</option>
+                     <option value="12+">Class 12+ (Dropper)</option>
+                </select>
+            </div>
+            <div class="flex justify-end gap-3 mt-6">
+                <button onclick="toggleEditProfile()" class="px-4 py-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg">Cancel</button>
+                <button onclick="saveProfileChanges()" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primaryHover">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="gemini-modal" class="fixed inset-0 z-[80] bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl max-w-sm w-full p-6">
+            <h3 class="text-xl font-bold mb-4">Update Gemini API Key</h3>
+            <input type="password" id="input-gemini-key" placeholder="Paste API Key here" class="w-full p-2 border rounded dark:bg-slate-700 dark:border-slate-600 mb-4">
+            <div class="flex justify-end gap-3">
+                <button onclick="document.getElementById('gemini-modal').classList.add('hidden')" class="px-4 py-2 text-slate-500 hover:bg-slate-100 rounded-lg">Cancel</button>
+                <button onclick="updateGeminiKey()" class="px-4 py-2 bg-primary text-white rounded-lg">Update</button>
+            </div>
+        </div>
+    </div>
+
+<div id="pdf-viewer-modal" class="fixed inset-0 z-[100] bg-slate-900/95 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden border border-slate-700">
+        <div class="bg-slate-100 dark:bg-slate-900 p-4 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center shrink-0">
+            <h3 class="text-lg font-bold text-primary flex items-center">
+                <i class="fa-solid fa-certificate mr-2"></i> Certificate Preview
+            </h3>
+            <div class="flex gap-3">
+                <button id="btn-download-pdf" class="px-5 py-2 bg-primary hover:bg-primaryHover text-white text-sm font-bold rounded-lg transition shadow-lg flex items-center">
+                    <i class="fa-solid fa-download mr-2"></i> Save PDF
+                </button>
+                <button onclick="closePdfModal()" class="text-slate-400 hover:text-white transition bg-slate-200 dark:bg-slate-700 rounded-full w-9 h-9 flex items-center justify-center">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div class="flex-grow bg-slate-200 dark:bg-slate-900/50 p-4 overflow-auto flex items-center justify-center">
+            <img id="cert-preview-image" class="max-w-full h-auto rounded shadow-lg bg-white" src="" alt="Certificate Preview">
+        </div>
+        <p class="text-center text-xs py-2 text-slate-500 bg-slate-100 dark:bg-slate-900">Long press image to save directly if download button fails</p>
+    </div>
+</div>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    
+    <script>
+        // --- FIREBASE INIT ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyAOJmK4igVb_P8cV6jLfZhFPGFmAZfVvRE",
+            authDomain: "quiznew-30700.firebaseapp.com",
+            projectId: "quiznew-30700",
+            storageBucket: "quiznew-30700.firebasestorage.app",
+            messagingSenderId: "107821881642",
+            appId: "1:107821881642:web:7d708bda99196c85e42653",
+            measurementId: "G-0B6095T5X7"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore()
+
+        let currentUser = null;
+        let userStats = { totalTests: 0, totalQuestions: 0, totalCorrect: 0, totalIncorrect: 0, totalTime: 0 };
+        
+        // Data Structures
+        let groupedHistory = {}; // Key: QuizTitle, Value: Array of Attempts
+        let rawHistoryData = {}; // Key: ID, Value: Attempt Data (for direct lookup)
+        let chapterChartInstance = null; // To manage destroying old chart in modal
+
+        // --- AUTH & DATA LOADING ---
+        auth.onAuthStateChanged(async (user) => {
+            if (user) {
+                currentUser = user;
+                await loadUserProfile(user.uid);
+                await loadUserHistory(user.uid);
+                document.getElementById('loading-screen').classList.add('hidden');
+            } else {
+                window.location.href = '/quiz/auth.html';
+            }
+        });
+
+        document.getElementById('logout-btn').onclick = () => auth.signOut();
+
+        // --- PROFILE LOGIC ---
+        async function loadUserProfile(uid) {
+            const doc = await db.collection('users').doc(uid).get();
+            if (!doc.exists) {
+                document.getElementById('mandatory-profile-modal').classList.remove('hidden');
+                return;
+            }
+            const data = doc.data();
+            
+            if (!data.name || !data.class || !data.username) {
+                document.getElementById('mandatory-profile-modal').classList.remove('hidden');
+                document.getElementById('req-name').value = data.name || '';
+                document.getElementById('req-username').value = data.username || '';
+            }
+
+            updateProfileUI(data);
+            initCountdown(data.class); 
+        }
+
+        function updateProfileUI(data) {
+            document.getElementById('disp-name').textContent = data.name || 'User';
+            document.getElementById('disp-email').textContent = data.email;
+            document.getElementById('disp-badge').textContent = `Class ${data.class || 'N/A'}`;
+            document.getElementById('disp-username').textContent = data.username || 'Not Set';
+            
+            const gStatus = document.getElementById('gemini-status');
+            if (data.geminiApiKey) {
+                gStatus.innerHTML = '<i class="fa-solid fa-circle-check mr-1"></i> Active';
+                gStatus.className = 'flex items-center text-green-500 font-bold text-xs';
+            } else {
+                gStatus.innerHTML = '<i class="fa-solid fa-circle-xmark mr-1"></i> Inactive';
+                gStatus.className = 'flex items-center text-red-500 font-bold text-xs';
+            }
+        }
+
+        document.getElementById('mandatory-form').onsubmit = async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('req-name').value;
+            const uClass = document.getElementById('req-class').value;
+            const username = document.getElementById('req-username').value;
+            try {
+                await db.collection('users').doc(currentUser.uid).set({
+                    name, class: uClass, username
+                }, { merge: true });
+                document.getElementById('mandatory-profile-modal').classList.add('hidden');
+                loadUserProfile(currentUser.uid); 
+            } catch (err) {
+                alert("Error updating profile: " + err.message);
+            }
+        };
+
+        function toggleEditProfile() {
+            document.getElementById('edit-profile-modal').classList.toggle('hidden');
+        }
+
+        async function saveProfileChanges() {
+            const name = document.getElementById('edit-name').value;
+            const uClass = document.getElementById('edit-class').value;
+            if(!name || !uClass) return alert("Please fill details");
+            try {
+                await db.collection('users').doc(currentUser.uid).update({ name, class: uClass });
+                toggleEditProfile();
+                loadUserProfile(currentUser.uid);
+            } catch(e) { alert("Update failed"); }
+        }
+
+        async function updateGeminiKey() {
+            const key = document.getElementById('input-gemini-key').value.trim();
+            if(!key) return;
+            try {
+                await db.collection('users').doc(currentUser.uid).update({ geminiApiKey: key });
+                document.getElementById('gemini-modal').classList.add('hidden');
+                loadUserProfile(currentUser.uid);
+            } catch(e) { alert("Failed to save key"); }
+        }
+
+        // --- NEW: COMPRESSED HISTORY & STATS LOGIC ---
+        async function loadUserHistory(uid) {
+            const snapshot = await db.collection('user_results').doc(uid).collection('attempts').orderBy('timestamp', 'desc').get();
+            
+            if (snapshot.empty) {
+                document.getElementById('no-history-msg').classList.remove('hidden');
+                return;
+            }
+
+            // Reset Global Stats
+            userStats = { totalTests: 0, totalQuestions: 0, totalCorrect: 0, totalIncorrect: 0, totalTime: 0 };
+            groupedHistory = {};
+            rawHistoryData = {};
+            
+            // Global Chart Data arrays
+            let allScores = [];
+            let allLabels = [];
+
+            snapshot.forEach((doc, idx) => {
+                const d = doc.data();
+                const attemptId = doc.id;
+                
+                // Store raw for single modal lookup
+                rawHistoryData[attemptId] = { id: attemptId, ...d };
+
+                // Group by Quiz Title
+                const title = d.quizTitle || 'Unknown Quiz';
+                if (!groupedHistory[title]) {
+                    groupedHistory[title] = [];
+                }
+                groupedHistory[title].push({ id: attemptId, ...d });
+
+                // Update Global Stats
+                userStats.totalTests++;
+                userStats.totalQuestions += (d.total || 0);
+                userStats.totalCorrect += (d.score || 0);
+                userStats.totalIncorrect += ((d.total - d.score) || 0);
+                userStats.totalTime += (d.totalTimeSeconds || 0);
+                
+                // For global chart (chronological reverse later)
+                allScores.push(d);
+            });
+
+            // Update Global Stats UI
+            document.getElementById('stat-total-tests').textContent = userStats.totalTests;
+            document.getElementById('stat-questions').textContent = userStats.totalQuestions;
+            const accuracy = Math.round((userStats.totalCorrect / userStats.totalQuestions) * 100) || 0;
+            document.getElementById('stat-accuracy').textContent = accuracy + '%';
+            const avgTime = Math.round(userStats.totalTime / userStats.totalQuestions) || 0;
+            document.getElementById('stat-time').textContent = avgTime + 's';
+
+            // Render Compressed Table
+            const tbody = document.getElementById('history-table-body');
+            tbody.innerHTML = '';
+            
+            Object.keys(groupedHistory).forEach(title => {
+                const attempts = groupedHistory[title];
+                // attempts[0] is latest because of sort desc
+                const latest = attempts[0];
+                const bestScore = Math.max(...attempts.map(a => a.score));
+                
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 dark:hover:bg-slate-800 transition";
+                tr.innerHTML = `
+                    <td class="p-4 font-bold text-slate-700 dark:text-slate-200">${title}</td>
+                    <td class="p-4"><span class="bg-slate-200 dark:bg-slate-700 px-2 py-1 rounded text-xs font-bold">${attempts.length} Attempts</span></td>
+                    <td class="p-4">${latest.score}/${latest.total} <span class="text-xs text-slate-400">(${new Date(latest.timestamp.toDate()).toLocaleDateString()})</span></td>
+                    <td class="p-4 text-primary font-bold">${bestScore}/${latest.total}</td>
+                    <td class="p-4 text-right">
+                        <button onclick="openChapterModal('${title.replace(/'/g, "\\'")}')" class="px-3 py-1 bg-primary hover:bg-primaryHover text-white rounded shadow text-xs font-bold">
+                            View History
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            // Render Global Charts
+            // Reverse for chronological order (Oldest -> Newest)
+            const chronological = [...allScores].reverse();
+            const labels = chronological.map((_, i) => `T${i+1}`);
+            const dataPoints = chronological.map(a => Math.round((a.score / a.total) * 100));
+            renderGlobalCharts(labels, dataPoints, userStats.totalCorrect, userStats.totalIncorrect);
+        }
+
+        // --- CHAPTER DETAILED MODAL ---
+        function openChapterModal(title) {
+            const attempts = groupedHistory[title];
+            if (!attempts) return;
+
+            // 1. Set Title
+            document.getElementById('ch-modal-title').textContent = title;
+
+            // 2. Render Sub-Table (Chronological Descending)
+            const listBody = document.getElementById('ch-modal-list');
+            listBody.innerHTML = '';
+            
+            // Sort attempts chronological for Graph (Old -> New)
+            const chronoAttempts = [...attempts].sort((a, b) => a.timestamp.toDate() - b.timestamp.toDate());
+            
+            // For Table we want New -> Old
+            attempts.forEach(att => {
+                const acc = Math.round((att.score / att.total) * 100);
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="p-3 text-xs text-slate-500">${new Date(att.timestamp.toDate()).toLocaleString()}</td>
+                    <td class="p-3 font-bold text-primary">${att.score}/${att.total}</td>
+                    <td class="p-3 text-xs">${acc}%</td>
+                    <td class="p-3 text-right">
+                         <button onclick="openResultModal('${att.id}')" class="text-xs underline text-indigo-500">View</button>
+                    </td>
+                `;
+                listBody.appendChild(tr);
+            });
+
+            // 3. Render Specific Graph
+            const ctx = document.getElementById('chapterChart').getContext('2d');
+            if (chapterChartInstance) chapterChartInstance.destroy();
+
+            const labels = chronoAttempts.map((_, i) => `Attempt ${i+1}`);
+            const scores = chronoAttempts.map(a => Math.round((a.score / a.total) * 100));
+
+            chapterChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Performance Trend (%)',
+                        data: scores,
+                        borderColor: '#6366f1',
+                        backgroundColor: 'rgba(99, 102, 241, 0.2)',
+                        fill: true,
+                        tension: 0.3,
+                        pointBackgroundColor: '#fff',
+                        pointBorderColor: '#6366f1',
+                        pointRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true, max: 100, grid: { color: 'rgba(200,200,200,0.1)' } },
+                        x: { grid: { display: false } }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+
+            document.getElementById('chapter-history-modal').classList.remove('hidden');
+        }
+
+        function closeChapterModal() {
+            document.getElementById('chapter-history-modal').classList.add('hidden');
+        }
+
+        // --- SINGLE RESULT MODAL ---
+        function openResultModal(attemptId) {
+            const data = rawHistoryData[attemptId];
+            if(!data) return;
+
+            document.getElementById('modal-quiz-title').textContent = data.quizTitle;
+            document.getElementById('modal-date').textContent = new Date(data.timestamp.toDate()).toLocaleString();
+            document.getElementById('modal-score').textContent = `${data.score}/${data.total}`;
+            
+            document.getElementById('modal-correct').textContent = data.score;
+            document.getElementById('modal-incorrect').textContent = data.total - data.score; 
+            document.getElementById('modal-time').textContent = formatTime(data.totalTimeSeconds || 0);
+            
+            const acc = Math.round((data.score / data.total) * 100) || 0;
+            document.getElementById('modal-accuracy').textContent = acc + '%';
+
+            document.getElementById('result-modal').classList.remove('hidden');
+        }
+
+        function closeResultModal() {
+            document.getElementById('result-modal').classList.add('hidden');
+        }
+
+        function formatTime(seconds) {
+            const m = Math.floor(seconds / 60);
+            const s = seconds % 60;
+            return `${m}m ${s}s`;
+        }
+
+        // --- GLOBAL CHARTS ---
+        function renderGlobalCharts(labels, data, correct, incorrect) {
+            new Chart(document.getElementById('scoreChart'), {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Score %',
+                        data: data,
+                        borderColor: '#6366f1',
+                        backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, max: 100 } } }
+            });
+
+            new Chart(document.getElementById('accuracyChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Correct', 'Incorrect'],
+                    datasets: [{
+                        data: [correct, incorrect],
+                        backgroundColor: ['#22c55e', '#ef4444'],
+                        borderWidth: 0
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+        }
+
+        // --- COUNTDOWN ---
+        function initCountdown(userClass) {
+            let targetDateStr = "May 3, 2027 00:00:00"; 
+            let label = "Target: May 3, 2027";
+            if (userClass === "12" || userClass === "12+") {
+                targetDateStr = "May 3, 2026 00:00:00"; 
+                label = "Target: May 3, 2026";
+            }
+            document.getElementById('countdown-label').innerText = label;
+            const targetDate = new Date(targetDateStr).getTime();
+
+            setInterval(() => {
+                const now = new Date().getTime();
+                const distance = targetDate - now;
+                if (distance < 0) {
+                    document.getElementById('cd-days').innerText = "0";
+                    return;
+                }
+                document.getElementById('cd-days').innerText = Math.floor(distance / (1000 * 60 * 60 * 24));
+                document.getElementById('cd-hours').innerText = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                document.getElementById('cd-mins').innerText = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                document.getElementById('cd-secs').innerText = Math.floor((distance % (1000 * 60)) / 1000);
+            }, 1000);
+        }
+
+        let currentPdfBase64 = null;
+
+         async function generateCertificate() {
+          const loader = document.getElementById('loading-screen');
+          loader.classList.remove('hidden');
+
+          document.getElementById('cert-name').textContent = document.getElementById('disp-name').textContent;
+          document.getElementById('cert-questions').textContent = userStats.totalQuestions;
+          document.getElementById('cert-tests').textContent = userStats.totalTests;
+          const acc = Math.round((userStats.totalCorrect / userStats.totalQuestions) * 100) || 0;
+          document.getElementById('cert-accuracy').textContent = acc + '%';
+          document.getElementById('cert-date').textContent = new Date().toLocaleDateString();
+          document.getElementById('cert-id').textContent = currentUser.uid.substring(0, 8).toUpperCase();
+  
+           const container = document.getElementById('certificate-container');
+           container.style.display = "flex";
+
+           await new Promise(r => setTimeout(r, 800));
+
+       try {
+            const canvas = await html2canvas(container, {
+             scale: 2,
+             useCORS: true,
+             allowTaint: true
+            });
+
+             const imgData = canvas.toDataURL('image/png');
+
+             document.getElementById('cert-preview-image').src = imgData;
+             const { jsPDF } = window.jspdf;
+             const pdf = new jsPDF({
+                                  orientation: 'landscape',
+                                  unit: 'px',
+                                  format: [canvas.width, canvas.height]
+                                  });
+             pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+             currentPdfBase64 = pdf.output('datauristring');
+
+             document.getElementById('pdf-viewer-modal').classList.remove('hidden');
+
+             } catch (e) {
+                         console.error("Gen Error:", e);
+                         alert("Preview failed. Please try again.");
+                         } finally {
+                                container.style.display = "none";
+                                loader.classList.add('hidden');
+                                }
+                         }
+
+             document.getElementById('btn-download-pdf').onclick = function() {
+                if (!currentPdfBase64) return alert("Please wait for preview to load");
+
+              const filename = `Certificate_${currentUser.uid.substring(0,6)}.pdf`;
+             const link = document.createElement('a');
+             link.href = currentPdfBase64;
+             link.download = filename;
+             document.body.appendChild(link);
+             link.click();
+             document.body.removeChild(link);
+         };
+
+         function closePdfModal() {
+             document.getElementById('pdf-viewer-modal').classList.add('hidden');
+             document.getElementById('cert-preview-image').src = "";
+             }
+
+        // Dark Mode
+        const themeToggle = document.getElementById('theme-toggle');
+        const updateTheme = () => {
+            if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        };
+        themeToggle.onclick = () => {
+            document.documentElement.classList.toggle('dark');
+            localStorage.theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+        };
+        updateTheme();
+
+    </script>
+</body>
+</html>

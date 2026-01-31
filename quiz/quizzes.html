@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en" class="transition-colors duration-300">
+<head>
+    <meta charset="UTF-8">
+    <meta name="google-site-verification" content="iatylsdA3ilcUEyKshZLLZmpDIh6TMUdj7qjgoLTWxw" />
+    <link rel="icon" type="image/jpeg" href="/pictures/neelaxmi.jpg">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> QUIZ CORNER | NEELAXMI QUIZ CENTER </title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css" integrity="sha384-GvrF9mu6tB9n7z8U8/u03bLg5W+V93w8L8Fv3w3v+Fz/3tN5V6z8S0g/T/x3X/7" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js" integrity="sha384-N3r8h7mKj4/Hn9p/n0Kx5i0wF3/W7/X7E4C4uCj5/FwR6Q6/W9z/3tZ0Q7/2Z/7" crossorigin="anonymous"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" integrity="sha384-yS3R/QoXG/0E6/zP/X4tXQ4+C6h1H1z5F6v6v+G6/Q6/4tZ6/3Z/A6" crossorigin="anonymous" onload="renderMathInElement(document.body);"></script>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        primary: '#6366f1', // Indigo 500
+                        primaryHover: '#4f46e5',
+                        brand: { 500: '#6366f1', 600: '#4f46e5' },
+                        darkBg: '#0f172a', // Slate 900
+                    },
+                    animation: {
+                        'blob': 'blob 7s infinite',
+                        'twinkle': 'twinkle 4s ease-in-out infinite',
+                        'fade-in': 'fadeIn 0.5s ease-out forwards',
+                    },
+                    keyframes: {
+                        blob: {
+                            '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                            '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+                            '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+                            '100%': { transform: 'translate(0px, 0px) scale(1)' },
+                        },
+                        twinkle: {
+                            '0%, 100': { opacity: '0.2' },
+                            '50%': { opacity: '1' },
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0', transform: 'translateY(10px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { transition: background-color 0.3s, color 0.3s; }
+        
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            transition: all 0.3s ease;
+        }
+        
+        .dark .glass-panel {
+            background: rgba(30, 41, 59, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            color: #f1f5f9;
+        }
+
+        .tab-active { border-bottom: 2px solid #6366f1; color: #6366f1; }
+        .tab-inactive { border-bottom: 2px solid transparent; color: #64748b; }
+        .dark .tab-inactive { color: #94a3b8; }
+
+        .loader {
+            border-top-color: #6366f1;
+            -webkit-animation: spinner 1.5s linear infinite;
+            animation: spinner 1.5s linear infinite;
+        }
+        @keyframes spinner { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .option-btn:active { transform: scale(0.98); }
+        
+        /* Custom Range Slider for Video Progress */
+.video-range {
+    -webkit-appearance: none;
+    background: rgba(255,255,255,0.2);
+    border-radius: 5px;
+    height: 5px;
+    cursor: pointer;
+}
+.video-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: 15px;
+    width: 15px;
+    background: #ef4444; /* Red-500 */
+    border-radius: 50%;
+    margin-top: -5px; 
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+}
+
+/* Animations */
+.control-bar {
+    transition: opacity 0.3s ease;
+    background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+}
+.video-wrapper:hover .control-bar,
+.video-wrapper.paused .control-bar {
+    opacity: 1;
+}
+.video-wrapper:not(.paused):not(:hover) .control-bar {
+    opacity: 0; /* Hide controls when playing and not hovering */
+}
+
+    </style>
+    
+    
+</head>
+<body class="bg-slate-50 dark:bg-darkBg text-slate-800 dark:text-slate-100 min-h-screen flex items-center justify-center p-4 selection:bg-primary selection:text-white relative overflow-hidden">
+
+    <div class="fixed inset-0 w-full h-full pointer-events-none z-0">
+        <div class="absolute top-0 left-0 w-72 h-72 bg-purple-300 dark:bg-purple-900/30 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-3xl opacity-30 animate-blob"></div>
+        <div class="absolute top-0 right-0 w-72 h-72 bg-indigo-300 dark:bg-indigo-900/30 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
+        <div class="absolute -bottom-8 left-20 w-72 h-72 bg-pink-300 dark:bg-pink-900/30 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-3xl opacity-30 animate-blob animation-delay-4000"></div>
+        <div id="stars-container" class="absolute inset-0 opacity-0 dark:opacity-100 transition-opacity duration-1000"></div>
+    </div>
+
+<div id="auth-box" class="max-w-md mx-auto bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-xl">
+    <h2 id="auth-title" class="text-2xl font-bold mb-6 text-center text-slate-800 dark:text-white">Login to QuizMaster</h2>
+    
+    <div class="space-y-4">
+        <input id="auth-email" type="email" placeholder="Email Address" class="w-full p-3 border border-slate-300 dark:border-slate-600 rounded-lg bg-slate-50 dark:bg-slate-700">
+        <input id="auth-password" type="password" placeholder="Password" class="w-full p-3 border border-slate-300 dark:border-slate-600 rounded-lg bg-slate-50 dark:bg-slate-700">
+        
+        <div id="registration-fields" class="hidden space-y-4">
+            <input id="auth-name" type="text" placeholder="Full Name" class="w-full p-3 border border-slate-300 dark:border-slate-600 rounded-lg bg-slate-50 dark:bg-slate-700">
+            <select id="auth-class" class="w-full p-3 border border-slate-300 dark:border-slate-600 rounded-lg bg-slate-50 dark:bg-slate-700">
+                <option value="" disabled selected>Select Class</option>
+                <option value="9">Class 9</option>
+                <option value="10">Class 10</option>
+                <option value="11">Class 11</option>
+                <option value="12">Class 12</option>
+            </select>
+            <input id="auth-username" type="text" placeholder="Unique Username" class="w-full p-3 border border-slate-300 dark:border-slate-600 rounded-lg bg-slate-50 dark:bg-slate-700">
+        </div>
+        
+        <div id="auth-gemini-key-container" style="display: none;">
+            <input id="auth-gemini-key" type="password" placeholder="Gemini API Key (Optional)" class="w-full p-3 border border-slate-300 dark:border-slate-600 rounded-lg bg-slate-50 dark:bg-slate-700">
+            <button id="why-gemini-btn" class="text-xs text-primary mt-1 hover:underline">Why do I need this?</button>
+        </div>
+        
+        <button id="auth-primary-btn" class="w-full py-3 bg-primary text-white font-bold rounded-lg hover:bg-opacity-90 transition-all">Sign In</button>
+        <p id="auth-error" class="text-red-500 text-sm hidden text-center"></p>
+        <button id="auth-toggle-mode" class="w-full text-sm text-slate-500 dark:text-slate-400 hover:text-primary transition-colors">Don't have an account? Sign Up</button>
+    </div>
+</div>
+
+
+    <div id="loading-screen" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-white dark:bg-darkBg transition-colors duration-300">
+        <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 dark:border-slate-700 h-16 w-16 mb-6"></div>
+        <h2 class="text-xl font-semibold text-slate-700 dark:text-slate-300 animate-pulse">Initializing Assessment...</h2>
+        <div id="error-message-area" class="hidden mt-4 text-center max-w-md px-4">
+            <p id="error-text" class="text-red-500 mb-4"></p>
+            <button onclick="history.back()" class="px-4 py-2 bg-slate-200 dark:bg-slate-700 rounded-lg hover:bg-slate-300 dark:hover:bg-slate-600 transition">Go Back</button>
+        </div>
+    </div>
+
+    <div id="quiz-container" class="hidden w-full max-w-4xl mx-auto relative z-10 transition-all duration-500">
+        <div class="glass-panel shadow-2xl rounded-2xl overflow-hidden relative">
+            <div class="w-full bg-gray-200 dark:bg-slate-700 h-1.5">
+                <div id="progress-bar" class="bg-primary h-1.5 transition-all duration-500 shadow-[0_0_10px_rgba(99,102,241,0.5)]" style="width: 0%"></div>
+            </div>
+
+            <header class="flex flex-col md:flex-row justify-between items-center p-6 border-b border-slate-200 dark:border-slate-700/50 gap-4">
+                <div class="w-full md:w-auto">
+                    <div class="flex items-center gap-3">
+                        <h2 id="quiz-title" class="text-xl md:text-2xl font-bold tracking-tight text-slate-800 dark:text-white">Loading...</h2>
+                        <button id="theme-toggle" class="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors text-slate-500 dark:text-slate-400">
+                            <i class="fa-solid fa-sun hidden" id="sun-icon"></i>
+                            <i class="fa-solid fa-moon" id="moon-icon"></i>
+                        </button>
+                    </div>
+                    <p class="text-xs font-semibold text-primary uppercase tracking-wider mt-1" id="question-meta">Question 1</p>
+                </div>
+                
+                <div class="flex items-center gap-3 w-full md:w-auto justify-between md:justify-end">
+                    <button id="pause-btn" class="flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-700/50 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full transition-colors">
+                        <i class="fa-solid fa-pause"></i> Pause
+                    </button>
+                    <button id="resume-btn" class="hidden flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-green-500 hover:bg-green-600 rounded-full transition-colors shadow-lg shadow-green-500/20">
+                        <i class="fa-solid fa-play"></i> Resume
+                    </button>
+                    
+                    <button id="end-quiz-early-btn" class="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-red-500 hover:bg-red-600 rounded-full transition-colors shadow-lg shadow-red-500/20">
+                        <i class="fa-solid fa-flag-checkered"></i> End Quiz
+                    </button>
+                    
+                    <div id="timer-box" class="flex items-center gap-2 px-5 py-2 bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-700/50 rounded-full font-mono font-bold shadow-sm transition-colors">
+                        <i class="fa-regular fa-clock"></i> <span id="time-display">00:00</span>
+                    </div>
+                </div>
+            </header>   
+            <main class="p-6 md:p-10 relative max-h-[60vh] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-slate-600 scrollbar-track-transparent">
+                <div id="paused-overlay" class="hidden absolute inset-0 z-20 backdrop-blur-md bg-white/30 dark:bg-black/30 flex flex-col items-center justify-center rounded-b-2xl">
+                    <div class="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-2xl text-center max-w-sm border border-slate-200 dark:border-slate-700">
+                        <div class="w-16 h-16 bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fa-solid fa-pause text-2xl"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-slate-800 dark:text-white mb-2">Quiz Paused</h3>
+                        <p class="text-slate-500 dark:text-slate-400 mb-6">Timer stopped.</p>
+                        <button onclick="togglePause(false)" class="w-full py-3 bg-primary hover:bg-primaryHover text-white rounded-xl font-semibold shadow-lg shadow-indigo-500/30 transition-all">Resume Quiz</button>
+                    </div>
+                </div>
+
+                <h2 id="question-text" class="text-lg md:text-2xl font-medium text-slate-800 dark:text-slate-100 mb-8 leading-relaxed"></h2>
+                <div id="options-area" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+                
+                <div id="violation-overlay" class="hidden absolute inset-0 z-30 backdrop-blur-xl bg-red-500/20 flex flex-col items-center justify-center rounded-b-2xl">
+    <div class="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-2xl text-center max-w-sm border-2 border-red-500">
+        <h3 class="text-2xl font-bold text-red-600 mb-2">Security Warning</h3>
+        <p id="violation-msg" class="text-slate-600 dark:text-slate-400 mb-6 font-medium"></p>
+        <button id="close-violation" class="w-full py-3 bg-red-600 text-white rounded-xl font-semibold">I Understand</button>
+    </div>
+</div>
+
+            </main>
+
+            <footer class="p-6 border-t border-slate-200 dark:border-slate-700/50 bg-slate-50/50 dark:bg-slate-800/50 flex flex-col md:flex-row justify-between items-center gap-4">
+                <div class="flex gap-3 w-full md:w-auto">
+                    <button id="prev-btn" class="flex-1 md:flex-none px-6 py-2.5 rounded-xl text-slate-600 dark:text-slate-300 font-medium bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 shadow-sm hover:bg-slate-50 dark:hover:bg-slate-600 transition-all disabled:opacity-50">Previous</button>
+                    <button id="next-btn" class="flex-1 md:flex-none px-6 py-2.5 rounded-xl text-white font-medium bg-primary shadow-lg shadow-indigo-500/30 hover:bg-primaryHover transition-all">Next</button>
+                    <button id="submit-btn" class="hidden flex-1 md:flex-none px-6 py-2.5 rounded-xl text-white font-medium bg-green-500 shadow-lg shadow-green-500/30 hover:bg-green-600 transition-all">Submit Quiz</button>
+                </div>
+                <button id="save-btn" class="w-full md:w-auto text-slate-500 dark:text-slate-400 font-medium hover:text-primary dark:hover:text-primaryHover transition-colors flex items-center justify-center gap-2 px-4 py-2">
+                    <i class="fa-regular fa-bookmark"></i> Save & Exit
+                </button>
+            </footer>
+        </div>
+    </div>
+
+    <div id="result-box" class="hidden fixed inset-0 z-[80] bg-slate-50 dark:bg-darkBg overflow-y-auto p-4 transition-opacity duration-500 w-full h-full">
+        <div class="max-w-7xl mx-auto py-8">
+            <div class="mb-8 text-center sm:text-left sm:flex sm:items-end sm:justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold text-slate-900 dark:text-white" id="res-quiz-title">Quiz Title</h1>
+                    <p class="mt-1 text-slate-500 dark:text-slate-400">Result Analysis & Performance Review</p>
+                </div>
+                <div class="mt-4 sm:mt-0">
+                    <span id="res-status-badge" class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">Completed</span>
+                </div>
+            </div>
+
+            <div class="border-b border-slate-200 dark:border-slate-700 mb-6">
+                <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+                    <button onclick="switchTab('summary')" id="tab-summary" class="tab-active whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center">
+                        <i class="fa-solid fa-chart-pie mr-2"></i> Summary
+                    </button>
+                    <button onclick="switchTab('detailed')" id="tab-detailed" class="tab-inactive whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center">
+                        <i class="fa-solid fa-list-check mr-2"></i> Detailed Review
+                    </button>
+                    <button onclick="switchTab('history')" id="tab-history" class="tab-inactive whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center">
+                        <i class="fa-solid fa-clock-rotate-left mr-2"></i> Attempt History
+                    </button>
+                    
+                    <button onclick="switchTab('video')" id="tab-video" class="tab-inactive whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center">
+                        <i class="fa-solid fa-clapperboard mr-2"></i> Video Solution
+                    </button>
+                    
+                </nav>
+            </div>
+
+            <div id="view-summary" class="space-y-6 animate-fade-in">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="glass-panel rounded-xl p-6 relative overflow-hidden">
+                        <dt class="text-sm font-medium text-slate-500 dark:text-slate-400 truncate">Total Score</dt>
+                        <dd class="mt-1 text-3xl font-bold text-brand-600 dark:text-brand-500" id="res-score">0/0</dd>
+                        <div class="absolute top-0 right-0 p-4 opacity-10"><i class="fa-solid fa-trophy text-6xl text-brand-600"></i></div>
+                    </div>
+                    <div class="glass-panel rounded-xl p-6">
+                        <dt class="text-sm font-medium text-slate-500 dark:text-slate-400 truncate">Accuracy</dt>
+                        <dd class="mt-1 text-3xl font-bold text-slate-900 dark:text-white" id="res-accuracy">0%</dd>
+                        <div class="w-full bg-gray-200 dark:bg-slate-700 rounded-full h-1.5 mt-3">
+                            <div id="res-accuracy-bar" class="bg-emerald-500 h-1.5 rounded-full" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="glass-panel rounded-xl p-6">
+                        <dt class="text-sm font-medium text-slate-500 dark:text-slate-400 truncate">Total Time</dt>
+                        <dd class="mt-1 text-3xl font-bold text-slate-900 dark:text-white" id="res-time">--:--</dd>
+                        <p class="text-xs text-slate-400 mt-2">Avg. <span id="res-avg-time">0s</span> / question</p>
+                    </div>
+                    <div class="glass-panel rounded-xl p-6 bg-gradient-to-br from-slate-800 to-slate-900 text-white border-0">
+                        <dt class="text-sm font-medium text-slate-400 truncate">Percentile Rank</dt>
+                        <dd class="mt-1 text-3xl font-bold text-white flex items-center">
+                            <span id="res-rank">Top --%</span>
+                            <i class="fa-solid fa-arrow-trend-up text-green-400 ml-2 text-lg"></i>
+                        </dd>
+                        <p class="text-xs text-slate-400 mt-2">Based on performance</p>
+                    </div>
+                </div>
+                <div class="flex justify-center mt-10">
+                    <button onclick="window.location.replace('/quiz/dashboard.html')" class="inline-flex items-center justify-center px-8 py-3 bg-brand-600 hover:bg-brand-500 text-white font-medium rounded-lg shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1">
+                        Go to Dashboard
+                    </button>
+                </div>
+            </div>
+
+            <div id="view-detailed" class="hidden space-y-6 animate-fade-in">
+                <div class="flex flex-wrap gap-2 mb-6">
+                    <button onclick="filterResults('all')" id="filter-all" class="px-4 py-2 rounded-lg text-sm font-medium bg-slate-800 text-white shadow-sm transition">All</button>
+                    <button onclick="filterResults('correct')" id="filter-correct" class="px-4 py-2 rounded-lg text-sm font-medium bg-white dark:bg-slate-700 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-600">Correct</button>
+                    <button onclick="filterResults('incorrect')" id="filter-incorrect" class="px-4 py-2 rounded-lg text-sm font-medium bg-white dark:bg-slate-700 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-600">Incorrect</button>
+                </div>
+                <div id="detailed-list" class="space-y-4"></div>
+            </div>
+
+            <div id="view-history" class="hidden space-y-4 animate-fade-in">
+                <h3 class="text-lg font-medium text-slate-800 dark:text-white mb-4">Past Attempts</h3>
+                <div id="history-list" class="space-y-4">
+                    </div>
+            </div>
+            
+            <div id="view-video" class="hidden space-y-6 animate-fade-in">
+    <div class="flex flex-col md:flex-row gap-6">
+        <div class="flex-1">
+            <h3 class="text-lg font-medium text-slate-800 dark:text-white mb-4">
+                <i class="fa-solid fa-film text-primary mr-2"></i> Full Solution
+            </h3>
+            <div id="video-content-area">
+                </div>
+        </div>
+
+        <div class="w-full md:w-80 space-y-4">
+            <div class="glass-panel p-4 rounded-xl border border-slate-200 dark:border-slate-700">
+                <h4 class="font-bold text-sm text-slate-700 dark:text-slate-300 mb-3">Quick Notes</h4>
+                <p class="text-xs text-slate-400 italic">Timestamp notes coming soon...</p>
+                <div id="video-notes-area" class="min-h-[100px]"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+
+    <div id="exit-modal" class="hidden fixed inset-0 z-[60] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-md w-full p-6 animate-fade-in border border-slate-100 dark:border-slate-700">
+            <h3 class="text-xl font-bold text-slate-800 dark:text-white mb-2">Unsaved Progress</h3>
+            <p class="text-slate-600 dark:text-slate-400 mb-6">If you leave now without saving, your progress will be lost.</p>
+            <div class="flex gap-3">
+                <button id="modal-cancel" class="flex-1 px-4 py-2 border rounded-xl dark:border-slate-600 dark:text-slate-300">Stay</button>
+                <button id="modal-save" class="flex-1 px-4 py-2 bg-primary text-white rounded-xl shadow-lg">Save & Exit</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="resume-modal" class="hidden fixed inset-0 z-[70] bg-slate-900/80 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-md w-full p-6 border border-slate-200 dark:border-slate-700">
+            <h3 class="text-xl font-bold text-slate-800 dark:text-white mb-2">Resume Quiz?</h3>
+            <p class="text-slate-600 dark:text-slate-400 mb-6">We found a saved attempt.</p>
+            <div class="flex flex-col gap-3">
+                <button id="btn-resume-attempt" class="w-full px-4 py-3 bg-primary text-white rounded-xl font-bold">Resume</button>
+                <button id="btn-restart-attempt" class="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-xl">Start Fresh</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="setup-modal" class="fixed inset-0 z-[60] bg-slate-900/90 backdrop-blur-md flex items-center justify-center p-4 hidden">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-lg w-full p-8 border border-slate-200 dark:border-slate-700 relative overflow-hidden">
+            
+            <div class="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-bl-full -mr-8 -mt-8"></div>
+            
+            <h3 class="text-2xl font-bold text-slate-800 dark:text-white mb-2 relative z-10">Quiz Setup</h3>
+            <p class="text-slate-500 dark:text-slate-400 mb-6 relative z-10">Customize your practice session for <span id="setup-quiz-title" class="font-bold text-primary"></span>.</p>
+            
+            <div class="space-y-6 relative z-10">
+                
+                <div>
+                    <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-3">Select Mode</label>
+                    <div class="grid grid-cols-2 gap-4">
+                        <label class="cursor-pointer">
+                            <input type="radio" name="quiz_mode" value="test" class="peer sr-only" checked onchange="toggleModeDescription('test')">
+                            <div class="p-4 rounded-xl border-2 border-slate-200 dark:border-slate-700 peer-checked:border-primary peer-checked:bg-indigo-50 dark:peer-checked:bg-primary/10 transition-all hover:bg-slate-50 dark:hover:bg-slate-700/50">
+                                <div class="flex items-center mb-1">
+                                    <i class="fa-solid fa-stopwatch text-xl text-slate-400 peer-checked:text-primary mr-3"></i>
+                                    <span class="font-bold text-slate-700 dark:text-white">Test Mode</span>
+                                </div>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 leading-snug">Submit at the end. Simulates real exam conditions.</p>
+                            </div>
+                        </label>
+                        
+                        <label class="cursor-pointer">
+                            <input type="radio" name="quiz_mode" value="quiz" class="peer sr-only" onchange="toggleModeDescription('quiz')">
+                            <div class="p-4 rounded-xl border-2 border-slate-200 dark:border-slate-700 peer-checked:border-green-500 peer-checked:bg-green-50 dark:peer-checked:bg-green-500/10 transition-all hover:bg-slate-50 dark:hover:bg-slate-700/50">
+                                <div class="flex items-center mb-1">
+                                    <i class="fa-solid fa-graduation-cap text-xl text-slate-400 peer-checked:text-green-500 mr-3"></i>
+                                    <span class="font-bold text-slate-700 dark:text-white">Quiz Mode</span>
+                                </div>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 leading-snug">Immediate feedback. Check answers as you go.</p>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Question Set</label>
+                    <select id="setup-question-set" class="w-full p-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-primary outline-none transition-all">
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Time Limit</label>
+                    <select id="setup-timer" class="w-full p-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-primary outline-none transition-all">
+                    </select>
+                </div>
+                
+                <div class="flex gap-3 pt-2">
+                    <button onclick="window.location.replace('/index.html')" class="flex-1 px-4 py-3 border border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300 font-bold rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition">Back</button>
+                    <button id="btn-start-custom" class="flex-[2] px-4 py-3 bg-primary hover:bg-primaryHover text-white font-bold rounded-xl shadow-lg shadow-indigo-500/30 transition transform active:scale-95">Start Practice</button>
+                </div>
+            </div>
+            
+            
+<div class="mt-4">
+    <button id="btn-view-last-result" class="w-full py-3 px-4 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold rounded-xl hover:bg-slate-200 dark:hover:bg-slate-600 transition-all flex items-center justify-center gap-2">
+        <i class="fa-solid fa-clock-rotate-left"></i> View Previous Result
+    </button>
+</div>
+
+        </div>
+    </div>    
+
+    <div id="gemini-api-modal" class="fixed inset-0 z-[100] hidden bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4 transition-all duration-300">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-md p-6 border border-slate-200 dark:border-slate-700 transform transition-all scale-100">
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 bg-indigo-100 dark:bg-indigo-900/30 text-primary rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fa-solid fa-robot text-2xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 dark:text-white mb-2">Unlock AI Explanations</h2>
+                <p class="text-slate-600 dark:text-slate-400 text-sm">
+                    To get detailed explanations for your answers, please enter your personal <strong>Google Gemini API Key</strong>.
+                </p>
+            </div>
+
+            <div id="gemini-error-message" class="hidden p-3 mb-4 text-sm font-medium text-red-800 rounded-lg bg-red-50 dark:bg-red-900 dark:text-red-400" role="alert">
+                </div>
+
+            <div class="space-y-4">
+                <div>
+                    <label for="gemini-api-key-input" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">API Key</label>
+                    <input type="password" id="gemini-api-key-input" placeholder="Paste your API Key here (AIza...)"
+                           class="w-full p-3 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary dark:bg-slate-700 dark:text-white transition-all outline-none">
+                    <p class="text-xs text-slate-500 mt-1">Your key is saved locally to your profile.</p>
+                </div>
+
+                <button id="modal-save-gemini-key" class="w-full py-3 bg-primary hover:bg-indigo-600 text-white font-bold rounded-xl shadow-lg shadow-indigo-500/30 transition-all transform active:scale-95">
+                    Save & Get Explanation
+                </button>
+                
+                <div class="grid grid-cols-2 gap-3 pt-2">
+                    <a href="https://aistudio.google.com/app/apikey" target="_blank" class="flex items-center justify-center px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-lg transition-colors">
+                        <i class="fa-solid fa-key mr-2"></i> Get Key
+                    </a>
+                     <a href="Gemini.html"  class="flex items-center justify-center px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-lg transition-colors">
+                        <i class="fa-solid fa-book mr-2"></i> Guide
+                    </a>
+                </div>
+
+                <button id="modal-cancel-gemini-key" class="w-full py-2 text-sm text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="why-gemini-modal" class="fixed inset-0 z-[101] hidden bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4 transition-all duration-300">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-lg p-6 border border-slate-200 dark:border-slate-700 transform transition-all scale-100">
+            <h2 class="text-2xl font-bold text-primary mb-4 flex items-center">
+                <i class="fa-solid fa-lightbulb mr-3"></i> Why Do I Need the Gemini API?
+            </h2>
+            
+            <p class="text-slate-600 dark:text-slate-400 mb-4">
+                This quiz application uses **Google Gemini's AI** to provide **personalized, in-depth explanations** for every question you attempt.
+            </p>
+
+            <ul class="list-disc list-inside text-slate-700 dark:text-slate-300 space-y-2 mb-6 ml-4">
+                <li>**Personalized Feedback:** Get an explanation tailored to whether your answer was correct or incorrect.</li>
+                <li>**Deeper Learning:** Go beyond the correct option with detailed concepts and supplementary information.</li>
+                <li>**Privacy:** By using your own key, the explanation generation is linked directly to your Google AI account, ensuring usage is attributed to you.</li>
+            </ul>
+
+            <h3 class="text-xl font-semibold text-slate-800 dark:text-white mb-3">How to Get Your Key:</h3>
+            
+            <ol class="space-y-3 mb-6">
+                <li class="p-3 bg-slate-50 dark:bg-slate-700 rounded-lg text-sm text-slate-700 dark:text-slate-300">
+                    1. Click the **'Get API Key'** button below.
+                </li>
+                <li class="p-3 bg-slate-50 dark:bg-slate-700 rounded-lg text-sm text-slate-700 dark:text-slate-300">
+                    2. Sign in with your Google account and click **"Create API Key."**
+                </li>
+                <li class="p-3 bg-slate-50 dark:bg-slate-700 rounded-lg text-sm text-slate-700 dark:text-slate-300">
+                    3. **Copy the key** and paste it into the optional field.
+                </li>
+            </ol>
+
+            <div class="flex justify-between space-x-3">
+                <a href="https://aistudio.google.com/app/apikey" target="_blank" class="flex-1 text-center py-3 bg-indigo-500 hover:bg-indigo-600 text-white font-bold rounded-xl transition-colors">
+                    <i class="fa-solid fa-key mr-2"></i> Get API Key
+                </a>
+                <button id="close-why-gemini-modal" class="flex-1 py-3 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-600 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    <script src="auth.js"></script>
+    <script src="quiz.js"></script>
+    <script src="result.js"></script>
+    <script src="vedio.js"></script>
+    <script>
+        // Advanced Zoom Modal with Scale functionality
+        const setupImageModal = () => {
+            if (document.getElementById('img-zoom-modal')) return;
+
+            const modalHtml = `
+            <div id="img-zoom-modal" class="fixed inset-0 z-[9999] hidden bg-black/95 backdrop-blur-md flex flex-col items-center justify-center transition-opacity duration-300">
+                
+                <div class="absolute top-4 right-4 flex gap-4 z-[210]">
+                    <button onclick="zoomImage(0.2)" class="p-3 bg-white/10 text-white rounded-full hover:bg-white/20 transition"><i class="fa-solid fa-magnifying-glass-plus"></i></button>
+                    <button onclick="zoomImage(-0.2)" class="p-3 bg-white/10 text-white rounded-full hover:bg-white/20 transition"><i class="fa-solid fa-magnifying-glass-minus"></i></button>
+                    <button onclick="closeZoomModal()" class="p-3 bg-red-500/80 text-white rounded-full hover:bg-red-600 transition"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+
+                <div class="relative w-full h-full flex items-center justify-center overflow-hidden" onwheel="handleWheel(event)">
+                    <img id="img-zoom-target" src="" class="max-w-none transition-transform duration-200 cursor-grab active:cursor-grabbing" style="transform: scale(1);">
+                </div>
+                
+                <p class="absolute bottom-6 text-white/50 text-sm">Scroll to zoom • Drag to move</p>
+            </div>`;
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+            
+            // Drag Logic
+            const img = document.getElementById('img-zoom-target');
+            let isDragging = false, startX, startY, translateX = 0, translateY = 0, scale = 1;
+
+            img.addEventListener('mousedown', (e) => { isDragging = true; startX = e.clientX - translateX; startY = e.clientY - translateY; });
+            window.addEventListener('mouseup', () => isDragging = false);
+            window.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                e.preventDefault();
+                translateX = e.clientX - startX;
+                translateY = e.clientY - startY;
+                updateTransform();
+            });
+
+            window.zoomImage = (delta) => {
+                scale += delta;
+                if (scale < 0.5) scale = 0.5;
+                if (scale > 5) scale = 5;
+                updateTransform();
+            };
+
+            window.handleWheel = (e) => {
+                e.preventDefault();
+                const delta = e.deltaY > 0 ? -0.1 : 0.1;
+                zoomImage(delta);
+            }
+
+            function updateTransform() {
+                img.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+            }
+            
+            window.closeZoomModal = () => {
+                 document.getElementById('img-zoom-modal').classList.add('hidden');
+                 // Reset
+                 scale = 1; translateX = 0; translateY = 0; updateTransform();
+            };
+        };
+
+        window.openImageZoom = (src) => {
+            setupImageModal();
+            const modal = document.getElementById('img-zoom-modal');
+            const target = document.getElementById('img-zoom-target');
+            target.src = src;
+            modal.classList.remove('hidden');
+        };
+    </script>
+
+
+</body>
+</html>
