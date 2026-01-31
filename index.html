@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Notification Corner: Find top educators and exclusive updates.">
+    <title>Notification Corner | NEELAXMI -: THE HELPER </title>
+    
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#0f172a">
+
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Neelaxmi">
+<link rel="apple-touch-icon" href="/pictures/neelaxmi.jpg"> 
+
+<link rel="icon" type="image/jpeg" href="/pictures/neelaxmi.jpg">
+
+    <meta name="google-site-verification" content="iatylsdA3ilcUEyKshZLLZmpDIh6TMUdj7qjgoLTWxw" />
+    <link rel="icon" type="image/jpeg" href="/pictures/neelaxmi.jpg">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+    <script>
+      window.OneSignalDeferred = window.OneSignalDeferred || [];
+      OneSignalDeferred.push(function(OneSignal) {
+        OneSignal.init({
+          appId: "4837b92b-ecaa-4bf4-9a3d-7ed740c82dd9", 
+          safari_web_id: "web.onesignal.auto.xxxxx", 
+          notifyButton: { enable: true },
+          allowLocalhostAsSecureOrigin: true, 
+        });
+      });
+    </script>
+    
+<style>
+/* ... (YOUR EXISTING CSS REMAINS EXACTLY THE SAME) ... */
+:root {
+    --sidebar-width: min(280px, 85vw);
+    --primary-gradient: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
+    --glass-bg: rgba(255, 255, 255, 0.05);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --text-main: #f8fafc;
+    --text-dim: #94a3b8;
+    --transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    --title-size: clamp(1.8rem, 6vw, 3rem);
+    --card-padding: clamp(1rem, 3vw, 2rem);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: #0f172a;
+    color: var(--text-main);
+    min-height: 100vh;
+    display: flex;
+    overflow-x: hidden;
+}
+
+/* 2. NOTIFICATION SYSTEM STYLES */
+.notification-nav { position: fixed; top: 15px; right: 15px; z-index: 1101; }
+.bell-container {
+    display: flex !important; /* Force it to show always */
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding-top: 10px;
+    background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border); width: 48px; height: 48px;
+    border-radius: 12px; display: flex; align-items: center; justify-content: center;
+    cursor: pointer; position: relative; transition: 0.3s;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+.bell-container:hover { background: rgba(255, 255, 255, 0.1); border-color: #00d2ff; }
+.badge {
+    position: absolute; top: -5px; right: -5px; background: #ff4757;
+    color: white; font-size: 0.7rem; padding: 2px 6px; border-radius: 50%;
+    font-weight: 800; display: none; border: 2px solid #0f172a;
+    animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.notif-panel {
+    position: fixed; top: 75px; right: 15px; width: 340px; background: #1e293b;
+    border: 1px solid rgba(0, 210, 255, 0.3); border-radius: 20px; display: none;
+    flex-direction: column; z-index: 1100; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    max-height: 70vh; overflow-y: auto; animation: slideDown 0.3s ease;
+}
+.notif-header {
+    padding: 15px 20px; font-weight: 700; border-bottom: 1px solid var(--glass-border);
+    background: rgba(0, 210, 255, 0.1); color: #fff; font-size: 0.95rem;
+    display: flex; justify-content: space-between; align-items: center;
+}
+.notif-item {
+    padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05);
+    transition: 0.2s; background: rgba(255,255,255,0.02);
+    display: flex; flex-direction: column; gap: 10px;
+}
+.notif-item:hover { background: rgba(255, 255, 255, 0.05); }
+.notif-item.new {
+    border-left: 3px solid #00d2ff;
+    background: linear-gradient(90deg, rgba(0, 210, 255, 0.08) 0%, transparent 100%);
+}
+.notif-banner { width: 100%; height: 120px; object-fit: cover; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); }
+.notif-content-top { display: flex; justify-content: space-between; align-items: flex-start; }
+.notif-title { color: #fff; font-weight: 700; font-size: 0.95rem; line-height: 1.2; }
+.notif-msg { color: #94a3b8; font-size: 0.85rem; line-height: 1.5; }
+.notif-time { font-size: 0.7rem; color: #64748b; margin-top: 5px; display: block; text-align: right; }
+.notif-action-btn {
+    display: inline-block; width: 100%; padding: 10px; background: rgba(0, 210, 255, 0.15);
+    color: #00d2ff; text-align: center; border-radius: 10px; text-decoration: none;
+    font-weight: 600; font-size: 0.85rem; transition: 0.3s; border: 1px solid rgba(0, 210, 255, 0.2);
+}
+.notif-action-btn:hover { background: #00d2ff; color: #0f172a; }
+@keyframes ring {
+  0% { transform: rotate(0); } 10% { transform: rotate(15deg); } 20% { transform: rotate(-15deg); }
+  30% { transform: rotate(10deg); } 40% { transform: rotate(-10deg); } 50% { transform: rotate(0); }
+  100% { transform: rotate(0); }
+}
+.bell-container.has-new i { animation: ring 2s infinite; color: #00d2ff; }
+
+/* 3. SIDEBAR & NAV */
+.menu-toggle {
+    position: fixed; top: 15px; left: 15px; z-index: 1100; background: var(--primary-gradient);
+    border: none; color: white; width: 48px; height: 48px; border-radius: 12px;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    font-size: 1.4rem; box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+.sidebar {
+    width: var(--sidebar-width); background: rgba(15, 23, 42, 0.98);
+    backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+    border-right: 1px solid var(--glass-border); height: 100vh; position: fixed;
+    left: calc(-1.1 * var(--sidebar-width)); top: 0; display: flex; flex-direction: column;
+    padding: 80px 1.2rem 2rem; transition: var(--transition); z-index: 1050; overflow-y: auto;
+}
+.sidebar.active { left: 0; }
+.nav-link {
+    display: flex; align-items: center; gap: 15px; padding: 12px 18px; color: var(--text-dim);
+    text-decoration: none; border-radius: 14px; margin-bottom: 8px; transition: 0.3s; font-size: 0.95rem;
+}
+.nav-link:hover, .nav-link.active {
+    background: var(--glass-bg); color: #00d2ff; box-shadow: inset 0 0 10px rgba(0, 210, 255, 0.1);
+}
+
+/* 4. MAIN CONTENT */
+.main-wrapper {
+    flex-grow: 1; width: 100%; padding: clamp(70px, 10vh, 100px) clamp(15px, 5vw, 50px) 3rem;
+    transition: var(--transition); min-width: 0;
+}
+@media (min-width: 1024px) { .main-wrapper.shifted { margin-left: var(--sidebar-width); } }
+@media (max-width: 768px) { .main-wrapper.shifted { margin-left: 0; filter: blur(5px); } }
+.header-content { display: flex; flex-direction: column; align-items: center; gap: 20px; margin-bottom: clamp(2rem, 5vh, 4rem); text-align: center; }
+@media (min-width: 768px) { .header-content { flex-direction: row; text-align: left; } }
+.header-logo {
+    width: clamp(100px, 25vw, 180px); height: auto; aspect-ratio: 1/1; border-radius: 50%;
+    object-fit: cover; border: 3px solid #00d2ff; filter: drop-shadow(0 0 15px rgba(0, 210, 255, 0.4));
+    animation: float 3s ease-in-out infinite;
+}
+.title {
+    font-size: var(--title-size); font-weight: 800; letter-spacing: -1px; line-height: 1.1;
+    background: linear-gradient(90deg, #fff, #00d2ff, #3a7bd5, #fff); background-size: 200% auto;
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: shine 4s linear infinite;
+}
+.subtitle { color: var(--text-dim); margin-top: 8px; font-size: clamp(0.9rem, 2vw, 1.1rem); }
+
+/* 5. SEARCH & GRID */
+.search-wrapper { position: relative; max-width: 600px; width: 100%; margin: 0 auto 3rem; }
+.search-input {
+    width: 100%; padding: 16px 20px 16px 55px; background: var(--glass-bg);
+    border: 1px solid var(--glass-border); border-radius: 20px; color: white;
+    outline: none; font-size: 1rem; transition: 0.3s;
+}
+.search-input:focus { border-color: #00d2ff; background: rgba(255, 255, 255, 0.08); }
+.search-icon { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: var(--text-dim); }
+.notifications-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 25px; }
+.teacher-card {
+    background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 28px;
+    padding: var(--card-padding); transition: 0.3s; display: flex; flex-direction: column; height: 100%;
+}
+.teacher-card:hover {
+    border-color: #00d2ff; background: rgba(255, 255, 255, 0.08);
+    transform: translateY(-10px) scale(1.02); box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+}
+.avatar { width: 70px; height: 70px; border-radius: 18px; object-fit: cover; margin-bottom: 1.2rem; border: 2px solid #3a7bd5; }
+.rank-badge { font-size: 0.7rem; font-weight: 700; color: #00d2ff; text-transform: uppercase; letter-spacing: 1px; }
+.card-body { color: var(--text-dim); font-size: 0.95rem; line-height: 1.6; margin: 15px 0; flex-grow: 1; }
+.btn-profile {
+    background: var(--primary-gradient); color: white; text-decoration: none; padding: 12px;
+    border-radius: 14px; text-align: center; font-weight: 600; transition: 0.3s;
+}
+
+/* 6. MODAL & ANIMATIONS */
+.modal-backdrop {
+    position: fixed; inset: 0; background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(10px); display: none; align-items: center; justify-content: center;
+    z-index: 2000; padding: 20px;
+}
+.modal-card {
+    background: linear-gradient(165deg, #1e293b 0%, #0f172a 100%);
+    padding: clamp(1.5rem, 5vw, 2.5rem); border-radius: 30px;
+    max-width: 450px; width: 100%; text-align: center;
+    border: 1px solid rgba(0, 210, 255, 0.3); position: relative;
+    overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+.modal-card::before {
+    content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+    background: radial-gradient(circle, rgba(0, 210, 255, 0.05) 0%, transparent 70%); z-index: 0;
+}
+.modal-content-wrapper { position: relative; z-index: 1; }
+.modal-icon {
+    font-size: 4rem; background: var(--primary-gradient); -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent; margin-bottom: 1.5rem; display: inline-block;
+    filter: drop-shadow(0 0 10px rgba(0, 210, 255, 0.4)); animation: pulseIcon 2s infinite;
+}
+.btn-join {
+    background: var(--primary-gradient); color: white; text-decoration: none;
+    padding: 16px 30px; border-radius: 18px; display: flex; align-items: center; justify-content: center;
+    gap: 10px; font-weight: 700; font-size: 1.1rem; transition: var(--transition);
+    box-shadow: 0 10px 20px rgba(58, 123, 213, 0.3); margin-top: 1.5rem;
+}
+.btn-join:hover { transform: translateY(-3px); box-shadow: 0 15px 25px rgba(58, 123, 213, 0.4); }
+.btn-close {
+    background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border); color: #94a3b8;
+    margin-top: 20px; padding: 8px 16px; border-radius: 10px; cursor: pointer;
+    font-size: 0.85rem; transition: 0.3s;
+}
+.btn-close:hover { background: rgba(255, 255, 255, 0.1); color: #fff; }
+
+@keyframes shine { to { background-position: 200% center; } }
+@keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+@keyframes pulseIcon { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.1); opacity: 0.8; } }
+@keyframes popIn { 0% { transform: scale(0); } 80% { transform: scale(1.2); } 100% { transform: scale(1); } }
+@keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #00d2ff; }
+
+
+/* === NEW: FLOATING INSTALL BUTTON (LEFT SIDE) === */
+.install-float {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    z-index: 1102;
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    border-radius: 50%;
+    display: flex; /* Yaha 'none' ki jagah 'flex' kar diya hai taaki hamesha dikhe */
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.2rem;
+    box-shadow: 0 4px 15px rgba(56, 239, 125, 0.4);
+    cursor: pointer;
+    border: 2px solid rgba(255,255,255,0.2);
+    animation: bounceIn 1s ease, glowPulse 2s infinite;
+}
+
+/* Sidebar button ko bhi hamesha dikhane ke liye */
+#sidebarInstallBtn {
+    display: flex !important; 
+}
+.install-float:hover {
+    transform: translateY(-5px) scale(1.1);
+    box-shadow: 0 10px 25px rgba(56, 239, 125, 0.6);
+}
+
+.install-float i {
+    animation: slideDownArrow 2s infinite;
+}
+
+/* Animations for Install Button */
+@keyframes bounceIn {
+    0% { transform: scale(0); opacity: 0; }
+    60% { transform: scale(1.2); opacity: 1; }
+    100% { transform: scale(1); }
+}
+
+@keyframes glowPulse {
+    0% { box-shadow: 0 0 0 0 rgba(56, 239, 125, 0.7); }
+    70% { box-shadow: 0 0 0 15px rgba(56, 239, 125, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(56, 239, 125, 0); }
+}
+
+@keyframes slideDownArrow {
+    0%, 100% { transform: translateY(-2px); }
+    50% { transform: translateY(3px); }
+}
+
+/* === UPDATED: FULL SCREEN SPLASH VIDEO === */
+#pwaSplash {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background: #000; /* Dark background */
+    z-index: 9999; display: none;
+    align-items: center; justify-content: center; 
+    overflow: hidden;
+}
+
+#pwaSplash video {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    min-width: 100%;
+    min-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: cover; /* This makes it full screen */
+    z-index: 1;
+}
+
+#pwaSplash h2 {
+    position: absolute;
+    bottom: 50px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    color: #fff;
+    z-index: 2;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.7);
+    animation: pulseIcon 2s infinite;
+}
+</style>
+</head>
+<body>
+
+<div id="pwaSplash">
+    <video id="splashVideo" autoplay playsinline>
+        <source src="/logo.mp4" type="video/mp4">
+    </video>
+    <h2>Starting Neelaxmi...</h2>
+</div>
+    <button class="menu-toggle" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i>
+    </button>
+    
+    <div id="installFloatBtn" class="install-float" onclick="installPWA()">
+    <i class="fas fa-download"></i>
+</div>
+
+<div class="notification-nav">
+    <div class="bell-container" onclick="toggleNotifPanel()">
+        <i class="fas fa-bell"></i>
+        <span class="badge" id="notifCount">0</span>
+    </div>
+    </div>
+    <div class="notif-panel" id="notifPanel">
+        <div class="notif-header">
+            <span>Latest Updates</span>
+            <i class="fas fa-sync-alt" style="font-size: 0.8rem; opacity: 0.7;"></i>
+        </div>
+        <div id="notifList">
+            <p style="padding: 30px; color: #64748b; font-size: 0.85rem; text-align: center;">
+                No new notifications yet.
+            </p>
+        </div>
+    </div>
+
+    <nav class="sidebar" id="sidebar">
+        <a href="/index.html" class="nav-link active"><i class="fas fa-home"></i> Home</a>
+        <a href="/quiz/DASHBOARD.HTML" class="nav-link"><i class="fas fa-comments"></i> DASHBOARD</a>
+        <a href="#" class="nav-link" id="sidebarInstallBtn" onclick="installPWA(); return false;" style="display: none;">
+           <i class="fas fa-mobile-alt"></i> Install App
+        </a>
+        <a href="https://akmsirdiscussion.netlify.app/" target="_blank" class="nav-link"><i class="fas fa-comments"></i> AKM SIR DISCUSSION</a>
+        <a href="https://neetcountdown2026.netlify.app/" target="_blank" class="nav-link"><i class="fas fa-clock"></i> NEET COUNTDOWN</a>
+        <a href="https://saksenquiz.netlify.app/" target="_blank" class="nav-link"><i class="fas fa-lightbulb"></i> SAKSEN QUIZ CORNER</a>
+        <a href="https://dppanalysis.netlify.app/" target="_blank" class="nav-link"><i class="fas fa-chart-bar"></i> DPP ANALYSIS</a>
+        <a href="#" target="_blank" class="nav-link"><i class="fas fa-calendar-check"></i> SCHEDULE TRACKER</a>
+        <a href="http://diwalisak.netlify.app/" target="_blank" class="nav-link"><i class="fas fa-firework"></i> DIWALI VFX</a>
+        <a href="https://telegram.me/saksen_main_bot" target="_blank" class="nav-link"><i class="fab fa-telegram"></i> MAIN BOT</a>
+
+        <div style="margin-top: auto; padding: 20px; font-size: 0.75rem; color: #64748b;">
+            © <span id="year"></span> TEAM SAKSEN
+        </div>
+    </nav>
+
+    <main class="main-wrapper" id="mainContent">
+       <header class="header-content">
+         <img src="/pictures/neelaxmi.jpg" alt="Logo" class="header-logo">
+             <div>
+                <h1 class="title">NEELAXMI : THE HELPER </h1>
+                <p class="subtitle">Curated by <span style="color: #00d2ff; font-weight: 600;">NEELAXMI & SAKEN</span></p>
+             </div>
+        </header>
+
+        <div class="search-wrapper">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" id="searchBar" class="search-input" placeholder="Search educator or subject...">
+        </div>
+
+        <div class="notifications-grid" id="notificationsContainer"></div>
+    </main>
+
+    <div id="telegramModal" class="modal-backdrop">
+        <div class="modal-card">
+            <div class="modal-content-wrapper">
+                <i class="fab fa-telegram modal-icon"></i>
+                <h2 style="color: #fff; margin-bottom: 12px; font-weight: 800;">Join the SAKSEN Squad!</h2>
+                <p style="color: #94a3b8; line-height: 1.6; margin-bottom: 5px;">
+                    Don't miss out on exclusive notes and direct updates from <b>NEELAXMI & SAKSHAM</b>.
+                </p>
+                
+                <a href="https://telegram.me/saksen_main_bot" target="_blank" class="btn-join" onclick="closeModal()">
+                    <span>Join Channel Now</span>
+                    <i class="fas fa-external-link-alt"></i>
+                </a>
+
+                <button onclick="closeModal()" class="btn-close">
+                    Maybe later, I'll browse first
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+
+    <script>
+        // === PWA LOGIC START ===
+        
+        // 1. Register Service Worker (Offline Capability)
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => console.log('SW Registered'))
+                    .catch(err => console.log('SW Fail:', err));
+            });
+        }
+
+        // 2. Custom PWA Splash Screen Logic
+        // This detects if the app is running in "standalone" mode (Installed App)
+if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
+    const splash = document.getElementById('pwaSplash');
+    const video = document.getElementById('splashVideo');
+    
+    splash.style.display = 'flex';
+
+    // This will hide the splash screen after 4 seconds
+    // Adjust 4000 to match the exact length of your video in milliseconds
+    setTimeout(() => {
+        splash.style.transition = 'opacity 0.8s ease';
+        splash.style.opacity = '0';
+        setTimeout(() => splash.style.display = 'none', 800);
+    }, 4000); 
+}
+        // === PWA LOGIC END ===
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDAZ_xwRd_uJcf-Gzv58HA9f_HZ7BCCJ8g",
+            authDomain: "gallery-83144.firebaseapp.com",
+            projectId: "gallery-83144",
+            storageBucket: "gallery-83144.firebasestorage.app",
+            messagingSenderId: "1005577519231",
+            appId: "1:1005577519231:web:638899904126ae78cdff4a"
+        };
+        
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // UI Variables
+        let unreadCount = 0;
+        let isPanelOpen = false;
+
+       // ==========================================
+        // 2. DATA SOURCE (TEACHERS)
+        // ==========================================
+        const TEACHERS_DATA = [
+            { name: "Ajay Sir", subject: "Chemistry", rank: "Super Six", description: "Specializes in Physical Chemistry. Known for high-yield concepts and zero-trick mastery.", imgUrl: "/pictures/akmsir.jpg" },
+            { name: "Prateek Jain", subject: "Physics", rank: "BRUTAL ", description: "Zero tricks, 100% concepts. The ultimate guide for mastering Physics fundamentals.", imgUrl: "/pictures/pj.jpg" },
+            { name: "SEEP MAM", subject: "BIOLOGY", rank: "QUEEN", description: "Beauty is not the only reason for fame sometimes it's just a free version of the brain.", imgUrl: "/pictures/seep.jpg" },
+            { name: "Ramesh sharda", subject: "CHEMISTRY", rank: "SMART DADU", description: "AGE WITH EXPERIENCE NEVER GONNA FAIL.", imgUrl: "/pictures/rssir2.jpeg" },
+            { name: "AMIT GUPTA SIR", subject: "BIOLOGY", rank: "PG IN UG", description: "The master of Zoology with years of legacy.", imgUrl: "/pictures/AGsir2.jpeg" },
+            { name: "TEST SERIES", subject: "TEST SERIES", rank: "CHECK YOUR CAPACITY", description: "IF YOU ARE FLYING THEN IT HAVE POWER TO TAKE DOWN YOU TO EARTH.", imgUrl: "/pictures/neelaxmi.jpg" },
+        ];
+
+        // ==========================================
+        // 3. CORE UI LOGIC
+        // ==========================================
+        const container = document.getElementById('notificationsContainer');
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('mainContent');
+
+        function toggleSidebar() {
+            sidebar.classList.toggle('active');
+            mainContent.classList.toggle('shifted');
+        }
+
+        function renderCards(data) {
+            container.innerHTML = data.map((teacher, index) => {
+                const profileSlug = 'teachers/' + teacher.name.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '.html';
+                return `
+                    <article class="teacher-card" style="animation: slideDown 0.5s ease forwards; animation-delay: ${index * 0.1}s; opacity: 0;">
+                        <div class="rank-badge">${teacher.rank}</div>
+                        <img class="avatar" src="${teacher.imgUrl}" onerror="this.src='https://ui-avatars.com/api/?name=${teacher.name}'">
+                        <h3 style="font-size: 1.2rem;">${teacher.name}</h3>
+                        <p style="color: #00d2ff; font-weight: 600; font-size: 0.8rem;">${teacher.subject}</p>
+                        <div class="card-body">${teacher.description}</div>
+                        <a href="${profileSlug}" class="btn-profile">View Profile <i class="fas fa-arrow-right" style="margin-left:8px;"></i></a>
+                    </article>
+                `;
+            }).join('');
+        }
+
+        document.getElementById('searchBar').addEventListener('keyup', (e) => {
+            const term = e.target.value.toLowerCase().trim();
+            const filtered = TEACHERS_DATA.filter(t => 
+                t.name.toLowerCase().includes(term) || t.subject.toLowerCase().includes(term)
+            );
+            renderCards(filtered);
+        });
+
+        // ==========================================
+        // 4. NOTIFICATION LOGIC
+        // ==========================================
+        let lastOpenedTime = localStorage.getItem('saksen_notif_last_viewed');
+        lastOpenedTime = lastOpenedTime ? parseInt(lastOpenedTime) : 0;
+
+        function toggleNotifPanel() {
+            const panel = document.getElementById('notifPanel');
+            const badge = document.getElementById('notifCount');
+            
+            isPanelOpen = !isPanelOpen;
+            
+            if (isPanelOpen) {
+                panel.style.display = 'flex';
+                unreadCount = 0;
+                badge.style.display = 'none';
+                lastOpenedTime = Date.now();
+                localStorage.setItem('saksen_notif_last_viewed', lastOpenedTime);
+                setTimeout(() => {
+                    document.querySelectorAll('.notif-item.new').forEach(el => {
+                        el.classList.remove('new');
+                        el.style.borderLeft = 'none';
+                    });
+                }, 2000);
+            } else {
+                panel.style.display = 'none';
+            }
+        }
+
+        db.collection("notifications")
+          .orderBy("timestamp", "desc") 
+          .limit(20)
+          .onSnapshot((snapshot) => {
+            const list = document.getElementById('notifList');
+            const badge = document.getElementById('notifCount');
+            list.innerHTML = ''; 
+
+            if (snapshot.empty) {
+                list.innerHTML = `<p style="padding: 30px; color: #64748b; font-size: 0.85rem; text-align: center;">No new notifications.</p>`;
+                return;
+            }
+
+            let currentUnread = 0;
+
+            snapshot.forEach((doc) => {
+                const data = doc.data();
+                let notifTimeMs = 0;
+                let timeString = 'Just now';
+                
+                if (data.timestamp) {
+                    notifTimeMs = data.timestamp.seconds * 1000;
+                    timeString = new Date(notifTimeMs).toLocaleDateString([], {
+                        month: 'short', day: 'numeric', hour: '2-digit', minute:'2-digit'
+                    });
+                }
+
+                const isNew = notifTimeMs > lastOpenedTime;
+                if (isNew) currentUnread++;
+
+                const div = document.createElement('div');
+                div.className = `notif-item ${isNew ? 'new' : ''}`;
+
+                const imgHtml = data.img ? 
+                    `<img src="${data.img}" class="notif-banner" alt="Update">` : '';
+                
+                const btnHtml = data.link ? 
+                    `<a href="${data.link}" target="_blank" class="notif-action-btn">
+                        ${data.btnText || 'Check it out'} <i class="fas fa-arrow-right"></i>
+                     </a>` : '';
+
+                div.innerHTML = `
+                    ${imgHtml}
+                    <div class="notif-content-top">
+                        <div class="notif-title">${data.title}</div>
+                    </div>
+                    <div class="notif-msg">${data.message}</div>
+                    ${btnHtml}
+                    <small class="notif-time">${timeString}</small>
+                `;
+
+                list.appendChild(div);
+            });
+
+            if (currentUnread > 0) {
+                badge.innerText = currentUnread;
+                badge.style.display = 'block';
+            } else {
+                badge.style.display = 'none';
+            }
+            unreadCount = currentUnread;
+        });
+        
+        
+        
+// === UPDATED PWA LOGIC ===
+let deferredPrompt = null;
+const installFloatBtn = document.getElementById('installFloatBtn');
+const sidebarInstallBtn = document.getElementById('sidebarInstallBtn');
+
+// 1. Service Worker Registration
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+            .then(registration => console.log('SW Registered'))
+            .catch(err => console.log('SW Fail:', err));
+    });
+}
+
+// 2. Install Prompt Capture (The "App Store" Logic)
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    console.log("PWA Install prompt captured.");
+});
+// 3. Install Function (Triggered by both buttons)
+async function installPWA() {
+    // Case 1: Agar browser support karta hai aur prompt ready hai
+    if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+            deferredPrompt = null;
+        }
+    } 
+    // Case 2: Agar browser incapable hai (iOS ya Unsupported Browsers)
+    else {
+        showManualInstallInstructions();
+    }
+}
+
+function showManualInstallInstructions() {
+    // Forceful alert/modal for users on iPhone or old browsers
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    
+    if (isIOS) {
+        alert("Neelaxmi App Install Karein:\n\n1. Browser ke 'Share' button par click karein (Bottom bar).\n2. Thoda niche scroll karein aur 'Add to Home Screen' select karein.");
+    } else {
+        alert("Install Guide:\n\n1. Browser ke menu (3 dots ⋮) par click karein.\n2. 'Install App' ya 'Add to Home Screen' par tap karein.");
+    }
+}
+
+// 4. Splash Screen Logic (Fullscreen + Sound)
+if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
+    const splash = document.getElementById('pwaSplash');
+    const video = document.getElementById('splashVideo');
+    
+    splash.style.display = 'flex'; // Show Splash
+
+    // Attempt to play with sound
+    // Note: Some browsers block audio without a user click. 
+    // We try to play; if it fails, we catch it.
+    var playPromise = video.play();
+
+    if (playPromise !== undefined) {
+        playPromise.then(_ => {
+            // Autoplay started!
+        })
+        .catch(error => {
+            // Auto-play was prevented. 
+            // Fallback: Mute and play if audio is blocked
+            video.muted = true;
+            video.play();
+        });
+    }
+
+    // Hide splash after video ends or 4 seconds
+    setTimeout(() => {
+        splash.style.transition = 'opacity 0.8s ease';
+        splash.style.opacity = '0';
+        setTimeout(() => splash.style.display = 'none', 800);
+    }, 4500); // 4.5 seconds
+}     
+        // ==========================================
+        // 5. MODAL & STARTUP
+        // ==========================================
+        function closeModal() {
+            document.getElementById('telegramModal').style.display = 'none';
+            localStorage.setItem('telegram_modal_timestamp', Date.now());
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('year').textContent = new Date().getFullYear();
+            renderCards(TEACHERS_DATA);
+
+            const lastInteraction = localStorage.getItem('telegram_modal_timestamp');
+            const oneWeekInMs = 7 * 24 * 60 * 60 * 1000;
+            const now = Date.now();
+
+            if (!lastInteraction || (now - lastInteraction) > oneWeekInMs) {
+                setTimeout(() => { 
+                    document.getElementById('telegramModal').style.display = 'flex'; 
+                }, 3000);
+            }
+        });
+    </script>
+</body>
+</html>
