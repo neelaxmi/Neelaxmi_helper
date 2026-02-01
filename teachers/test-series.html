@@ -6,7 +6,7 @@
     <title>TEST SERIES ~ NEELAXMI</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
-    <link rel="icon" type="image/jpeg" href="/pictures/neelaxmi.jpg">
+    <link rel="icon" type="image/jpeg" href="/pictures/neelaxmi.png">
     <link rel="stylesheet" type="text/css" href="/css/teacher.css">
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
@@ -39,7 +39,7 @@
 
 <body data-theme="default-ui">
 
-    <img id="bg-watermark" src="/pictures/neelaxmi.jpg" alt="Watermark" onerror="this.style.display='none'">
+    <img id="bg-watermark" src="/pictures/neelaxmi.png" alt="Watermark" onerror="this.style.display='none'">
 
     <div class="max-w-6xl mx-auto px-4 md:px-8 pt-4 relative z-10">
         <div id="theme-switcher" class="flex flex-wrap gap-2 p-2 card rounded-xl shadow-lg border-none">
@@ -52,7 +52,7 @@
             
             <div class="flex items-center space-x-4">
                 <div class="w-24 h-24 sm:w-32 sm:h-32 rounded-full overflow-hidden border-2 border-border flex-shrink-0">
-                    <img src="/pictures/neelaxmi.jpg" onerror="this.src='https://placehold.co/128x128/000/fff?text=PJ'" alt="TEST SERIES" class="w-full h-full object-cover">
+                    <img src="/pictures/neelaxmi.png" onerror="this.src='https://placehold.co/128x128/000/fff?text=PJ'" alt="TEST SERIES" class="w-full h-full object-cover">
                 </div>
                 <div>
                     <h1 class="text-3xl font-extrabold text-primary">TEST SERIES </h1>
@@ -130,8 +130,8 @@
         const db = firebase.firestore();
         const EDUCATOR_DOC_PATH = "educators/TEST_SERIES";
 
-        const MAIN_THUMBNAIL_URL = "/PICTURES/neelaxmi.jpg"; 
-        const COMPANY_LOGO_URL = "/pictures/neelaxmi.jpg"; 
+        const MAIN_THUMBNAIL_URL = "/PICTURES/neelaxmi.png"; 
+        const COMPANY_LOGO_URL = "/pictures/neelaxmi.png"; 
         
         const body = document.body;
         const themeSwitcher = document.getElementById('theme-switcher');

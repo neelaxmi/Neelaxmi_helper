@@ -6,13 +6,15 @@
       <title>AJAY SIR [AKM] Profile</title>
       <script src="https://cdn.tailwindcss.com"></script>
       <link rel="stylesheet" href="/style.css">
-      <link rel="icon" type="image/jpeg" href="/pictures/neelaxmi.jpg">
+      <link rel="icon" type="image/jpeg" href="/pictures/neelaxmi.png">
       <meta name="google-site-verification" content="iatylsdA3ilcUEyKshZLLZmpDIh6TMUdj7qjgoLTWxw" />
       <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
       <link rel="stylesheet" href="/css.teachers.css">
       <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
       <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
       
    </head>
@@ -411,10 +413,25 @@ body[data-theme='dark'] .cyber-card {
          <div id="dynamic-content-area" class="mt-8">       </div>
       </div>
       
-      <div id="pdf-viewer-container">
-        <span class="close-pdf" onclick="closePdf()">&times;</span>
-        <iframe id="pdf-frame" src=""></iframe>
-      </div>
+<div id="pdf-viewer-container" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:9999; flex-direction:column;">
+    <div class="pdf-toolbar" style="display:flex; justify-content:space-between; align-items:center; padding:15px 25px; background:#1a1a1a; color:white;">
+        <div class="pdf-info flex items-center gap-3">
+            <img src="/pictures/neelaxmi.png" style="height:30px;" alt="Logo">
+            <span id="pdf-title-display" class="font-bold truncate max-w-[200px] md:max-w-md">PDF Viewer</span>
+        </div>
+        <div class="flex items-center gap-4">
+            <button onclick="sharePdfLink()" title="Share Link" style="background:none; border:none; color:white; cursor:pointer;"><i class="fas fa-share-nodes"></i></button>
+            <a id="download-btn" title="Download" style="color:white; text-decoration:none;" target="_blank"><i class="fas fa-download"></i></a>
+            <button onclick="closePdf()" style="background:none; border:none; color:white; font-size:30px; cursor:pointer;">&times;</button>
+        </div>
+    </div>
+
+    <div style="flex-grow:1; position:relative; display:flex; justify-content:center; background:#333; overflow:hidden;">
+        <img src="/pictures/neelaxmi.png" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); opacity:0.1; width:300px; pointer-events:none; z-index:1;">
+        
+        <iframe id="pdf-frame" src="" style="width:100%; height:100%; border:none; position:relative; z-index:2; background:white;"></iframe>
+    </div>
+</div>
 
 <script >
     
@@ -440,7 +457,7 @@ const db = firebase.firestore();
 const EDUCATOR_DOC_PATH = "educators/ajay_mishra";
 
 const MAIN_THUMBNAIL_URL = "/pictures/akm.png";
-const COMPANY_LOGO_URL = "/pictures/neelaxmi.jpg";
+const COMPANY_LOGO_URL = "/pictures/neelaxmi.png";
 
 const body = document.body;
 const themeSwitcher = document.getElementById('theme-switcher');
@@ -949,7 +966,7 @@ function renderPYQGridFromJSON() {
             <span class="absolute top-0 right-0 bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-bl-xl tracking-wider status">PYQ</span>
             <div class="relative z-10">
                 <div class="mb-4 p-2 inline-block rounded-full bg-red-100 shadow-lg overflow-hidden">
-                    <img src="/pictures/neelaxmi.jpg" alt="Company Logo" class="w-20 h-20 object-cover rounded-full">
+                    <img src="/pictures/neelaxmi.png" alt="Company Logo" class="w-20 h-20 object-cover rounded-full">
                 </div>
                 <h3 class="text-2xl font-bold text-gray-900 mb-5 leading-snug border-b pb-3 border-gray-100">${course.title}</h3>
             </div>
@@ -1081,19 +1098,30 @@ function injectPdfViewer() {
     }
 }
 
-function openPdf(link) {
-    let previewLink = link;
-    // Auto-convert standard drive links to preview mode
-    if (link.includes('drive.google.com') && (link.includes('/view') || link.includes('/edit'))) {
-        previewLink = link.replace(/\/view.*/, '/preview').replace(/\/edit.*/, '/preview');
-    }
+let currentPdfUrl = '';
+let currentPdfTitle = '';
+
+function openPdf(link, title = 'Module PDF') {
+    currentPdfUrl = link;
+    currentPdfTitle = title;
     
+    let displayLink = link;
+    // Force Google Drive links into Preview Mode to avoid "Invalid Structure" errors
+    if (link.includes('drive.google.com')) {
+        displayLink = link.replace(/\/view.*/, '/preview').replace(/\/edit.*/, '/preview');
+    }
+
     const container = document.getElementById('pdf-viewer-container');
     const frame = document.getElementById('pdf-frame');
+    const titleText = document.getElementById('pdf-title-display');
+    const dlBtn = document.getElementById('download-btn');
+
     if(container && frame) {
-        frame.src = previewLink;
+        titleText.innerText = title;
+        dlBtn.href = link; 
+        frame.src = displayLink;
         container.style.display = 'flex';
-        document.body.style.overflow = 'hidden'; // Prevent scrolling background
+        document.body.style.overflow = 'hidden';
     }
 }
 
@@ -1107,9 +1135,27 @@ function closePdf() {
     }
 }
 
-/* -------------------------------------------------------------------------- */
-/* DYNAMIC PDF FETCHING                        */
-/* -------------------------------------------------------------------------- */
+function sharePdfLink() {
+    if (!currentPdfTitle) return;
+
+    // Convert "Mole Concept Part 1" to "mole-concept-part-1"
+    const slug = currentPdfTitle
+        .toLowerCase()
+        .trim()
+        .replace(/[^\w\s-]/g, '')
+        .replace(/[\s_-]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+
+    const baseUrl = window.location.origin + window.location.pathname;
+    const shareUrl = `${baseUrl}?module=${slug}`; // NO MORE DATA PARAMETER!
+
+    navigator.clipboard.writeText(shareUrl).then(() => {
+        alert("Clean link copied: " + slug);
+    });
+}
+//-------------------------------------------------------------------------- */
+//* DYNAMIC PDF FETCHING                        */
+//* -------------------------------------------------------------------------- */
 
 async function fetchAndRenderModulePdfs() {
     toggleFilterButtons(false);
@@ -1133,7 +1179,7 @@ async function fetchAndRenderModulePdfs() {
 
         const cardsHtml = pdfArray.map(item => {
             return `
-                <div onclick="openPdf('${item.link}')" class="card cursor-pointer block bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-xl transition-all duration-300 group h-full flex flex-col relative">
+                <div onclick="openPdf('${item.link}', '${item.title.replace(/'/g, "\\'")}')" class="card cursor-pointer block bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-xl transition-all duration-300 group h-full flex flex-col relative">
                     <div class="relative w-full h-44 overflow-hidden">
                         <img src="${MAIN_THUMBNAIL_URL}" alt="Class Thumbnail" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500">
                         <div class="absolute bottom-3 left-3 w-10 h-10 rounded-full border-2 border-white overflow-hidden shadow-md z-10">
@@ -1271,12 +1317,12 @@ function updateThemeButtons(activeTheme) {
     });
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     const savedTheme = localStorage.getItem(THEME_KEY) || 'default-ui';
     renderThemeButtons(savedTheme);
     body.setAttribute('data-theme', savedTheme);
-    
-    // Inject viewer initially
+    const params = new URLSearchParams(window.location.search);
+    const moduleSlug = params.get('module');    // Inject viewer initially
     injectPdfViewer();
 
     const navTabs = document.querySelectorAll('.nav-tab');
@@ -1294,12 +1340,53 @@ document.addEventListener('DOMContentLoaded', () => {
             switchTheme(themeButton.dataset.themeId);
         }
     });
+    
+if (moduleSlug) {
+        try {
+            // Search Firebase for the module with this title
+            const snapshot = await db.doc(EDUCATOR_DOC_PATH)
+                .collection('module_pdfs')
+                .where('status', '==', 'approved')
+                .get();
 
+            let foundFile = null;
+
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                // Create a slug from the database title to compare
+                const dbSlug = data.title.toLowerCase().trim().replace(/[^\w\s-]/g, '').replace(/[\s_-]+/g, '-');
+                
+                if (dbSlug === moduleSlug) {
+                    foundFile = data;
+                }
+            });
+
+            if (foundFile) {
+                openPdf(foundFile.link, foundFile.title);
+            } else {
+                console.log("Module not found in database.");
+            }
+            
+            
+            // Cleanup the URL bar to keep it pretty
+            const cleanURL = window.location.origin + window.location.pathname;
+            window.history.replaceState({}, '', cleanURL);
+
+        } catch (error) {
+            console.error("Error finding shared module:", error);
+        }
+    }
+                
+                
+                
+                
     document.getElementById('filter-latest').addEventListener('click', handleFilterClick);
     document.getElementById('filter-oldest').addEventListener('click', handleFilterClick);
 
     fetchAndRenderStats();
     loadTabContent('Free classes', 'desc');
+    
+    
 });
 
     
