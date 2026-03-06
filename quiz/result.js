@@ -588,6 +588,39 @@ const loadAttemptDetails = async (attemptId) => {
     }
 }
 
+// Function to check if we should ask for feedback
+function checkFeedbackRequirement() {
+    const hasSubmitted = localStorage.getItem('feedbackSubmitted');
+    
+    // Only show if NOT submitted before
+    if (hasSubmitted !== 'true') {
+        document.getElementById('feedback-modal').classList.remove('hidden');
+    }
+}
+
+// Function to handle submission
+function submitFeedback(rating) {
+    // 1. Send data to your database (optional)
+    console.log("User rated:", rating);
+    
+    // 2. Mark as submitted in localStorage
+    localStorage.setItem('feedbackSubmitted', 'true');
+    
+    // 3. Hide modal
+    document.getElementById('feedback-modal').classList.add('hidden');
+    alert("Thank you for your feedback!");
+}
+
+// Function to handle skip
+function skipFeedback() {
+    // Just hide the modal (no localStorage set, so it asks next time)
+    document.getElementById('feedback-modal').classList.add('hidden');
+}
+
+// Trigger this when results load
+// Add this call inside your result loading function (where you display the score)
+// checkFeedbackRequirement();
+
 const fetchHistory = async () => {
     try {
         const snapshot = await db.collection('user_results').doc(CURRENT_USER_ID).collection('attempts')
