@@ -550,6 +550,22 @@ input[type=range]::-moz-range-thumb {
             </div>
         </div>
     </div>
+
+
+    <div id="feedback-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl max-w-sm w-full text-center">
+        <h3 class="text-xl font-bold mb-4 dark:text-white">Rate your experience!</h3>
+        <p class="mb-6 text-slate-500">How was the quiz?</p>
+        <div id="star-rating" class="flex justify-center gap-2 mb-6">
+            <button onclick="submitFeedback(1)" class="text-3xl hover:scale-110">⭐</button>
+            <button onclick="submitFeedback(2)" class="text-3xl hover:scale-110">⭐</button>
+            <button onclick="submitFeedback(3)" class="text-3xl hover:scale-110">⭐</button>
+            <button onclick="submitFeedback(4)" class="text-3xl hover:scale-110">⭐</button>
+            <button onclick="submitFeedback(5)" class="text-3xl hover:scale-110">⭐</button>
+        </div>
+        <button onclick="skipFeedback()" class="text-sm text-slate-400 hover:text-slate-600 underline">Skip for now</button>
+    </div>
+    </div>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
