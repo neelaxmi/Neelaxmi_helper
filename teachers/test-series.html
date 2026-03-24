@@ -7,6 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="icon" type="image/jpeg" href="/pictures/neelaxmi.png">
+    
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -95,7 +96,7 @@
             <div class="flex items-center gap-6">
                 <div class="relative">
                     <div class="absolute inset-0 bg-blue-500 blur-2xl opacity-20 animate-pulse"></div>
-                    <img src="/pictures/neelaxmi.png" class="relative w-24 h-24 md:w-32 md:h-32 rounded-2xl object-cover border border-white/10">
+                    <img src="/pictures/neelaxmi.png" alt="Logo" class="relative w-24 h-24 md:w-32 md:h-32 rounded-2xl object-cover border border-white/10">
                 </div>
                 <div>
                     <h1 class="text-3xl md:text-5xl font-extrabold tracking-tighter shimmer-text">TEST CENTER</h1>
@@ -116,7 +117,7 @@
             </div>
         </header>
 
-        <div class="flex items-center justify-center gap-4 mb-12">
+        <div class="flex items-center justify-center gap-4 mb-12 border-b border-white/10 pb-2">
             <button onclick="loadSection('TestSeries', this)" class="tab-btn active" id="defaultTab">
                 <i class="fas fa-file-code mr-2 opacity-50"></i>TEST SERIES
             </button>
@@ -124,109 +125,178 @@
                 <i class="fas fa-bolt mr-2 opacity-50 text-yellow-500"></i>LIVE QUIZ
             </button>
         </div>
+        
+        <div id="filter-container" class="mb-8 flex flex-wrap justify-center gap-3 opacity-0 transition-opacity duration-500">
+        </div>
 
         <div id="dynamic-content-area" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            </div>
+        </div>
 
     </div>
 
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyDAZ_xwRd_uJcf-Gzv58HA9f_HZ7BCCJ8g",
-            authDomain: "gallery-83144.firebaseapp.com",
-            projectId: "gallery-83144",
-            storageBucket: "gallery-83144.firebasestorage.app",
-            messagingSenderId: "1005577519231",
-            appId: "1:1005577519231:web:638899904126ae78cdff4a"
-        };
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyDAZ_xwRd_uJcf-Gzv58HA9f_HZ7BCCJ8g",
+        authDomain: "gallery-83144.firebaseapp.com",
+        projectId: "gallery-83144",
+        storageBucket: "gallery-83144.firebasestorage.app",
+        messagingSenderId: "1005577519231",
+        appId: "1:1005577519231:web:638899904126ae78cdff4a"
+    };
 
-        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-        const EDUCATOR_PATH = "educators/TEST_SERIES";
-        const contentArea = document.getElementById('dynamic-content-area');
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const EDUCATOR_PATH = "educators/TEST_SERIES";
+    
+    const contentArea = document.getElementById('dynamic-content-area');
+    const filterContainer = document.getElementById('filter-container');
 
-        async function fetchStats() {
-            const doc = await db.doc(EDUCATOR_PATH).get();
-            if (doc.exists) {
-                document.getElementById('watchMinsDisplay').textContent = doc.data().watchmin || '0';
-                document.getElementById('followersDisplay').textContent = doc.data().followers || '0';
-            }
+    // --- NEW STATE VARIABLES FOR FILTERING ---
+    let activeTabCollection = []; 
+    let currentType = 'TestSeries';
+
+    async function fetchStats() {
+        const doc = await db.doc(EDUCATOR_PATH).get();
+        if (doc.exists) {
+            document.getElementById('watchMinsDisplay').textContent = doc.data().watchmin || '0';
+            document.getElementById('followersDisplay').textContent = doc.data().followers || '0';
         }
+    }
 
-        async function loadSection(type, btn) {
-            // Update Tab UI
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
+    async function loadSection(type, btn) {
+        currentType = type;
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
 
-            contentArea.innerHTML = `<div class="col-span-full py-20 text-center font-mono text-slate-500 tracking-widest animate-pulse">INITIALIZING DATABASE_SYNC...</div>`;
+        contentArea.innerHTML = `<div class="col-span-full py-20 text-center font-mono text-slate-500 tracking-widest animate-pulse">INITIALIZING DATABASE_SYNC...</div>`;
+        filterContainer.innerHTML = '';
 
-            try {
-                if (type === 'TestSeries') {
-                    const snap = await db.doc(EDUCATOR_PATH).collection('courses').where('status', '==', 'approved').get();
-                    renderTests(snap);
-                } else {
-                    const snap = await db.doc(EDUCATOR_PATH).collection('quizzes').get();
-                    renderQuizzes(snap);
-                }
-            } catch (err) {
-                contentArea.innerHTML = `<div class="col-span-full text-red-400 text-center">Connection Failed. Check console.</div>`;
+        try {
+            let snapshot;
+            if (type === 'TestSeries') {
+                snapshot = await db.doc(EDUCATOR_PATH).collection('courses').where('status', '==', 'approved').get();
+            } else {
+                snapshot = await db.doc(EDUCATOR_PATH).collection('quizzes').get();
             }
-        }
 
-        function renderTests(snap) {
-            let html = '';
-            snap.forEach(doc => {
-                const data = doc.data();
-                html += `
-                <div class="glass-panel tech-card rounded-2xl p-6 group">
-                    <div class="flex items-start justify-between mb-6">
-                        <div class="bg-blue-500/10 p-3 rounded-xl">
-                            <i class="fas fa-file-pdf text-2xl text-blue-500"></i>
-                        </div>
-                        <span class="text-[10px] text-slate-500 font-bold border border-white/10 px-2 py-1 rounded tracking-tighter uppercase">Document</span>
-                    </div>
-                    <h3 class="text-xl font-bold mb-2 group-hover:text-blue-400 transition-colors">${data.name || data.title}</h3>
-                    <p class="text-slate-400 text-sm mb-8 line-clamp-2">${data.description || 'Access high-quality PDF test materials.'}</p>
-                    <a href="${data.link}" target="_blank" class="block w-full text-center py-3 bg-white/5 hover:bg-blue-600 rounded-xl font-bold text-xs tracking-widest uppercase transition-all border border-white/5 hover:border-blue-400">
-                        OPEN REPOSITORY <i class="fas fa-arrow-right ml-2 text-[10px]"></i>
-                    </a>
-                </div>`;
+            // Store data in global array for filtering
+            activeTabCollection = [];
+            snapshot.forEach(doc => {
+                activeTabCollection.push({ id: doc.id, ...doc.data() });
             });
-            contentArea.innerHTML = html || `<div class="col-span-full text-center text-slate-500">Empty Directory.</div>`;
-        }
 
-        function renderQuizzes(snap) {
-            let html = '';
-            snap.forEach(doc => {
-                const data = doc.data();
-                html += `
-                <div class="glass-panel tech-card rounded-2xl p-6 border-l-4 border-l-yellow-500/50">
-                    <div class="flex items-center gap-2 mb-4">
+            // 1. Generate the Filter Buttons
+            generateDynamicFilters(activeTabCollection);
+            
+            // 2. Render initial "All" view
+            renderContent(activeTabCollection);
+
+        } catch (err) {
+            console.error(err);
+            contentArea.innerHTML = `<div class="col-span-full text-red-400 text-center">Connection Failed.</div>`;
+        }
+    }
+
+    // --- SMART FILTER GENERATOR ---
+    function generateDynamicFilters(data) {
+        if (!data || data.length === 0) return;
+
+        const tags = new Set();
+        data.forEach(item => {
+            if (item.subject) tags.add(item.subject);
+            if (item.category) tags.add(item.category); // Supports 'category' from your previous logic
+            if (item.class) tags.add(item.class);
+        });
+
+        let html = `<button class="px-4 py-2 rounded-full text-[10px] font-bold tracking-widest uppercase transition-all border bg-blue-600 border-blue-400 text-white" onclick="applyFilter('all', this)">All</button>`;
+        
+        tags.forEach(tag => {
+            html += `<button class="px-4 py-2 rounded-full text-[10px] font-bold tracking-widest uppercase transition-all border bg-white/5 border-white/10 text-slate-400 hover:border-blue-500" onclick="applyFilter('${tag}', this)">${tag}</button>`;
+        });
+
+        filterContainer.innerHTML = html;
+        filterContainer.classList.remove('opacity-0');
+    }
+
+    // --- FILTER EXECUTION ---
+    window.applyFilter = function(criteria, btnElement) {
+        document.querySelectorAll('#filter-container button').forEach(b => {
+            b.classList.remove('bg-blue-600', 'border-blue-400', 'text-white');
+            b.classList.add('bg-white/5', 'border-white/10', 'text-slate-400');
+        });
+        btnElement.classList.add('bg-blue-600', 'border-blue-400', 'text-white');
+
+        if (criteria === 'all') {
+            renderContent(activeTabCollection);
+        } else {
+            const filtered = activeTabCollection.filter(item => 
+                (item.subject === criteria) || 
+                (item.category === criteria) || 
+                (item.class === criteria)
+            );
+            renderContent(filtered);
+        }
+    }
+
+    function renderContent(dataArray) {
+        if (currentType === 'TestSeries') {
+            renderTests(dataArray);
+        } else {
+            renderQuizzes(dataArray);
+        }
+    }
+
+    function renderTests(dataArray) {
+        let html = dataArray.map(data => `
+            <div class="glass-panel tech-card rounded-2xl p-6 group">
+                <div class="flex items-start justify-between mb-6">
+                    <div class="bg-blue-500/10 p-3 rounded-xl">
+                        <i class="fas fa-file-pdf text-2xl text-blue-500"></i>
+                    </div>
+                    <span class="text-[10px] text-slate-500 font-bold border border-white/10 px-2 py-1 rounded tracking-tighter uppercase">
+                        ${data.subject || 'Document'}
+                    </span>
+                </div>
+                <h3 class="text-xl font-bold mb-2 group-hover:text-blue-400 transition-colors">${data.name || data.title}</h3>
+                <p class="text-slate-400 text-sm mb-8 line-clamp-2">${data.description || 'Access high-quality PDF test materials.'}</p>
+                <a href="${data.link}" target="_blank" class="block w-full text-center py-3 bg-white/5 hover:bg-blue-600 rounded-xl font-bold text-xs tracking-widest uppercase transition-all border border-white/5 hover:border-blue-400">
+                    OPEN REPOSITORY <i class="fas fa-arrow-right ml-2 text-[10px]"></i>
+                </a>
+            </div>`).join('');
+        contentArea.innerHTML = html || `<div class="col-span-full text-center text-slate-500">Empty Directory.</div>`;
+    }
+
+    function renderQuizzes(dataArray) {
+        let html = dataArray.map(data => `
+            <div class="glass-panel tech-card rounded-2xl p-6 border-l-4 border-l-yellow-500/50">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-2">
                         <span class="w-2 h-2 bg-green-500 rounded-full animate-ping"></span>
                         <span class="text-[10px] font-black text-green-500 uppercase tracking-widest">Live Engine</span>
                     </div>
-                    <h3 class="text-xl font-black mb-4 uppercase tracking-tight text-white">${data.title}</h3>
-                    <div class="flex gap-4 mb-8">
-                        <div class="bg-white/5 px-3 py-1 rounded text-[10px] font-bold text-slate-400">
-                            <i class="far fa-clock mr-1 text-yellow-500"></i> ${data.duration}m
-                        </div>
-                        <div class="bg-white/5 px-3 py-1 rounded text-[10px] font-bold text-slate-400">
-                            <i class="far fa-question-circle mr-1 text-blue-500"></i> ${data.questions} Qs
-                        </div>
+                    <span class="text-[10px] text-slate-500 font-bold border border-white/10 px-2 py-1 rounded uppercase">
+                        ${data.subject || 'General'}
+                    </span>
+                </div>
+                <h3 class="text-xl font-black mb-4 uppercase tracking-tight text-white">${data.title}</h3>
+                <div class="flex gap-4 mb-8">
+                    <div class="bg-white/5 px-3 py-1 rounded text-[10px] font-bold text-slate-400">
+                        <i class="far fa-clock mr-1 text-yellow-500"></i> ${data.duration}m
                     </div>
-                    <a href="/quiz/quizzes.html?uid=${data.targetQuizId || doc.id}" class="block w-full text-center py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-black text-xs tracking-[0.2em] uppercase transition-all shadow-lg shadow-blue-900/40">
-                        START PROTOCOL
-                    </a>
-                </div>`;
-            });
-            contentArea.innerHTML = html || `<div class="col-span-full text-center text-slate-500">No active engines.</div>`;
-        }
+                    <div class="bg-white/5 px-3 py-1 rounded text-[10px] font-bold text-slate-400">
+                        <i class="far fa-question-circle mr-1 text-blue-500"></i> ${data.questions} Qs
+                    </div>
+                </div>
+                <a href="/quiz/quizzes.html?uid=${data.targetQuizId || data.id}" class="block w-full text-center py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-black text-xs tracking-[0.2em] uppercase transition-all shadow-lg shadow-blue-900/40">
+                    START PROTOCOL
+                </a>
+            </div>`).join('');
+        contentArea.innerHTML = html || `<div class="col-span-full text-center text-slate-500">No active engines.</div>`;
+    }
 
-        // Initialize
-        document.addEventListener('DOMContentLoaded', () => {
-            fetchStats();
-            loadSection('TestSeries', document.getElementById('defaultTab'));
-        });
-    </script>
-</body>
+    document.addEventListener('DOMContentLoaded', () => {
+        fetchStats();
+        loadSection('TestSeries', document.getElementById('defaultTab'));
+    });
+</script></body>
 </html>
