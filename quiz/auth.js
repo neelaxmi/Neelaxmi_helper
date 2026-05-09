@@ -112,12 +112,45 @@ authEls.authBtn.onclick = async () => {
     }
 };
 
+// Google Login Logic
+document.getElementById('google-login-btn').onclick = async () => {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    
+    try {
+        const result = await auth.signInWithPopup(provider);
+        const user = result.user;
+        
+        // Check if user document exists in Firestore, if not, create it
+        const userDoc = await db.collection('users').doc(user.uid).get();
+
+        if (!userDoc.exists) {
+            await db.collection('users').doc(user.uid).set({
+                uid: user.uid,
+                name: user.displayName,
+                email: user.email,
+                username: user.email.split('@')[0] + Math.floor(Math.random() * 1000),
+                class: "",
+                bookmarks: [],
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+        }
+
+    } catch (error) {
+        authEls.authError.textContent = error.message;
+        authEls.authError.classList.remove('hidden');
+    }
+};
+
+
+// Auth State Change
 auth.onAuthStateChanged(user => {
     if (user) {
+
         CURRENT_USER_ID = user.uid;
         authEls.authBox.classList.add('hidden');
-        
+
         db.collection('users').doc(CURRENT_USER_ID).onSnapshot(doc => {
+
             if (doc.exists) {
                 userData = doc.data();
                 userGeminiApiKey = userData.geminiApiKey;
@@ -125,29 +158,41 @@ auth.onAuthStateChanged(user => {
             } else {
                 console.warn("⚠️ No user profile found.");
             }
+
         }, e => {
             console.error("❌ Error fetching user data.", e);
         });
-        
+
         const params = new URLSearchParams(window.location.search);
         currentQuizId = params.get('uid');
-        
+
         if (currentQuizId) {
-            if (typeof loadQuiz !== 'undefined') loadQuiz(currentQuizId);
+
+            if (typeof loadQuiz !== 'undefined') {
+                loadQuiz(currentQuizId);
+            }
+
         } else {
+
             const errorArea = document.getElementById('error-message-area');
+
             if (errorArea) {
-                document.getElementById('error-text').textContent = "Quiz ID is missing from the URL.";
+                document.getElementById('error-text').textContent =
+                    "Quiz ID is missing from the URL.";
+
                 errorArea.classList.remove('hidden');
             }
+
             authEls.loader.classList.remove('hidden');
         }
+
     } else {
+
         authEls.loader.classList.add('hidden');
         authEls.authBox.classList.remove('hidden');
+
     }
 });
-
 window.toggleBookmark = async (questionId) => {
     if (!CURRENT_USER_ID) return;
     const userRef = db.collection('users').doc(CURRENT_USER_ID);
