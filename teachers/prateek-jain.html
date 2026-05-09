@@ -92,6 +92,63 @@
     background: rgba(59, 130, 246, 0.05);
     padding-left: 1rem;
 }
+
+
+/* Pro Filter Container */
+#filter-area {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding: 15px 5px; /* Added padding for shadow clearance */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    -webkit-overflow-scrolling: touch;
+}
+
+#filter-area::-webkit-scrollbar {
+    display: none;
+}
+
+/* Pro Filter Pills */
+.filter-btn {
+    all: unset; /* Resets default button behavior */
+    cursor: pointer;
+    white-space: nowrap;
+    padding: 10px 24px;
+    border-radius: 14px; /* Squircle look instead of pill */
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: -0.2px;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    background: #f1f5f9;
+    color: #475569;
+    border: 1px solid transparent;
+}
+
+/* Hover State - Subtle Lift */
+.filter-btn:hover:not(.active) {
+    background: #ffffff;
+    color: #1e293b;
+    border-color: #e2e8f0;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* Active State - Gradient & Glow */
+.filter-btn.active {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    color: #ffffff;
+    font-weight: 600;
+    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+    transform: scale(1.05);
+}
+
+/* Tap Effect for Mobile */
+.filter-btn:active {
+    transform: scale(0.95);
+}
+
+
     </style>
 </head>
 
@@ -372,6 +429,8 @@
                 if (item.subject) tags.add(item.subject);
                 if (item.class) tags.add(item.class);     // Checks for 'class' field (e.g. 11th)
                 if (item.status) tags.add(item.status);   // Checks for 'status' field (e.g. Ongoing)
+                if (item.detailedChapter) tags.add(item.detailedChapter);
+
             });
             
             const uniqueTags = [...tags];
@@ -397,7 +456,8 @@
                     (item.subject === criteria) || 
                     (item.class === criteria) || 
                     (item.status === criteria) ||
-                    (item.language === criteria)
+                    (item.language === criteria)||
+                    (item.detailedChapter === criteria)
                 );
                 renderFilteredContent(filtered);
             }
@@ -447,6 +507,14 @@
                                     <span class="font-medium">Starts: ${dateDisplay}</span>
                                 </div>
                             </div>
+                            
+                            <div class="flex items-center mb-2 gap-2 flex-wrap">
+                            <span class="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-100 uppercase tracking-wide">        ${quiz.subject || 'Physics'}
+                            </span>
+                            ${quiz.class ? `<span class="text-xs font-bold text-gray-600 bg-gray-100 px-2 py-0.5 rounded border border-gray-200 uppercase tracking-wide">${quiz.class}</span>` : ''}
+                            ${quiz.detailedChapter ? `<span class="text-[10px] font-bold text-purple-600 bg-purple-50 px-2 py-0.5 rounded border border-purple-200 uppercase tracking-wide truncate max-w-[150px]" title="${quiz.detailedChapter}">${quiz.detailedChapter}</span>` : ''}
+                            </div>
+
                             <div class="relative bg-gray-50 rounded-lg p-3 mb-4 border border-gray-100">
                                 <p class="text-sm text-gray-600 leading-relaxed line-clamp-2">
                                     ${item.description || 'No description provided.'}
@@ -467,100 +535,74 @@
             contentArea.innerHTML = `<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in">${cardsHtml}</div>`;
         }
         
-        
         function renderFilteredContent(data) {
-    if (activeTabName === 'free_classes') {
+            if (activeTabName === 'free_classes') {
         renderFreeClassCards(data);
     } else if (activeTabName === 'courses') {
         renderCourseCards(data);
     } else if (activeTabName === 'quizzes') {
-        renderQuizCards(data);
+        renderQuizCardsUI(data); // Call a dedicated UI-only function
     } else if (activeTabName === 'aplo') {
         renderAploCards(data);
     }
 }
 
-async function renderQuizCards(data) {
-
-    contentArea.innerHTML = `<div class="p-8 text-center text-secondary">Loading Quizzes from DATABASE...</div>`;
-    const companyLogo = COMPANY_LOGO_URL;
+function renderQuizCardsUI(quizzesArray) {
+    if (!quizzesArray || quizzesArray.length === 0) {
+        contentArea.innerHTML = `<div class="p-8 text-center text-gray-500">😔 No quizzes found for this filter.</div>`;
+        return;
+    }
     
-    try {
-        const snapshot = await db.doc(EDUCATOR_DOC_PATH).collection('quizzes').get();
-        let quizzesArray = [];
-        snapshot.forEach(doc => {
-            const data = doc.data();
-            quizzesArray.push({
-                id: doc.id,
-                targetQuizId: data.targetQuizId,
-                ...data
-            });
-        });
+    const cardsHtml = quizzesArray.map(quiz => {
+        const activeQuizID = quiz.targetQuizId || quiz.id || 'default';
+        const title = quiz.title || 'Untitled Quiz';
+        const subject = quiz.subject || 'Physics';
+        const questions = quiz.questions || 'N/A';
+        const thumbnailImg = quiz.thumbnail || '/pictures/pjsir.jpg';
         
-        if (quizzesArray.length === 0) {
-            contentArea.innerHTML = `<div class="p-8 text-center text-gray-500">😔 No quizzes found on Firebase.</div>`;
-            return;
-        }
-        
-        const cardsHtml = quizzesArray.map(quiz => {
-            const activeQuizID = quiz.targetQuizId ? quiz.targetQuizId : quiz.id;
-            const title = quiz.title || 'Untitled Quiz';
-            const subject = quiz.subject || 'General';
-            const questions = quiz.questions || 'N/A';
-            const duration = quiz.duration || 'N/A';
-            const thumbnailImg = quiz.thumbnail || '/pictures/pjsir.jpg';
-            
-            return `
-                <div class="card overflow-hidden rounded-xl border border-border transform hover:scale-[1.02] transition duration-300 h-full flex flex-col bg-white">
-                    <div class="relative h-40 w-full overflow-hidden">
-                        <img src="${thumbnailImg}" alt="${title}" class="w-full h-full object-cover">
-                        ${companyLogo ? `
-                            <div class="absolute top-3 left-3 bg-white/90 p-1 rounded-lg shadow-md">
-                                <img src="${companyLogo}" alt="Logo" class="w-8 h-8 rounded-md object-contain">
-                            </div>
-                        ` : ''}
-                        <div class="absolute top-3 right-3">
-                            <span class="text-[10px] font-bold text-accent bg-white/95 px-2 py-1 rounded-md border border-border uppercase tracking-widest shadow-sm">
-                                ${subject}
-                            </span>
-                        </div>
+        return `
+            <div class="card overflow-hidden rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300 h-full flex flex-col bg-white">
+                <div class="relative h-44 w-full overflow-hidden">
+                    <img src="${thumbnailImg}" alt="${title}" class="w-full h-full object-cover">
+                    <div class="absolute top-3 right-3">
+                        <span class="text-[10px] font-bold text-blue-600 bg-white/95 px-2 py-1 rounded border border-blue-100 uppercase tracking-widest shadow-sm">
+                            ${subject}
+                        </span>
                     </div>
-                    <div class="p-5 flex flex-col flex-grow">
-                        <h3 class="text-lg font-bold text-primary mb-3 leading-snug line-clamp-2 min-h-[3.5rem]">
-                            ${title}
-                        </h3>
-                        <div class="flex items-center gap-4 mb-6 mt-auto">
-                            <div class="flex items-center text-xs text-secondary">
-                                <i class="fas fa-list-ul mr-2 text-accent"></i>
-                                <span class="font-semibold text-primary mr-1">${questions}</span> Qs
-                            </div>
-                            <div class="flex items-center text-xs text-secondary">
-                                <i class="far fa-clock mr-2 text-accent"></i>
-                                <span class="font-semibold text-primary mr-1">${duration}</span> Mins
-                            </div>
+                </div>
+                
+                <div class="p-5 flex flex-col flex-grow">
+                    <div class="flex items-center mb-3 gap-2 flex-wrap">
+                        ${quiz.class ? `<span class="text-[10px] font-bold text-gray-600 bg-gray-100 px-2 py-0.5 rounded border border-gray-200 uppercase tracking-wide">${quiz.class}</span>` : ''}
+                        ${quiz.detailedChapter ? `<span class="text-[10px] font-bold text-purple-600 bg-purple-50 px-2 py-0.5 rounded border border-purple-200 uppercase tracking-wide truncate max-w-[140px]" title="${quiz.detailedChapter}">${quiz.detailedChapter}</span>` : ''}
+                    </div>
+
+                    <h3 class="text-lg font-bold text-gray-900 mb-4 leading-snug line-clamp-2 min-h-[3.5rem]">
+                        ${title}
+                    </h3>
+
+                    <div class="mt-auto">
+                        <div class="flex items-center text-xs text-gray-500 mb-4">
+                            <i class="fas fa-list-ul mr-2 text-blue-500"></i>
+                            <span class="font-bold text-gray-800 mr-1">${questions}</span> Questions
                         </div>
                         <a href="/quiz/quizzes.html?uid=${activeQuizID}" 
-                           class="w-full text-center py-2.5 border border-transparent text-sm font-semibold rounded-lg text-accent-text bg-accent hover:opacity-90 transition-colors flex items-center justify-center shadow-md">
-                            Attempt Quiz <span class="ml-2">🚀</span>
+                           class="w-full text-center py-2.5 block text-sm font-semibold rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors shadow-md">
+                            Attempt Quiz 🚀
                         </a>
                     </div>
                 </div>
-            `;
-        }).join('');
-        
-        contentArea.innerHTML = `
-            <div class="mb-10 border-l-4 border-accent pl-6">
-                <h2 class="text-3xl font-extrabold text-primary tracking-tight">🎯 Available Quizzes</h2>
-                <p class="text-md text-secondary mt-1">Select an assessment to begin your session.</p>
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">${cardsHtml}</div>
-        `;
-        
-    } catch (error) {
-        console.error("Error fetching quizzes:", error);
-        contentArea.innerHTML = `<div class="p-8 text-center text-red-500">Error loading quizzes: ${error.message}</div>`;
-    }
+            </div>`;
+    }).join('');
+    
+    contentArea.innerHTML = `
+        <div class="mb-8 border-l-4 border-blue-600 pl-4">
+            <h2 class="text-2xl font-extrabold text-gray-900 tracking-tight">🎯 Available Quizzes</h2>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">${cardsHtml}</div>
+    `;
 }
+
 function renderCourseCards(courseArray) {
     if (courseArray.length === 0) {
         contentArea.innerHTML = `<div class="p-8 text-center text-secondary">No courses found.</div>`;
