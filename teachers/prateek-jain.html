@@ -639,12 +639,12 @@ function renderCourseCards(courseArray) {
                             ${course.duration || 'N/A Duration'}
                         </span>
                     </div>
-
-<div class="bg-gray-50 p-3 rounded-lg border border-gray-100 mb-4">
-    <p class="text-sm text-gray-600 leading-relaxed">
-        <span class="font-bold text-gray-800">Summary:</span> ${course.description || 'No description available.'}
-    </p>
-</div>
+                    
+                    <div class="bg-gray-50 p-3 rounded-lg border border-gray-100 mb-4">
+                       <p class="text-sm text-gray-600 leading-relaxed">
+                           <span class="font-bold text-gray-800">Summary:</span> ${course.description || 'No description available.'}
+                       </p>
+                    </div>
 
                     <div class="mt-auto">
                         <button class="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors shadow-md flex justify-center items-center">
@@ -829,113 +829,163 @@ async function fetchAndRenderModulePdfs() {
 function renderOtherContent(tabName) {
     filterArea.innerHTML = '';
     
-    if (tabName === 'About') {
-        // Added the RETURN keyword here
-        return `
-            <div class="max-w-5xl mx-auto space-y-8 animate-fade-in pb-12">
-                <div class="about-card rounded-3xl p-8 md:p-12 relative overflow-hidden">
-                    <div class="absolute top-0 right-0 w-64 h-64 bg-accent/5 rounded-full -mr-32 -mt-32 blur-3xl"></div>
-                    
-                    <div class="relative z-10 flex flex-col md:flex-row items-center gap-10">
-                        <div class="relative group">
-                            <div class="absolute -inset-1 bg-gradient-to-r from-blue-600 to-cyan-400 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
-                            <img src="/pictures/pjsir.jpg" class="relative w-48 h-48 md:w-56 md:h-56 rounded-2xl object-cover shadow-2xl transition-transform duration-500 group-hover:scale-[1.02]" alt="Prateek Jain Sir">
-                        </div>
-
-                        <div class="flex-grow text-center md:text-left">
-                            <span class="stat-pill px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-4 inline-block shadow-lg">Rank 1 Physics Faculty</span>
-                            <h2 class="text-4xl md:text-5xl font-black text-primary mb-4 tracking-tight">Prateek Jain <span class="text-accent text-2xl">Sir</span></h2>
-                            <p class="text-xl italic text-secondary mb-6 font-medium">"0% Tricks. 100% Concepts."</p>
-                            
-                            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                                <div class="bg-white/50 p-3 rounded-xl border border-white/50 backdrop-blur-sm">
-                                    <span class="block text-2xl font-black text-primary">10+</span>
-                                    <span class="text-[10px] uppercase text-secondary font-bold tracking-widest">Years Exp.</span>
-                                </div>
-                                <div class="bg-white/50 p-3 rounded-xl border border-white/50 backdrop-blur-sm">
-                                    <span class="block text-2xl font-black text-primary">AIR 6</span>
-                                    <span class="text-[10px] uppercase text-secondary font-bold tracking-widest">Top Rank</span>
-                                </div>
-                                <div class="bg-white/50 p-3 rounded-xl border border-white/50 backdrop-blur-sm">
-                                    <span class="block text-2xl font-black text-primary">IIT-K</span>
-                                    <span class="text-[10px] uppercase text-secondary font-bold tracking-widest">Research</span>
-                                </div>
-                                <div class="bg-white/50 p-3 rounded-xl border border-white/50 backdrop-blur-sm">
-                                    <span class="block text-2xl font-black text-primary">#1</span>
-                                    <span class="text-[10px] uppercase text-secondary font-bold tracking-widest">Unacademy</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div class="about-card rounded-2xl p-6 space-y-6">
-                        <h3 class="text-xl font-black text-primary flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white text-sm">
-                                <i class="fas fa-microscope"></i>
-                            </div>
-                            Academic Research
-                        </h3>
-                        <p class="text-secondary leading-relaxed border-l-2 border-accent pl-4">
-                            Conducted significant **Research Work with HC Verma Sir** at IIT Kanpur, focusing on advanced pedagogical methods in Physics.
-                        </p>
-                        <div class="space-y-4">
-                            <div class="accomplishment-item p-3 rounded-lg">
-                                <span class="block font-bold text-primary">Founder @Physicsaholics</span>
-                                <span class="text-xs text-secondary">Leading the revolution in conceptual Physics learning.</span>
-                            </div>
-                            <div class="accomplishment-item p-3 rounded-lg">
-                                <span class="block font-bold text-primary">Ex-Senior Faculty Kota</span>
-                                <span class="text-xs text-secondary">Taught at CP Kota & FIITJEE (Delhi/Indore).</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="about-card rounded-2xl p-6">
-                        <h3 class="text-xl font-black text-primary mb-6 flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-lg bg-accent flex items-center justify-center text-white text-sm">
-                                <i class="fas fa-bullhorn"></i>
-                            </div>
-                            Global Recognition
-                        </h3>
-                        <ul class="space-y-4">
-                            <li class="flex items-center gap-3 text-sm text-secondary">
-                                <i class="fas fa-check-circle text-green-500"></i> Featured in **THE HINDU** & National News.
-                            </li>
-                            <li class="flex items-center gap-3 text-sm text-secondary">
-                                <i class="fas fa-check-circle text-green-500"></i> Interviewed by **International Media**.
-                            </li>
-                            <li class="flex items-center gap-3 text-sm text-secondary">
-                                <i class="fas fa-check-circle text-green-500"></i> Organized KVPY Workshops for Teachers.
-                            </li>
-                        </ul>
+        if (tabName === 'About') {
+            // Added the RETURN keyword here
+            return `
+                <div class="max-w-5xl mx-auto space-y-8 animate-fade-in pb-12">
+                    <div class="about-card rounded-3xl p-8 md:p-12 relative overflow-hidden">
+                        <div class="absolute top-0 right-0 w-64 h-64 bg-accent/5 rounded-full -mr-32 -mt-32 blur-3xl"></div>
                         
-                        <div class="mt-8 grid grid-cols-2 gap-3">
-                            <a href="https://t.me/NEET_PHYSICS" class="flex items-center justify-center gap-2 py-3 bg-[#0088cc] text-white rounded-xl font-bold text-xs hover:opacity-90 transition shadow-lg">
-                                <i class="fab fa-telegram-plane"></i> NEET
-                            </a>
-                            <a href="https://t.me/iitjee_physics" class="flex items-center justify-center gap-2 py-3 bg-[#0088cc] text-white rounded-xl font-bold text-xs hover:opacity-90 transition shadow-lg">
-                                <i class="fab fa-telegram-plane"></i> JEE
-                            </a>
+                        <div class="relative z-10 flex flex-col md:flex-row items-center gap-10">
+                            <div class="relative group">
+                                <div class="absolute -inset-1 bg-gradient-to-r from-blue-600 to-cyan-400 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
+                                <img src="/pictures/pjsir.jpg" class="relative w-48 h-48 md:w-56 md:h-56 rounded-2xl object-cover shadow-2xl transition-transform duration-500 group-hover:scale-[1.02]" alt="Prateek Jain Sir">
+                            </div>
+    
+                            <div class="flex-grow text-center md:text-left">
+                                <span class="stat-pill px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-4 inline-block shadow-lg">Rank 1 Physics Faculty</span>
+                                <h2 class="text-4xl md:text-5xl font-black text-primary mb-4 tracking-tight">Prateek Jain <span class="text-accent text-2xl">Sir</span></h2>
+                                <p class="text-xl italic text-secondary mb-6 font-medium">"0% Tricks. 100% Concepts."</p>
+                                
+                                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                                    <div class="bg-white/50 p-3 rounded-xl border border-white/50 backdrop-blur-sm">
+                                        <span class="block text-2xl font-black text-primary">10+</span>
+                                        <span class="text-[10px] uppercase text-secondary font-bold tracking-widest">Years Exp.</span>
+                                    </div>
+                                    <div class="bg-white/50 p-3 rounded-xl border border-white/50 backdrop-blur-sm">
+                                        <span class="block text-2xl font-black text-primary">AIR 6</span>
+                                        <span class="text-[10px] uppercase text-secondary font-bold tracking-widest">Top Rank</span>
+                                    </div>
+                                    <div class="bg-white/50 p-3 rounded-xl border border-white/50 backdrop-blur-sm">
+                                        <span class="block text-2xl font-black text-primary">IIT-K</span>
+                                        <span class="text-[10px] uppercase text-secondary font-bold tracking-widest">Research</span>
+                                    </div>
+                                    <div class="bg-white/50 p-3 rounded-xl border border-white/50 backdrop-blur-sm">
+                                        <span class="block text-2xl font-black text-primary">#1</span>
+                                        <span class="text-[10px] uppercase text-secondary font-bold tracking-widest">Unacademy</span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
+                    
+                    
+    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="about-card rounded-2xl p-6 space-y-6">
+                            <h3 class="text-xl font-black text-primary flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white text-sm">
+                                    <i class="fas fa-microscope"></i>
+                                </div>
+                                Academic Research
+                            </h3>
+                            <p class="text-secondary leading-relaxed border-l-2 border-accent pl-4">
+                                Conducted significant **Research Work with HC Verma Sir** at IIT Kanpur, focusing on advanced pedagogical methods in Physics.
+                            </p>
+                            <div class="space-y-4">
+                                <div class="accomplishment-item p-3 rounded-lg">
+                                    <span class="block font-bold text-primary">Founder @Physicsaholics</span>
+                                    <span class="text-xs text-secondary">Leading the revolution in conceptual Physics learning.</span>
+                                </div>
+                                <div class="accomplishment-item p-3 rounded-lg">
+                                    <span class="block font-bold text-primary">Ex-Senior Faculty Kota</span>
+                                    <span class="text-xs text-secondary">Taught at CP Kota & FIITJEE (Delhi/Indore).</span>
+                                </div>
+                            </div>
+                        </div>
+    
+                        <div class="about-card rounded-2xl p-6">
+                            <h3 class="text-xl font-black text-primary mb-6 flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-lg bg-accent flex items-center justify-center text-white text-sm">
+                                    <i class="fas fa-bullhorn"></i>
+                                </div>
+                                Global Recognition
+                            </h3>
+                            <ul class="space-y-4">
+                                <li class="flex items-center gap-3 text-sm text-secondary">
+                                    <i class="fas fa-check-circle text-green-500"></i> Featured in **THE HINDU** & National News.
+                                </li>
+                                <li class="flex items-center gap-3 text-sm text-secondary">
+                                    <i class="fas fa-check-circle text-green-500"></i> Interviewed by **International Media**.
+                                </li>
+                                <li class="flex items-center gap-3 text-sm text-secondary">
+                                    <i class="fas fa-check-circle text-green-500"></i> Organized KVPY Workshops for Teachers.
+                                </li>
+                            </ul>
+                            
+                            <div class="mt-8 grid grid-cols-2 gap-3">
+                                <a href="https://t.me/NEET_PHYSICS" class="flex items-center justify-center gap-2 py-3 bg-[#0088cc] text-white rounded-xl font-bold text-xs hover:opacity-90 transition shadow-lg">
+                                    <i class="fab fa-telegram-plane"></i> NEET
+                                </a>
+                                <a href="https://t.me/iitjee_physics" class="flex items-center justify-center gap-2 py-3 bg-[#0088cc] text-white rounded-xl font-bold text-xs hover:opacity-90 transition shadow-lg">
+                                    <i class="fab fa-telegram-plane"></i> JEE
+                                    
+                                    
+                                <a href="https://m.youtube.com/@PhysicsbyPrateekJain" class="flex items-center justify-center gap-2 py-3 bg-[#FF0000] text-white rounded-xl font-bold text-xs hover:opacity-90 transition shadow-lg">
+                                <i class="fab fa-youtube"></i> YOUTUBE
+                            </a>
+                            
+                                </div>
+                        </div>
+                    </div>
+                    
+                    
+                    // Add this section after the Expertise/Batch Enquiry card (at the end of the return string)
+<div class="about-card rounded-2xl p-8 bg-white border border-gray-100 shadow-xl overflow-hidden relative group">
+    <div class="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full -mr-16 -mt-16 blur-2xl"></div>
+    
+    <div class="relative z-10 flex flex-col md:flex-row items-center gap-8 md:gap-12">
+        <!-- Left Side: Logo/Branding -->
+        <div class="flex-shrink-0">
+            <div class="relative">
+                <div class="absolute -inset-2 bg-gradient-to-tr from-blue-600 to-indigo-400 rounded-full blur opacity-20 group-hover:opacity-40 transition duration-500"></div>
+                <img src="/pictures/neelaxmi.png" class="relative w-24 h-24 md:w-32 md:h-32 rounded-full object-contain bg-white p-2 shadow-inner" alt="App Logo">
+            </div>
+        </div>
 
-                <div class="about-card rounded-2xl p-6 bg-gradient-to-r from-gray-900 to-blue-900 text-white border-none">
-                    <div class="flex flex-col md:flex-row justify-between items-center gap-4">
-                        <div>
-                            <span class="text-xs font-black text-blue-400 uppercase tracking-widest">Expertise</span>
-                            <p class="text-lg font-bold">NEET | IIT JEE Main & Advanced | Olympiads</p>
-                        </div>
-                        <a href="https://wa.me/message/LGGYLVL34IW4F1" target="_blank" class="px-6 py-3 bg-white text-blue-900 rounded-xl font-black text-sm hover:scale-105 transition active:scale-95">
-                            Batch Enquiry <i class="fab fa-whatsapp ml-1"></i>
-                        </a>
+        <!-- Right Side: Content & Action -->
+        <div class="flex-grow text-center md:text-left space-y-4">
+            <div>
+                <h3 class="text-2xl font-black text-primary">Download Official App</h3>
+                <p class="text-secondary text-sm md:text-base max-w-md mt-2 leading-relaxed">
+                    Access premium lectures, daily practice problems, and real-time doubt clearing. Take your Physics preparation everywhere you go.
+                </p>
+            </div>
+            
+            <div class="flex flex-wrap justify-center md:justify-start gap-4">
+                <a href="https://classupdates.netlify.app/pjsir.apk" 
+                   target="_blank" 
+                   class="flex items-center gap-3 px-6 py-3 bg-black text-white rounded-xl transition-all duration-300 hover:bg-gray-800 hover:shadow-xl hover:-translate-y-1 active:scale-95">
+                    <i class="fab fa-google-play text-2xl"></i>
+                    <div class="text-left">
+                        <p class="text-[10px] uppercase font-bold leading-none opacity-70">Let's </p>
+                        <p class="text-lg font-bold leading-none">DOWNLOAD</p>
                     </div>
+                </a>
+                
+                <div class="hidden lg:flex items-center text-xs font-bold text-green-600 bg-green-50 px-3 py-1 rounded-full self-center">
+                    <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse mr-2"></span>
+                    Latest Version 4.2 Available
                 </div>
             </div>
-        `;
-    }
+        </div>
+    </div>
+</div>
+    
+                    <div class="about-card rounded-2xl p-6 bg-gradient-to-r from-gray-900 to-blue-900 text-white border-none">
+                        <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                            <div>
+                                <span class="text-xs font-black text-blue-400 uppercase tracking-widest">Expertise</span>
+                                <p class="text-lg font-bold">NEET | IIT JEE Main & Advanced | Olympiads</p>
+                            </div>
+                            <a href="https://wa.me/message/7042223369" target="_blank" class="px-6 py-3 bg-white text-blue-900 rounded-xl font-black text-sm hover:scale-105 transition active:scale-95">
+                                Batch Enquiry <i class="fab fa-whatsapp ml-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
     
     
     
