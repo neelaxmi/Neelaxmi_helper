@@ -1,0 +1,602 @@
+[
+  {
+    "question": "Molten sodium chloride conducts electricity due to the presence of :",
+    "options": {
+      "1": "free electrons",
+      "2": "free ions",
+      "3": "free molecules",
+      "4": "free atoms of Na and Cl"
+    },
+    "answer": "B"
+  },
+  {
+    "question": "Strong electrolyte are those which :",
+    "options": {
+      "1": "dissolve readily in water",
+      "2": "conduct electricity",
+      "3": "dissociate into ions even at high concentration",
+      "4": "dissociate into ions at high dilution."
+    },
+    "answer": "C"
+  },
+  {
+    "question": "Which one of the following is wrong :-",
+    "options": {
+      "1": "Specific conductance increases on dilution",
+      "2": "Specific conductance decreases on dilution",
+      "3": "Equivalent conductance increases on dilution",
+      "4": "Molar conductance increases on dilution"
+    },
+    "answer": "A"
+  },
+  {
+    "question": "The value of molar conductivity of HCl is greater than that of NaCl at a particular temperature because :",
+    "options": {
+      "1": "Molecular mass of HCl is less than that of NaCl.",
+      "2": "Velocity of H⁺ ions is more than that of Na⁺ ions",
+      "3": "HCl is strongly acidic",
+      "4": "Ionisation of HCl is larger than that of NaCl"
+    },
+    "answer": "B"
+  },
+  {
+    "question": "Electrolytic conduction differs from metallic conduction from the fact that in the former",
+    "options": {
+      "1": "The resistant increases with increasing temperature",
+      "2": "The resistance decreases with increasing temperature",
+      "3": "The resistance remains constant with increasing temperature",
+      "4": "The resistance is independent of the length of the conductor"
+    },
+    "answer": "B"
+  },
+  {
+    "question": "Which has maximum conductivity :",
+    "options": {
+      "1": "[Cr(NH₃)₃Cl₃]",
+      "2": "[Cr(NH₃)₄Cl₂]Cl",
+      "3": "[Cr(NH₃)₅Cl₂]Cl",
+      "4": "[Cr(NH₃)₆]Cl₃"
+    },
+    "answer": "D"
+  },
+  {
+    "question": "The highest electrical conductivity of the following aqueous solution is of",
+    "options": {
+      "1": "0.1 M fluoroacetic acid",
+      "2": "0.1 M difluoroacetic acid",
+      "3": "0.1 M acetic acid",
+      "4": "0.1 M chloroacetic acid"
+    },
+    "answer": "b"
+  },
+  {
+    "question": "Which of the following solutions of NaCl will have the highest specific condutance ?",
+    "options": {
+      "1": "0.001 N",
+      "2": "0.1 N",
+      "3": "0.01 N",
+      "4": "1.0 N"
+    },
+    "answer": "4"
+  },
+  {
+    "question": "The specific conductances in ohm⁻¹ cm⁻¹ of four electrolytes P, Q, R and S are given in brackets:\nP (5.0 × 10⁻⁵)\nQ (7.0 × 10⁻⁸)\nR (1.0 × 10⁻¹⁰)\nS (9.2 × 10⁻³)\nThe one that offers highest resistance to the passage of electric current is",
+    "options": {
+      "1": "P",
+      "2": "S",
+      "3": "R",
+      "4": "Q"
+    },
+    "answer": "3"
+  },
+  {
+    "question": "If the specific resistance of a solution of concentration C g equivalent litre⁻¹ is R, then its equivalent conductance is :",
+    "options": {
+      "1": "100R / C",
+      "2": "RC / 1000",
+      "3": "1000 / RC",
+      "4": "C / 1000R"
+    },
+    "answer": "3"
+  },
+  {
+    "question": "If V, in the equation Λ = sp. cond. × V, is the volume in CC containing 1 eq. of the electrolyte; V for a N/10 solution will be :",
+    "options": {
+      "1": "10 c.c.",
+      "2": "100 c.c.",
+      "3": "1000 c.c.",
+      "4": "10,000 c.c."
+    },
+    "answer": "4"
+  },
+  {
+    "question": "Which of the following solutions of KCl has the lowest value of equivalent conductance ?",
+    "options": {
+      "1": "1 M",
+      "2": "0.1 M",
+      "3": ".01 M",
+      "4": ".001 M"
+    },
+    "answer": "1"
+  },
+  {
+    "question": "The specific conductivity of N/10 KCl solution at 20ºC is 0.012 Ω⁻¹ cm⁻¹ and the resistance of the cell containing this solution at 20ºC is 56Ω. The cell constant is",
+    "options": {
+      "1": "4.616 cm⁻¹",
+      "2": "0.672 cm⁻¹",
+      "3": "2.173 cm⁻¹",
+      "4": "3.324 cm⁻¹"
+    },
+    "answer": "2"
+  },
+  {
+    "question": "The ionization constant of a weak electrolyte is 25×10⁻⁶ while the equivalent conductance of its 0.01 N solution is 19.6 S cm² eq⁻¹. The equivalent conductance of the electrolyte at infinite dilution (in S cm² eq⁻¹) will be",
+    "options": {
+      "1": "39.2",
+      "2": "78.4",
+      "3": "392",
+      "4": "196"
+    },
+    "answer": "3"
+  },
+  {
+    "question": "The resistance of 1N solution of CH₃COOH is 250Ω, when measured in a cell of cell constant 1.15 cm⁻¹. The equivalent conductance will be",
+    "options": {
+      "1": "4.6 Ω⁻¹cm²eq⁻¹",
+      "2": "9.2 Ω⁻¹cm²eq⁻¹",
+      "3": "18.4 Ω⁻¹cm²eq⁻¹",
+      "4": "0.023 Ω⁻¹cm²eq⁻¹"
+    },
+    "answer": "1"
+  },
+  {
+    "question": "The specific conductance of a 0.01 M solution of KCl is 0.0014 ohm⁻¹ cm⁻¹at 25º C. Its equivalent conductance (cm² ohm⁻¹ equiv⁻¹) is:–",
+    "options": {
+      "1": "140",
+      "2": "14",
+      "3": "1.4",
+      "4": "0.14"
+    },
+    "answer": "1"
+  },
+  {
+    "question": "Specific conductance of 0.1 M Nitric acid is 6.3 × 10⁻² ohm⁻¹ cm⁻¹. The molar conductance of the solution is :",
+    "options": {
+      "1": "630 ohm⁻¹ cm² mol⁻¹",
+      "2": "315 ohm⁻¹ cm² mol⁻¹",
+      "3": "100 ohm⁻¹ cm² mol⁻¹",
+      "4": "6.300 ohm⁻¹ cm² mol⁻¹"
+    },
+    "answer": "1"
+  },
+  {
+    "question": "The equivalent conductivity of 0.1 N CH₃COOH at 25 ºC is 80 and at infinite dilution 400. The degree of dissociation of CH₃COOH is :",
+    "options": {
+      "1": "1",
+      "2": "0.2",
+      "3": "0.1",
+      "4": "0.5"
+    },
+    "answer": "2"
+  },
+  {
+    "question": "At infinite dilution, the eq. conductances of CH₃COONa, HCl and CH₃COOH are 91, 426 and 391 mho cm² respectively at 25 ºC. The eq. conductance of NaCl at infinite dilution will be :",
+    "options": {
+      "1": "126",
+      "2": "209",
+      "3": "391",
+      "4": "908"
+    },
+    "answer": "1"
+  },
+  {
+    "question": "The limiting molar conductivities Λ⁰ for NaCl, KBr and KCl are 126, 152 and 150 S cm² mol⁻¹ respectively. The Λ⁰ for NaBr is :",
+    "options": {
+      "1": "278 S cm² mol⁻¹",
+      "2": "176 S cm² mol⁻¹",
+      "3": "128 S cm² mol⁻¹",
+      "4": "302 S cm² mol⁻¹"
+    },
+    "answer": "3"
+  },
+  {
+    "question": "The conductivity of a saturated solution of BaSO₄ is 3.06 × 10⁻⁶ ohm⁻¹ cm⁻¹and its molar conductance is 1.53 ohm⁻¹ cm² mol⁻¹. The Ksp of BaSO₄ will be",
+    "options": {
+      "1": "4 × 10⁻¹²",
+      "2": "2.5 × 10⁻⁹",
+      "3": "2.5 × 10⁻¹³",
+      "4": "4 × 10⁻⁶"
+    },
+    "answer": "4"
+  },
+  {
+    "question": "For HCl solution at 25ºC, equivalent conductance at infinite dilution, is 425 ohm⁻¹cm²equiv⁻¹. The specific conductance of a solution of HCl is 3.825 ohm⁻¹ cm⁻¹. If the apparent degree of dissociation is 90% the normality of the solution is :-",
+    "options": {
+      "1": "0.90 N",
+      "2": "1.0 N",
+      "3": "10 N",
+      "4": "1.2 N"
+    },
+    "answer": "3"
+  },
+  {
+    "question": "Molar conductances of BaCl₂, H₂SO₄ and HCl at infinite dilutions are x₁, x₂ and x₃, respectively. Equivalent conductance of BaSO₄ at infinite dilution will be:",
+    "options": {
+      "1": "[x₁ + x₂ - x₃] / 2",
+      "2": "[x₁ - x₂ - x₃] / 2",
+      "3": "2(x₁ + x₂ - 2x₃)",
+      "4": "[x₁ + x₂ - 2x₃] / 2"
+    },
+    "answer": "4"
+  },
+  {
+    "question": "The passage of electricity in the Daniel cell when Zn and Cu electrodes are connected is :",
+    "options": {
+      "1": "from Cu to Zn in the cell",
+      "2": "from Cu to Zn out side the cell",
+      "3": "from Zn to Cu outside the cell",
+      "4": "in any direction in the cell"
+    },
+    "answer": "2"
+  },
+  {
+    "question": "In the galvanic cell Cu |Cu²⁺ (1M)||Ag⁺ (1M) | Ag the electrons will travel in the external circuit :",
+    "options": {
+      "1": "from Ag to Cu",
+      "2": "from Cu to Ag",
+      "3": "electrons do not travel in the external circuit",
+      "4": "in any direction"
+    },
+    "answer": "2"
+  },
+  {
+    "question": "Which is not true for a standard hydrogen electrode ?",
+    "options": {
+      "1": "The hydrogen ion concentration is 1 M",
+      "2": "Temperature is 25ºC",
+      "3": "Pressure of hydrogen is 1 atmosphere",
+      "4": "It contains a metallic conductor which does not adsorb hydrogen."
+    },
+    "answer": "4"
+  },
+  {
+    "question": "Which of the following statements is correct :–",
+    "options": {
+      "1": "Oxidation occur at anode in both galvanic and electrolytic cell",
+      "2": "Reduction occurs at anode in both galvanic and electrolytic cell",
+      "3": "Reduction occur at anode in electrolytic cell where as oxidation occur at cathode in galvanic cell",
+      "4": "Oxidation occur at anode in electrolytic cell where as reduction occur at anode in galvanic cell"
+    },
+    "answer": "1"
+  },
+  {
+    "question": "Cu | Cu⁺²(1M) || Zn⁺²(1 M) | Zn\nA cell represented above should have emf.",
+    "options": {
+      "1": "Positive",
+      "2": "Negative",
+      "3": "Zero",
+      "4": "Cannot be predicted"
+    },
+    "answer": "2"
+  },
+  {
+    "question": "Which of the following statements is TRUE for the electrochemical Daniel cell :",
+    "options": {
+      "1": "Electrons flow from copper electrode to zinc electrode.",
+      "2": "Current flows from zinc electrode to copper electrode.",
+      "3": "Cations move toward copper electrode.",
+      "4": "Cations move toward zinc electrode."
+    },
+    "answer": "3"
+  },
+  {
+    "question": "Other things being equal, the life of a daniel cell may be increased by :–",
+    "options": {
+      "1": "Keeping low temperature",
+      "2": "Using large copper electrode",
+      "3": "Decreasing concentration of copper ions",
+      "4": "Using large zinc electrodes"
+    },
+    "answer": "4"
+  },
+  {
+    "question": "The cell emf depends on :–",
+    "options": {
+      "1": "Size of anode",
+      "2": "Volume of solution",
+      "3": "Temperature",
+      "4": "All of them"
+    },
+    "answer": "3"
+  },
+  {
+    "question": "The standard electrode potential value of the elements A, B and C are 0.68, –2.50 and 0.50 V respectively. The order of their reducing power is:",
+    "options": {
+      "1": "A > B > C",
+      "2": "A > C > B",
+      "3": "C > B > A",
+      "4": "B > C > A"
+    },
+    "answer": "4"
+  },
+  {
+    "question": "The standard reduction potential at 25 ºC of Li⁺ / Li, Ba²⁺ / Ba, Na⁺ / Na and Mg²⁺ / Mg are –3.05, –2.73, –2.71 and –2.37 volt respectively. Which one of the following is the strongest oxidising agent ?",
+    "options": {
+      "1": "Na⁺",
+      "2": "Li⁺",
+      "3": "Ba²⁺",
+      "4": "Mg²⁺"
+    },
+    "answer": "4"
+  },
+  {
+    "question": "The reduction potential values are given below : \nAl³⁺ / Al = –1.67 volt, Mg²⁺ / Mg = –2.34 volt \nCu²⁺ / Cu = + 0.34 volt, I₂ / 2I⁻ = + 0.53 volt \nWhich one is the best reducing agent ?",
+    "options": {
+      "1": "Al",
+      "2": "Mg",
+      "3": "Cu",
+      "4": "I₂"
+    },
+    "answer": "2"
+  },
+  {
+    "question": "The standard reduction potentials at 25ºC for the following half reactions are given against each : \nZn²⁺ (aq) + 2e⁻ → Zn(s), –0.762 \nCr³⁺ (aq) + 3e⁻ → Cr(s), –0.740 \n2H⁺ + 2e⁻ → H₂(g), 0.00 \nFe³⁺ + 2e⁻ → Fe²⁺, 0.77 \nWhich is the strongest reducing agent ?",
+    "options": {
+      "1": "Zn",
+      "2": "Cr",
+      "3": "H₂(g)",
+      "4": "Fe²⁺ (aq)"
+    },
+    "answer": "1"
+  },
+  {
+    "question": "The standard electrode potential of Zn, Ag and Cu are –0.76, 0.80 and 0.34 volt respectively, then :",
+    "options": {
+      "1": "Ag can oxidise Zn and Cu",
+      "2": "Ag can reduce Zn²⁺ and Cu²⁺",
+      "3": "Zn can reduce Ag⁺ and Cu²⁺",
+      "4": "Cu can oxidise Zn and A"
+    },
+    "answer": "3"
+  },
+  {
+    "question": "Given A°Ag⁺/Ag = 0.80V, E°Mg²⁺/Mg = –2.37V, E°Cu²⁺/Cu = 0.34 V, E°Hg²⁺/Hg = 0.79V .\nWhich of the following statement is correct",
+    "options": {
+      "1": "AgNO₃ can be stored in copper vessel",
+      "2": "Mg(NO₃)₂ can not be stored in copper vessel",
+      "3": "CuCl₂ can be stored in silver vessel",
+      "4": "HgCl₂ can be stored in copper vessel"
+    },
+    "answer": "3"
+  },
+  {
+    "question": "A standard reduction electrode potentials of four elements are \nA = – 0.250 V , B = – 0.140 V \nC = – 0.126 V , D = – 0.402 V \nThe element that displaces A from its compounds aqueous solution is :–",
+    "options": {
+      "1": "B",
+      "2": "C",
+      "3": "D",
+      "4": "None"
+    },
+    "answer": "3"
+  },
+  {
+    "question": "Zn can not displace following ions from their aqueous solution :",
+    "options": {
+      "1": "Ag⁺",
+      "2": "Cu²⁺",
+      "3": "Fe²⁺",
+      "4": "Na⁺"
+    },
+    "answer": "4"
+  },
+  {
+    "question": "Which one will liberate Br₂ from KBr ?",
+    "options": {
+      "1": "HI",
+      "2": "I₂",
+      "3": "Cl₂",
+      "4": "SO₂"
+    },
+    "answer": "3"
+  },
+  {
+    "question": "If a spoon of copper metal is placed in a solution of ferrous sulphate :",
+    "options": {
+      "1": "Cu will precipitate out",
+      "2": "Iron will precipitate",
+      "3": "Cu and Fe will precipitate",
+      "4": "No rection will take place"
+    },
+    "answer": "4"
+  },
+  {
+    "question": "Which of the following metals does not give the following reaction ? \nM + water —> oxide or hydroxide + H₂",
+    "options": {
+      "1": "Iron",
+      "2": "Sodium",
+      "3": "Mercury",
+      "4": "Magnesium"
+    },
+    "answer": "3"
+  },
+  {
+    "question": "Red hot carbon will remove oxygen from the oxide XO and YO but not from ZO. Y will remove oxygen from XO. Use this evidence to deduce the order of activity of the three metals X, Y and Z putting the most active first.",
+    "options": {
+      "1": "XYZ",
+      "2": "ZYX",
+      "3": "YXZ",
+      "4": "ZXY"
+    },
+    "answer": "2"
+  },
+  {
+    "question": "A gas X at 1 atm. is bubbled through a solution containing a mixture of 1 M Y⁻ and 1 M Z⁻ at 25 °C. If the reduction potential of Z > Y > X then :",
+    "options": {
+      "1": "Y will oxidise X and not Z",
+      "2": "Y will oxidise Z and not X",
+      "3": "Y will oxidise both X and Z",
+      "4": "Y will reduce both X and Z"
+    },
+    "answer": "1"
+  },
+  {
+    "question": "Each of the three metals x, y and z were put in turn into aqueous solution of the other two. \nx + salt of y (or z) = y (or z) + salt of x \nWhich one of the following observation is probably incorrect ?",
+    "options": {
+      "1": "y + salt of x = no action observed",
+      "2": "y + salt of z = z + salt of y",
+      "3": "z + salt of x = x + salt of z",
+      "4": "z + salt of y = no action observed"
+    },
+    "answer": "3"
+  },
+  {
+    "question": "Which of the following displacement does not occur?",
+    "options": {
+      "1": "Zn + 2H⁺ → Zn²⁺ + H₂ ↑",
+      "2": "Fe + 2Ag⁺ → Fe²⁺ + Ag ↓",
+      "3": "Cu + Fe²⁺ → Cu²⁺ + Fe ↓",
+      "4": "Zn + Pb²⁺ → Zn²⁺ + Pb ↓"
+    },
+    "answer": "3"
+  },
+  {
+    "question": "The following four colourless salt solutions are placed in separate test tubes and a strip of Cu is placed in each solution which finally turns blue:–",
+    "options": {
+      "1": "Zn(NO₃)₂",
+      "2": "Mg(NO₃)₂",
+      "3": "KNO₃",
+      "4": "AgNO₃"
+    },
+    "answer": "4"
+  },
+  {
+    "question": "Adding powdered Pb and Fe to a solution containing 1.0 M in each of Pb⁺² and Fe⁺² ions would result into the formation of :–",
+    "options": {
+      "1": "More of Pb and Fe⁺² ions",
+      "2": "More of Fe and Pb²⁺ ions",
+      "3": "More of Fe and Pb",
+      "4": "More of Fe⁺² and Pb²⁺ ions"
+    },
+    "answer": "1"
+  },
+  {
+    "question": "The following facts are available :– \n2X⁻ + Y₂ → 2Y⁻ + X₂ \n2W⁻ + Y₂ → NO reaction \n2Z⁻ + X₂ → 2X⁻ + Z₂ \nWhich of the following statements is correct :–",
+    "options": {
+      "1": "E°w⁻/w₂ > E°y⁻/y₂ > E°x⁻/x₂ > E°z⁻/z₂",
+      "2": "E°w⁻/w₂ < E°y⁻/y₂ < E°x⁻/x₂ < E°z⁻/z₂",
+      "3": "E°w⁻/w₂ < E°y⁻/y₂ > E°x⁻/x₂ > E°z⁻/z₂",
+      "4": "E°w⁻/w₂ > E°y⁻/y₂ < E°x⁻/x₂ < E°z⁻/z₂"
+    },
+    "answer": "2"
+  },
+  {
+    "question": "E° for the half cell Zn²⁺ | Zn is –0.76 e.m.f. of the cell \nZn | Zn²⁺ (1M) || 2H⁺ (1M) | H₂ (1 atm) is :",
+    "options": {
+      "1": "–0.76 V",
+      "2": "+0.76 V",
+      "3": "–0.38 V",
+      "4": "+ 0.38 V"
+    },
+    "answer": "2"
+  },
+  {
+    "question": "The standard electrode potentials for the reactions \nAg⁺ (aq.) + e⁻ —> Ag(s), \nSn²⁺ (aq.) + 2e⁻ —> Sn (s) \nat 25 °C are 0.80 volt and –0.14 volt, respectively. The standard emf of the cell. \nSn | Sn²⁺ (1M)||Ag⁺ (1M)| Ag is :",
+    "options": {
+      "1": "0.66 volt",
+      "2": "0.80 volt",
+      "3": "1.08 volt",
+      "4": "0.94 volt"
+    },
+    "answer": "4"
+  },
+  {
+    "question": "The standard oxidation potentials E°, for the half reaction are as : \nZn —> Zn²⁺ + 2e⁻ E° = + 0.76 volt \nFe —> Fe²⁺ + 2e⁻ E° = + 0.41 volt \nThe standard emf of the cell \nFe²⁺ + Zn → Zn²⁺ + Fe is –",
+    "options": {
+      "1": "0.35 volt",
+      "2": "– 0.35 volt",
+      "3": "+1.17 volt",
+      "4": "–1.17 volt"
+    },
+    "answer": "1"
+  },
+  {
+    "question": "E°(Ni²⁺/Ni) = –0.25 volt, \nE° (Au³⁺ / Au) = 1.50 volt. \nThe emf of the voltaic cell. \nNi / Ni²⁺ (1.0 M) | | Au³⁺ (1.0 M) | Au is :",
+    "options": {
+      "1": "1.25 volt",
+      "2": "–1.75 volt",
+      "3": "1.75 volt",
+      "4": "4.0 volt"
+    },
+    "answer": "3"
+  },
+  {
+    "question": "The oxidation potential of Zn, Cu, Ag, H₂ and Ni are 0.76, –0.34, –0.80, 0, 0.55 volt respectively. Which of the following reaction will provide maximum voltage ?",
+    "options": {
+      "1": "Zn + Cu²⁺ —> Cu + Zn²⁺",
+      "2": "Zn + 2Ag⁺ —> 2Ag + Zn²⁺",
+      "3": "H₂ + Cu²⁺ —> 2H⁺ + Cu",
+      "4": "H₂ + Ni²⁺ —> 2H⁺ + Ni"
+    },
+    "answer": "2"
+  },
+  {
+    "question": "From the following E° values of half cells \n(i) A³⁻ → A⁻² + e; E° = 1.5 V \n(ii) B⁺ + e → B; E° = 0.5 V \n(iii) C²⁺ + e → C⁺; E° = 0.5 V \n(iv) D → D²⁺ + 2e; E° = –1.15 V \nWhat combination of two half cells would result in a cell with the largest potential ?",
+    "options": {
+      "1": "(i) and (iii)",
+      "2": "(i) and (iv)",
+      "3": "(ii) and (iv)",
+      "4": "(iii) and (iv)"
+    },
+    "answer": "2"
+  },
+  {
+    "question": "Given electrode potentials : \nFe³⁺ + e —> Fe²⁺ ; E° = 0.771 volts \nI₂ + 2e —> 2I⁻ ; E° = 0.536 volts \nE° cell for the cell reaction \n2Fe³⁺ + 2I⁻ → 2Fe²⁺ + I₂ is -",
+    "options": {
+      "1": "(2 × 0.771 – 0.536) = 1.006 volts",
+      "2": "(0.771 – 0.5 × 0.536) = 0.503 volts",
+      "3": "0.771 – 0.536 = 0.235 volts",
+      "4": "0.536 – 0.771 = –0.235 volts"
+    },
+    "answer": "3"
+  },
+  {
+    "question": "The standard reduction electrode potentials of Fe²⁺/Fe and Sn²⁺/Sn are – 0.44 V and – 0.14V respective. What will be the standard E.M.F. of the following cell reaction \nFe²⁺ + Sn → Fe + Sn²⁺",
+    "options": {
+      "1": "0.3 V",
+      "2": "– 0.58 V",
+      "3": "+ 0.58 V",
+      "4": "– 0.30 V"
+    },
+    "answer": "4"
+  },
+  {
+    "question": "The standard electrode potentials of the two half cell are given below :– \nNi²⁺ + 2e⁻ → Ni ; E° = – 0.25 V \nZn²⁺ + 2e⁻ → Zn ; E° = – 0.77 V \nThe emf of cell formed by combining the two half cells would be :–",
+    "options": {
+      "1": "– 1.02 volt",
+      "2": "+ 0.52 volt",
+      "3": "+ 1.02 volt",
+      "4": "– 0.52 volt"
+    },
+    "answer": "2"
+  },
+  {
+    "question": "Aluminium displaces hydrogen from dilute HCl whereas silver does not, the E.M.F. of a cell prepared by combining Al/Al⁺³ and Ag/Ag⁺ is 2.46V. The reduction potential of silver electrode is +0.80V. The reduction potential of aluminium electrode is :",
+    "options": {
+      "1": "– 3.26 V",
+      "2": "+1.66V",
+      "3": "–1.66V",
+      "4": "3.26 V"
+    },
+    "answer": "3"
+  },
+  {
+    "question": "Calculate E⁰cell of following galvanic cell at 298 K; Ca(s)|Ca⁺²(aq.)||Fe⁺²(aq)|Fe(s) \nE⁰Ca⁺²/Ca = –2.87V; E⁰Fe/Fe⁺² = 0.41V",
+    "options": {
+      "1": "2.46 V",
+      "2": "–2.46V",
+      "3": "3.28 V",
+      "4": "– 3.28V"
+    },
+    "answer": "1"
+  }
+]
