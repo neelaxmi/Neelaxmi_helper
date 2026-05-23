@@ -1,7 +1,7 @@
 
 const firebaseConfig = {
     apiKey: "AIzaSyAOJmK4igVb_P8cV6jLfZhFPGFmAZfVvRE",
-    authDomain: "quiznew-30700.firebaseapp.com",
+    authDomain: "classupdates.netlify.app",
     projectId: "quiznew-30700",
     storageBucket: "quiznew-30700.firebasestorage.app",
     messagingSenderId: "107821881642",
@@ -214,3 +214,29 @@ window.toggleBookmark = async (questionId) => {
         console.error("Error toggling bookmark:", e);
     }
 };
+
+
+
+// Telegram se login hone ke baad ye function chalega
+function onTelegramAuth(user) {
+    console.log("Telegram se login hua:", user);
+
+    // Google wale logic ki tarah Firestore mein data save kar rahe hain
+    const userRef = db.collection('users').doc('tg_' + user.id);
+
+    userRef.set({
+        uid: 'tg_' + user.id,
+        name: user.first_name + (user.last_name ? ' ' + user.last_name : ''),
+        username: user.username || 'N/A',
+        auth_provider: 'telegram',
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    }, { merge: true }) // merge: true taaki purana data delete na ho
+    .then(() => {
+        // Data save hone ke baad user ko quizzes page par bhej do
+        window.location.href = "quizzes.html"; 
+    })
+    .catch((error) => {
+        console.error("Error saving Telegram user: ", error);
+        alert("Login me problem aayi, wapas try karo.");
+    });
+}

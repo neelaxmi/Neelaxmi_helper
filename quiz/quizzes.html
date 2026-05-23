@@ -205,10 +205,16 @@ input[type=range]::-moz-range-thumb {
         <span class="text-sm font-bold text-slate-700 dark:text-slate-200">Google</span>
     </button>
 
-    <button id="telegram-login-btn" class="flex items-center justify-center gap-2 py-3 px-4 bg-[#229ED9] hover:bg-[#1c83b5] rounded-xl transition-all shadow-sm">
-        <i class="fa-brands fa-telegram text-white text-xl"></i>
-        <span class="text-sm font-bold text-white">Telegram</span>
-    </button>
+<div class="telegram-login-wrapper" style="display: flex; justify-content: center; margin-top: 10px;">
+    <script async src="https://telegram.org/js/telegram-widget.js?22" 
+            data-telegram-login="Testhubeducbot" 
+            data-size="large" 
+            data-userpic="false"
+            data-onauth="onTelegramAuth(user)" 
+            data-request-access="write"></script>
+</div>
+
+
 </div>
     </div>
 </div>
