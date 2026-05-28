@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neelaxmi The Helper | The Great Comeback</title>
+    <meta name="description" content="Free NEET & JEE study materials, Unacademy class updates, and powerful bots by Mridul. We are back and stronger than ever.">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Poppins', 'sans-serif'] },
+                    colors: { primary: '#3b82f6', secondary: '#1e293b', dark: '#0f172a', accent: '#38bdf8' }
+                }
+            }
+        }
+    </script>
+
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- AOS CSS -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    <style>
+        body { background-color: #0f172a; color: #f8fafc; }
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .text-gradient {
+            background: linear-gradient(to right, #38bdf8, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hover-lift { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .hover-lift:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(56, 189, 248, 0.2); }
+        
+        /* Custom Styles for New Features */
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        details > summary { list-style: none; }
+        details > summary::-webkit-details-marker { display: none; }
+    </style>
+</head>
+<body class="antialiased overflow-x-hidden">
+
+    <!-- Navbar with Logo Update -->
+    <nav class="fixed w-full z-50 glass-panel py-4 px-6 md:px-12 flex justify-between items-center shadow-lg">
+        <div class="flex items-center gap-3">
+            <!-- 1. Logo Replaced Emoji -->
+            <div class="w-10 h-10 rounded-full border-2 border-accent overflow-hidden bg-white flex items-center justify-center">
+                <!-- Replace src with your actual logo URL -->
+                <img src="https://ui-avatars.com/api/?name=NX&background=38bdf8&color=0f172a&bold=true" alt="Neelaxmi Logo" class="w-full h-full object-cover">
+            </div>
+            <span class="text-xl md:text-2xl font-bold tracking-wider">NEELAXMI<span class="text-accent">.</span></span>
+        </div>
+        <div class="hidden md:flex gap-6 font-semibold">
+            <a href="#story" class="hover:text-accent transition">Our Story</a>
+            <a href="#projects" class="hover:text-accent transition">Ecosystem</a>
+            <a href="#about" class="hover:text-accent transition">About Mridul</a>
+            <a href="#join" class="hover:text-accent transition">Join Us</a>
+        </div>
+        <a href="#app" class="bg-primary hover:bg-blue-600 text-white px-5 py-2 rounded-full font-bold transition shadow-lg shadow-blue-500/30">Get The App</a>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden">
+        <div class="absolute inset-0 z-0 opacity-20 bg-[url('https://images.unsplash.com/photo-1635070041078-e363dbe005cb?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center"></div>
+        <div class="absolute inset-0 bg-gradient-to-b from-transparent to-dark z-0"></div>
+        
+        <div class="container mx-auto px-6 relative z-10 text-center" data-aos="zoom-in" data-aos-duration="1000">
+            <span class="bg-red-500/20 text-red-400 border border-red-500/50 px-4 py-1 rounded-full text-sm font-bold uppercase tracking-wider mb-6 inline-block">Deleted on Aug 28. Reborn on May 14.</span>
+            <h1 class="text-5xl md:text-7xl font-extrabold mb-6 leading-tight">
+                THE HELPER IS <br><span class="text-gradient">BACK & UNTOUCHABLE</span>
+            </h1>
+            <p class="text-lg md:text-2xl text-gray-300 mb-10 max-w-3xl mx-auto">
+                More secure. More content. Zero cost. The ultimate arsenal for NEET & JEE students is officially back online.
+            </p>
+            <div class="flex flex-col md:flex-row gap-4 justify-center">
+                <a href="#join" class="bg-accent text-dark font-bold py-3 px-8 rounded-full hover:bg-white transition hover-lift flex items-center justify-center gap-2">
+                    <i class="fa-brands fa-telegram"></i> Join the New Channel
+                </a>
+                <a href="#projects" class="glass-panel text-white font-bold py-3 px-8 rounded-full hover:bg-white/10 transition flex items-center justify-center gap-2">
+                    Explore Resources <i class="fa-solid fa-arrow-down"></i>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- The Journey / Story Section -->
+    <!-- (Unchanged Story Section remains here for brevity, keeping original layout) -->
+    <section id="story" class="py-20 bg-dark">
+        <div class="container mx-auto px-6 text-center">
+            <h2 class="text-3xl md:text-5xl font-bold mb-16" data-aos="fade-up">A Story of <span class="text-gradient">Resilience</span></h2>
+            <div class="flex flex-col md:flex-row justify-center items-center gap-8 md:gap-4 relative">
+                <!-- Timeline items -->
+                <div class="glass-panel p-6 rounded-2xl w-full md:w-1/4 hover-lift" data-aos="fade-right" data-aos-delay="0">
+                    <h3 class="text-accent font-bold text-xl mb-2">27 Dec 2024</h3>
+                    <p class="text-sm text-gray-400">First launch of Neelaxmi to help students.</p>
+                </div>
+                <div class="hidden md:block w-8 border-t-2 border-dashed border-gray-600"></div>
+                <div class="glass-panel border-red-500/50 p-6 rounded-2xl w-full md:w-1/4 hover-lift relative overflow-hidden" data-aos="fade-right" data-aos-delay="200">
+                    <div class="absolute top-0 right-0 bg-red-600 text-white text-xs px-2 py-1 rounded-bl-lg">HACKED</div>
+                    <h3 class="text-red-400 font-bold text-xl mb-2">28 Aug 2025</h3>
+                    <p class="text-sm text-gray-400">ID hacked. Everything lost.</p>
+                </div>
+                <div class="hidden md:block w-8 border-t-2 border-dashed border-gray-600"></div>
+                <div class="glass-panel border-accent p-6 rounded-2xl w-full md:w-1/4 hover-lift shadow-[0_0_20px_rgba(56,189,248,0.3)]" data-aos="fade-right" data-aos-delay="300">
+                    <h3 class="text-white font-bold text-xl mb-2 bg-accent text-dark px-2 inline-block rounded">14 May 2026</h3>
+                    <p class="text-sm text-gray-300 font-semibold">WE ARE BACK.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects & Ecosystem (2. Collapsible Boxes Update) -->
+    <section id="projects" class="py-20 bg-secondary">
+        <div class="container mx-auto px-6">
+            <h2 class="text-3xl md:text-5xl font-bold text-center mb-6" data-aos="fade-up">The <span class="text-gradient">Neelaxmi</span> Ecosystem</h2>
+            <p class="text-center text-gray-400 mb-16 max-w-2xl mx-auto" data-aos="fade-up" data-aos-delay="100">Everything a NEET/JEE aspirant needs. Click below to expand.</p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                <!-- Web Platforms -->
+                <div class="glass-panel p-8 rounded-3xl" data-aos="fade-up" data-aos-delay="200">
+                    <h3 class="text-2xl font-bold mb-6 flex items-center gap-3 border-b border-gray-700 pb-4">
+                        <i class="fa-solid fa-code text-accent"></i> Web Platforms
+                    </h3>
+                    <div class="space-y-4">
+                        <!-- Collapsible Item Example -->
+                        <details class="group bg-dark/50 border border-gray-700 rounded-xl overflow-hidden transition-all duration-300">
+                            <summary class="flex justify-between items-center cursor-pointer p-4 font-semibold text-gray-200">
+                                <span class="flex items-center gap-3"><i class="fa-solid fa-check text-green-400"></i> AKM Sir Module</span>
+                                <i class="fa-solid fa-chevron-down text-gray-400 group-open:rotate-180 transition-transform"></i>
+                            </summary>
+                            <div class="p-4 pt-0 border-t border-gray-700/50 bg-gray-800/30">
+                                <p class="text-sm text-gray-400 mb-4">Complete module discussion and doubt-solving platform optimized for fast learning.</p>
+                                <a href="#" class="inline-block bg-accent/20 text-accent border border-accent hover:bg-accent hover:text-dark px-5 py-2 rounded-lg text-sm font-bold transition shadow-[0_0_10px_rgba(56,189,248,0.2)]">Now Try This <i class="fa-solid fa-arrow-right ml-1"></i></a>
+                            </div>
+                        </details>
+                        
+                        <details class="group bg-dark/50 border border-gray-700 rounded-xl overflow-hidden transition-all duration-300">
+                            <summary class="flex justify-between items-center cursor-pointer p-4 font-semibold text-gray-200">
+                                <span class="flex items-center gap-3"><i class="fa-solid fa-check text-green-400"></i> NEET Countdown</span>
+                                <i class="fa-solid fa-chevron-down text-gray-400 group-open:rotate-180 transition-transform"></i>
+                            </summary>
+                            <div class="p-4 pt-0 border-t border-gray-700/50 bg-gray-800/30">
+                                <p class="text-sm text-gray-400 mb-4">Live timer and daily schedule tracker to keep your preparation on point.</p>
+                                <a href="#" class="inline-block bg-accent/20 text-accent border border-accent hover:bg-accent hover:text-dark px-5 py-2 rounded-lg text-sm font-bold transition">Now Try This <i class="fa-solid fa-arrow-right ml-1"></i></a>
+                            </div>
+                        </details>
+                    </div>
+                </div>
+
+                <!-- Telegram Bots -->
+                <div class="glass-panel p-8 rounded-3xl" data-aos="fade-up" data-aos-delay="300">
+                    <h3 class="text-2xl font-bold mb-6 flex items-center gap-3 border-b border-gray-700 pb-4">
+                        <i class="fa-solid fa-robot text-accent"></i> Telegram Bots
+                    </h3>
+                    <div class="space-y-4">
+                        <details class="group bg-dark/50 border border-gray-700 rounded-xl overflow-hidden transition-all duration-300">
+                            <summary class="flex justify-between items-center cursor-pointer p-4 font-bold text-lg text-primary">
+                                <span class="flex items-center gap-3"><i class="fa-solid fa-book-open"></i> NEELAXMI BOT</span>
+                                <i class="fa-solid fa-chevron-down text-gray-400 group-open:rotate-180 transition-transform text-sm"></i>
+                            </summary>
+                            <div class="p-4 pt-0 border-t border-gray-700/50 bg-gray-800/30">
+                                <p class="text-sm text-gray-400 mb-4">Instantly access thousands of study materials, PDFs, and question banks automatically via Telegram.</p>
+                                <a href="#" class="inline-block bg-primary/20 text-primary border border-primary hover:bg-primary hover:text-white px-5 py-2 rounded-lg text-sm font-bold transition shadow-[0_0_10px_rgba(59,130,246,0.2)]">Now Try This <i class="fa-brands fa-telegram ml-1"></i></a>
+                            </div>
+                        </details>
+
+                        <details class="group bg-dark/50 border border-gray-700 rounded-xl overflow-hidden transition-all duration-300">
+                            <summary class="flex justify-between items-center cursor-pointer p-4 font-bold text-lg text-primary">
+                                <span class="flex items-center gap-3"><i class="fa-solid fa-video"></i> LECTURE EXTRACTOR</span>
+                                <i class="fa-solid fa-chevron-down text-gray-400 group-open:rotate-180 transition-transform text-sm"></i>
+                            </summary>
+                            <div class="p-4 pt-0 border-t border-gray-700/50 bg-gray-800/30">
+                                <p class="text-sm text-gray-400 mb-4">Extract and organize hidden video lectures from top educators seamlessly.</p>
+                                <a href="#" class="inline-block bg-primary/20 text-primary border border-primary hover:bg-primary hover:text-white px-5 py-2 rounded-lg text-sm font-bold transition">Now Try This <i class="fa-brands fa-telegram ml-1"></i></a>
+                            </div>
+                        </details>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Developer (3. Full Portfolio Button Update) -->
+    <section id="about" class="py-20 bg-dark relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-64 h-64 bg-primary rounded-full mix-blend-multiply filter blur-3xl opacity-20"></div>
+        <div class="absolute top-0 right-0 w-64 h-64 bg-accent rounded-full mix-blend-multiply filter blur-3xl opacity-20"></div>
+        
+        <div class="container mx-auto px-6 relative z-10">
+            <div class="glass-panel rounded-3xl p-8 md:p-12 flex flex-col md:flex-row items-center gap-10" data-aos="zoom-in">
+                <div class="w-full md:w-1/3 flex justify-center">
+                    <div class="w-48 h-48 rounded-full border-4 border-accent overflow-hidden shadow-[0_0_30px_rgba(56,189,248,0.5)]">
+                        <img src="https://ui-avatars.com/api/?name=MRIDUL&background=38bdf8&color=0f172a&size=512" alt="Mridul" class="w-full h-full object-cover">
+                    </div>
+                </div>
+                <div class="w-full md:w-2/3 text-center md:text-left">
+                    <h2 class="text-3xl font-bold mb-2">Meet the Creator: <span class="text-gradient">MRIDUL</span></h2>
+                    <p class="text-accent font-semibold mb-4 tracking-wide text-sm">CLASS 12 PASS-OUT | NEET DROPPER | CODER | WEIGHTLIFTER</p>
+                    <p class="text-gray-300 mb-6 leading-relaxed">
+                        I am currently preparing for NEET, but I have a massive passion for coding. When I'm not studying or hitting the gym for weightlifting, I build tools to make education free and accessible...
+                    </p>
+                    <div class="flex flex-wrap gap-4 justify-center md:justify-start mb-8">
+                        <span class="bg-gray-800 px-4 py-2 rounded-lg text-sm font-semibold shadow"><i class="fa-solid fa-dumbbell text-gray-400"></i> Lifting</span>
+                        <span class="bg-gray-800 px-4 py-2 rounded-lg text-sm font-semibold shadow"><i class="fa-solid fa-code text-blue-400"></i> Coding</span>
+                        <span class="bg-gray-800 px-4 py-2 rounded-lg text-sm font-semibold shadow"><i class="fa-solid fa-stethoscope text-green-400"></i> NEET</span>
+                    </div>
+                    
+                    <!-- 3. New Portfolio Button -->
+                    <a href="#your-portfolio-link" class="inline-flex items-center gap-3 bg-gradient-to-r from-primary to-accent text-white font-bold py-3 px-8 rounded-full hover:shadow-[0_0_20px_rgba(56,189,248,0.5)] transition hover-lift text-sm md:text-base">
+                        Visit Full Information About Mridul <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials (4. JSON Driven & Horizontal Scroll Update) -->
+    <section class="py-20 bg-secondary overflow-hidden">
+        <div class="container mx-auto px-6">
+            <h2 class="text-3xl md:text-5xl font-bold text-center mb-12" data-aos="fade-up">Trusted by <span class="text-gradient">Thousands</span></h2>
+            
+            <!-- Horizontal scroll container -->
+            <div id="testimonials-container" class="flex overflow-x-auto gap-6 pb-8 snap-x snap-mandatory hide-scrollbar cursor-grab" data-aos="fade-up">
+                <!-- Testimonials will be injected here via JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- 5. Join Us Section & Feedback Form -->
+    <section id="join" class="py-20 bg-dark border-t border-gray-800 relative">
+        <div class="container mx-auto px-6 max-w-4xl">
+            <div class="text-center mb-12" data-aos="fade-up">
+                <h2 class="text-3xl md:text-5xl font-bold mb-4">Join The <span class="text-gradient">Movement</span></h2>
+                <p class="text-gray-400">Help us hit our goal and stay connected with the best materials.</p>
+            </div>
+            
+            <!-- Member Counter UI -->
+            <div class="glass-panel rounded-2xl p-8 mb-12 text-center border border-accent/30 shadow-[0_0_30px_rgba(56,189,248,0.1)]" data-aos="zoom-in">
+                <div class="flex justify-between items-end mb-4">
+                    <div class="text-left">
+                        <p class="text-sm text-gray-400 font-bold uppercase tracking-wider mb-1">Current Members</p>
+                        <p class="text-3xl md:text-4xl font-extrabold text-white">8,432</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm text-gray-400 font-bold uppercase tracking-wider mb-1">Target Goal</p>
+                        <p class="text-xl md:text-2xl font-bold text-accent">10,000</p>
+                    </div>
+                </div>
+                <!-- Progress Bar -->
+                <div class="w-full bg-gray-800 rounded-full h-4 overflow-hidden shadow-inner">
+                    <div class="bg-gradient-to-r from-primary via-accent to-blue-300 h-4 rounded-full relative" style="width: 84%">
+                        <div class="absolute right-0 top-0 bottom-0 w-10 bg-white/20 animate-pulse"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Registration & Feedback Form -->
+            <form class="glass-panel rounded-3xl p-6 md:p-10 shadow-2xl border border-gray-700/50" data-aos="fade-up">
+                <h3 class="text-2xl font-bold mb-8 border-b border-gray-700 pb-4"><i class="fa-solid fa-user-plus text-accent mr-2"></i> User Registration & Feedback</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div>
+                        <label class="block text-sm font-semibold mb-2 text-gray-300">Name *</label>
+                        <input type="text" required class="w-full bg-dark/80 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-accent transition">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-2 text-gray-300">State (India) *</label>
+                        <input type="text" required class="w-full bg-dark/80 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-accent transition">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-2 text-gray-300">City *</label>
+                        <input type="text" required class="w-full bg-dark/80 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-accent transition">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-2 text-gray-300">Where did you hear about us? *</label>
+                        <select required class="w-full bg-dark/80 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-accent transition appearance-none">
+                            <option value="" disabled selected>Select an option</option>
+                            <option>Telegram Channel</option>
+                            <option>YouTube</option>
+                            <option>Friend / Referral</option>
+                            <option>Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <label class="block text-sm font-semibold mb-2 text-gray-300">Feedback / Message *</label>
+                    <textarea required rows="4" placeholder="Tell us what tools you need next..." class="w-full bg-dark/80 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-accent transition"></textarea>
+                </div>
+
+                <div class="mb-8">
+                    <label class="block text-sm font-semibold mb-2 text-gray-300">Telegram / Insta Username <span class="text-gray-500 font-normal">(Optional)</span></label>
+                    <div class="relative">
+                        <span class="absolute left-4 top-3.5 text-gray-500">@</span>
+                        <input type="text" placeholder="username" class="w-full bg-dark/80 border border-gray-700 rounded-xl pl-10 pr-4 py-3 text-white focus:outline-none focus:border-accent transition">
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full bg-gradient-to-r from-primary to-accent hover:from-accent hover:to-blue-400 text-dark font-extrabold text-lg py-4 rounded-xl transition hover-lift shadow-[0_0_20px_rgba(56,189,248,0.3)]">
+                    Join The Ecosystem Now
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark border-t border-gray-800 pt-16 pb-8">
+        <div class="container mx-auto px-6 flex flex-col md:flex-row justify-between items-center">
+            <div class="text-center md:text-left mb-6 md:mb-0">
+                <div class="flex items-center gap-3 justify-center md:justify-start mb-4">
+                    <div class="w-8 h-8 rounded-full border border-accent bg-white flex items-center justify-center">
+                        <img src="https://ui-avatars.com/api/?name=NX&background=38bdf8&color=0f172a&bold=true" class="w-full h-full object-cover rounded-full">
+                    </div>
+                    <span class="text-2xl font-bold tracking-wider">NEELAXMI<span class="text-accent">.</span></span>
+                </div>
+                <p class="text-gray-500 text-sm">Built with passion by Mridul. For the students, by a student.</p>
+            </div>
+            <div class="flex gap-6 text-2xl text-gray-400">
+                <a href="#" class="hover:text-accent transition"><i class="fa-brands fa-telegram"></i></a>
+                <a href="#" class="hover:text-accent transition"><i class="fa-brands fa-github"></i></a>
+                <a href="#" class="hover:text-accent transition"><i class="fa-brands fa-youtube"></i></a>
+                <a href="#" class="hover:text-accent transition"><i class="fa-brands fa-instagram"></i></a>
+            </div>
+        </div>
+        <div class="text-center mt-12 text-gray-600 text-sm">
+            &copy; 2026 Neelaxmi The Helper. All Rights Reserved. Back and Untouchable.
+        </div>
+    </footer>
+
+    <!-- Initialize AOS Animation Library -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    
+    <!-- Custom Scripts (JSON Testimonials & AOS) -->
+    <script>
+        // 1. Initialize Scroll Animations
+        AOS.init({ once: true, offset: 50, duration: 800, easing: 'ease-in-out-cubic' });
+
+        // 2. JSON Data for Testimonials
+        const testimonialsData = [
+            {
+                name: "Qualified Student",
+                role: "NEET Dropper",
+                rating: 5,
+                text: "Neelaxmi saved my prep. When the group got deleted I panicked, but the new platform is insane. The lakhs of free questions are exactly what Unacademy students need for practice.",
+                image: "https://ui-avatars.com/api/?name=QS&background=1e293b&color=38bdf8"
+            },
+            {
+                name: "Rohan Patel",
+                role: "JEE Aspirant",
+                rating: 5,
+                text: "Mridul is doing God's work. The Lecture Extractor bot is flawless. I couldn't afford premium batches, but these free materials leveled the playing field.",
+                image: "https://ui-avatars.com/api/?name=RP&background=1e293b&color=38bdf8"
+            },
+            {
+                name: "Anjali Verma",
+                role: "Class 12th Board",
+                rating: 5,
+                text: "The AKM Sir Module Discussion tool is so well coded. Hard to believe a 12th pass-out built this while prepping for exams and lifting weights!",
+                image: "https://ui-avatars.com/api/?name=AV&background=1e293b&color=38bdf8"
+            },
+            {
+                name: "Rahul M.",
+                role: "Medical Student",
+                rating: 5,
+                text: "The sheer amount of backend security added to this V2 launch gives me so much confidence. Nothing beats the Neelaxmi ecosystem.",
+                image: "" // Testing empty image (will omit img tag dynamically)
+            }
+        ];
+
+        // 3. Inject Testimonials to Horizontal Scroll Container
+        const container = document.getElementById('testimonials-container');
+        
+        testimonialsData.forEach(t => {
+            // Check if image exists in JSON, otherwise skip rendering image tag
+            const imageHTML = t.image 
+                ? `<img src="${t.image}" alt="${t.name}" class="w-12 h-12 rounded-full border-2 border-accent shadow-sm">` 
+                : `<div class="w-12 h-12 rounded-full bg-gray-700 border-2 border-accent flex items-center justify-center text-accent"><i class="fa-solid fa-user"></i></div>`;
+            
+            // Build Stars based on rating
+            const starsHTML = '<i class="fa-solid fa-star text-accent text-sm"></i>'.repeat(t.rating);
+
+            container.innerHTML += `
+                <div class="glass-panel p-6 rounded-2xl min-w-[300px] md:min-w-[380px] flex-shrink-0 snap-center hover-lift border border-gray-700/50">
+                    <div class="flex items-center gap-4 mb-4">
+                        ${imageHTML}
+                        <div>
+                            <p class="font-bold text-white text-lg leading-tight">${t.name}</p>
+                            <p class="text-xs text-gray-400 font-semibold uppercase tracking-wider">${t.role}</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-1 mb-4">
+                        ${starsHTML}
+                    </div>
+                    <p class="text-gray-300 text-sm leading-relaxed">"${t.text}"</p>
+                </div>
+            `;
+        });
+    </script>
+</body>
+                                                                        </html>
+
+
+
+
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neelaxmi The Helper | The Great Comeback</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&family=Great+Vibes&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { 
+                        sans: ['Poppins', 'sans-serif'],
+                        signature: ['Great Vibes', 'cursive']
+                    },
+                    colors: { primary: '#3b82f6', secondary: '#1e293b', dark: '#0f172a', accent: '#38bdf8' }
+                }
+            }
+        }
+    </script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    <style>
+        body { background-color: #0f172a; color: #f8fafc; }
+        .glass-panel { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .text-gradient { background: linear-gradient(to right, #38bdf8, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        
+        /* Modal Style for Submission Card */
+        #successModal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.9);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body class="antialiased overflow-x-hidden">
+
+    <section id="app" class="py-20 bg-gradient-to-b from-dark to-secondary">
+        <div class="container mx-auto px-6 text-center">
+            <h2 class="text-3xl md:text-5xl font-bold mb-10" data-aos="fade-up">Get the <span class="text-gradient">Neelaxmi App</span></h2>
+            <div class="flex flex-col md:flex-row justify-center gap-6" data-aos="zoom-in">
+                <a href="/downloads/neelaxmi.apk" class="glass-panel p-8 rounded-3xl hover:border-accent transition group w-full md:w-64">
+                    <i class="fa-brands fa-android text-5xl text-green-400 mb-4 group-hover:scale-110 transition"></i>
+                    <h3 class="text-xl font-bold mb-2">Android</h3>
+                    <p class="text-gray-400 text-sm mb-4">Download APK v2.0</p>
+                    <span class="bg-primary px-4 py-2 rounded-full text-xs font-bold">Download Now</span>
+                </a>
+                <a href="/downloads/neelaxmi_setup.exe" class="glass-panel p-8 rounded-3xl hover:border-accent transition group w-full md:w-64">
+                    <i class="fa-brands fa-windows text-5xl text-blue-400 mb-4 group-hover:scale-110 transition"></i>
+                    <h3 class="text-xl font-bold mb-2">PC / Windows</h3>
+                    <p class="text-gray-400 text-sm mb-4">Download EXE Setup</p>
+                    <span class="bg-primary px-4 py-2 rounded-full text-xs font-bold">Download Now</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section id="join" class="py-20 bg-dark">
+        <div class="container mx-auto px-6 max-w-4xl">
+            <form id="membershipForm" class="glass-panel rounded-3xl p-6 md:p-10 shadow-2xl" onsubmit="handleFormSubmit(event)">
+                <h3 class="text-2xl font-bold mb-8 border-b border-gray-700 pb-4">Member Registration</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div>
+                        <label class="block text-sm font-semibold mb-2">Full Name</label>
+                        <input type="text" id="formName" required class="w-full bg-dark/80 border border-gray-700 rounded-xl px-4 py-3 text-white focus:border-accent outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-2">Indian State</label>
+                        <select id="formState" required class="w-full bg-dark/80 border border-gray-700 rounded-xl px-4 py-3 text-white focus:border-accent outline-none">
+                            <option value="">Select State</option>
+                            <option>Andhra Pradesh</option><option>Arunachal Pradesh</option><option>Assam</option><option>Bihar</option><option>Chhattisgarh</option><option>Goa</option><option>Gujarat</option><option>Haryana</option><option>Himachal Pradesh</option><option>Jharkhand</option><option>Karnataka</option><option>Kerala</option><option>Madhya Pradesh</option><option>Maharashtra</option><option>Manipur</option><option>Meghalaya</option><option>Mizoram</option><option>Nagaland</option><option>Odisha</option><option>Punjab</option><option>Rajasthan</option><option>Sikkim</option><option>Tamil Nadu</option><option>Telangana</option><option>Tripura</option><option>Uttar Pradesh</option><option>Uttarakhand</option><option>West Bengal</option><option>Delhi</option><option>Jammu & Kashmir</option><option>Ladakh</option><option>Other UT</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-2">City</label>
+                        <input type="text" id="formCity" required class="w-full bg-dark/80 border border-gray-700 rounded-xl px-4 py-3 text-white focus:border-accent outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-2">Where did you hear about us?</label>
+                        <input type="text" id="formSource" required class="w-full bg-dark/80 border border-gray-700 rounded-xl px-4 py-3 text-white focus:border-accent outline-none">
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <label class="block text-sm font-semibold mb-2">Feedback</label>
+                    <textarea id="formFeedback" required rows="3" class="w-full bg-dark/80 border border-gray-700 rounded-xl px-4 py-3 text-white focus:border-accent outline-none"></textarea>
+                </div>
+
+                <div class="mb-6">
+                    <label class="block text-sm font-semibold mb-2">TG / Insta Username (Optional)</label>
+                    <input type="text" id="formSocial" class="w-full bg-dark/80 border border-gray-700 rounded-xl px-4 py-3 text-white focus:border-accent outline-none">
+                </div>
+
+                <button type="submit" class="w-full bg-accent text-dark font-bold py-4 rounded-xl hover:scale-[1.02] transition shadow-lg shadow-accent/20">
+                    Register Now
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <div id="successModal">
+        <div class="bg-white text-dark p-8 rounded-3xl max-w-md w-full relative shadow-[0_0_50px_rgba(56,189,248,0.4)]">
+            <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-dark"><i class="fa-solid fa-xmark text-2xl"></i></button>
+            
+            <div class="text-center mb-6">
+                <img src="https://ui-avatars.com/api/?name=NX&background=38bdf8&color=ffffff&bold=true" class="w-16 h-16 mx-auto rounded-full border-2 border-accent mb-2">
+                <h4 class="text-xl font-extrabold tracking-tighter">NEELAXMI VERIFIED MEMBER</h4>
+                <div class="w-20 h-1 bg-accent mx-auto mt-1"></div>
+            </div>
+
+            <div class="space-y-3 border-y border-gray-100 py-6 my-6">
+                <p class="text-sm"><strong>Name:</strong> <span id="cardName"></span></p>
+                <p class="text-sm"><strong>Location:</strong> <span id="cardLocation"></span></p>
+                <p class="text-sm"><strong>Member ID:</strong> <span class="font-mono">NX-2026-</span><span id="cardID"></span></p>
+            </div>
+
+            <div class="flex justify-between items-end">
+                <div>
+                    <p class="text-xs text-gray-400 italic">"Empowering Every Student"</p>
+                </div>
+                <div class="text-right">
+                    <p class="font-signature text-3xl text-primary">Mridul</p>
+                    <p class="text-[10px] font-bold uppercase text-gray-500 tracking-widest border-t border-gray-200">Authorized Signature</p>
+                </div>
+            </div>
+            <p class="text-center mt-6 text-xs font-bold text-accent">WELCOME TO THE ECOSYSTEM</p>
+        </div>
+    </div>
+
+    <footer class="bg-secondary py-16 border-t border-gray-800">
+        <div class="container mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-12">
+            <div>
+                <span class="text-2xl font-bold">NEELAXMI<span class="text-accent">.</span></span>
+                <p class="text-gray-400 mt-4 text-sm">Providing free, high-quality resources for NEET and JEE aspirants globally.</p>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4">
+                <div class="flex flex-col gap-2">
+                    <h5 class="font-bold text-accent mb-2 uppercase text-xs">Core</h5>
+                    <a href="/index.html" class="text-sm hover:text-white text-gray-400"><i class="fas fa-home mr-2"></i> Home</a>
+                    <a href="/quiz/DASHBOARD.HTML" class="text-sm hover:text-white text-gray-400"><i class="fas fa-comments mr-2"></i> Dashboard</a>
+                    <a href="https://akmsirdiscussion.netlify.app/" class="text-sm hover:text-white text-gray-400"><i class="fas fa-comments mr-2"></i> AKM Sir</a>
+                    <a href="https://neetcountdown2026.netlify.app/" class="text-sm hover:text-white text-gray-400"><i class="fas fa-clock mr-2"></i> Countdown</a>
+                </div>
+                <div class="flex flex-col gap-2">
+                    <h5 class="font-bold text-accent mb-2 uppercase text-xs">Analysis</h5>
+                    <a href="https://NEETTESTANALYSIS.netlify.app/" class="text-sm hover:text-white text-gray-400"><i class="fas fa-lightbulb mr-2"></i> Test Analysis</a>
+                    <a href="https://dppanalysis.netlify.app/" class="text-sm hover:text-white text-gray-400"><i class="fas fa-chart-bar mr-2"></i> DPP Analysis</a>
+                    <a href="updates.html" class="text-sm hover:text-white text-gray-400"><i class="fas fa-calendar-check mr-2"></i> Updates</a>
+                    <a href="/privacy.html" class="text-sm hover:text-white text-gray-400"><i class="fab fa-telegram mr-2"></i> Privacy</a>
+                </div>
+            </div>
+
+            <div class="flex flex-col gap-2">
+                <h5 class="font-bold text-accent mb-2 uppercase text-xs">External</h5>
+                <a href="https://saksenquiz.netlify.app/" class="text-sm hover:text-white text-gray-400"><i class="fas fa-lightbulb mr-2"></i> Saksen Quiz</a>
+                <a href="http://diwalisak.netlify.app/" class="text-sm hover:text-white text-gray-400"><i class="fas fa-firework mr-2"></i> Diwali VFX</a>
+                <a href="https://telegram.me/saksen_main_bot" class="text-sm hover:text-white text-gray-400"><i class="fab fa-telegram mr-2"></i> Main Bot</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({ once: true });
+
+        function handleFormSubmit(event) {
+            event.preventDefault();
+            
+            // Get values
+            const name = document.getElementById('formName').value;
+            const state = document.getElementById('formState').value;
+            const city = document.getElementById('formCity').value;
+            
+            // Fill Card
+            document.getElementById('cardName').innerText = name;
+            document.getElementById('cardLocation').innerText = city + ", " + state;
+            document.getElementById('cardID').innerText = Math.floor(Math.random() * 9000) + 1000;
+            
+            // Show Modal
+            document.getElementById('successModal').style.display = 'flex';
+            
+            // Optional: Reset form
+            event.target.reset();
+        }
+
+        function closeModal() {
+            document.getElementById('successModal').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
+
+
+
+
+
+                                                                        
