@@ -1,5 +1,3 @@
-
-
 let currentResultData = null;
 let currentQuestionForExplanation = null; 
 let explanationCache = {};
@@ -8,7 +6,7 @@ const resultEls = {
     resultBox: document.getElementById('result-box'),
     container: document.getElementById('quiz-container'),
     title: document.getElementById('quiz-title'), 
-    submit: document.getElementById('submit-btn'), 
+    submit: document.getElementById('final-submit-btn'), 
     resTitle: document.getElementById('res-quiz-title'),
     resScore: document.getElementById('res-score'),
     resAccuracy: document.getElementById('res-accuracy'),
@@ -316,6 +314,13 @@ const submitQuiz = async (isTimeout = false) => {
     resultEls.submit.disabled = true;
     resultEls.submit.innerHTML = '<span class="loader w-4 h-4 border-2 mr-2 inline-block"></span> Processing...';
 
+    // Release the camera and stop the local face-detection loop — proctoring
+    // is only needed while the quiz itself is active.
+    if (typeof window.stopProctoring === 'function') window.stopProctoring();
+    const proctorViolationCount = (typeof violationCount !== 'undefined') ? violationCount : 0;
+    const proctorViolationLog = (typeof violationLog !== 'undefined') ? violationLog : [];
+    const autoSubmittedForViolations = proctorViolationCount > 3;
+
     let score = 0;
     const detailed = questions.map(q => {
         const u = userAnswers[q.id];
@@ -334,11 +339,16 @@ const submitQuiz = async (isTimeout = false) => {
         quizTitle: resultEls.title.textContent,
         score, total: questions.length,
         answers: detailed,
-        status: isTimeout ? 'Timed Out' : 'Completed',
+        status: autoSubmittedForViolations ? 'Auto-Submitted (Proctoring Violation)' : (isTimeout ? 'Timed Out' : 'Completed'),
         timestamp: firebase.firestore.FieldValue.serverTimestamp(),
         timeTaken: formattedTime,
         totalTimeSeconds: totalTimeSpent,
-        rank: calculateRank(score, questions.length)
+        rank: calculateRank(score, questions.length),
+        proctoring: {
+            violationCount: proctorViolationCount,
+            autoSubmitted: autoSubmittedForViolations,
+            log: proctorViolationLog
+        }
     };
 
     try {
@@ -350,6 +360,9 @@ const submitQuiz = async (isTimeout = false) => {
         const progRef = db.collection('user_progress').doc(CURRENT_USER_ID).collection('saved_quizzes').doc(currentQuizId);
         const progDoc = await progRef.get();
         if(progDoc.exists) await progRef.delete(); 
+
+        // 2b. Clear locally-persisted proctoring violation state for this attempt
+        try { sessionStorage.removeItem('quiz_violations_' + (currentQuizId || 'session')); } catch(e) {}
         
         // 3. Render
         renderFinalResult(resultData);
