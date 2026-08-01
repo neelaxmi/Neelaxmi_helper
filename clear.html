@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Production Code Minifier</title>
+  <!-- Load JS Obfuscator library directly from CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/javascript-obfuscator/dist/index.browser.js"></script>
+  <style>
+    * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background: #121212; color: #e0e0e0; padding: 15px; margin: 0; }
+    h2 { color: #00e676; margin-top: 0; font-size: 20px; }
+    label { display: block; font-weight: bold; margin-top: 12px; margin-bottom: 5px; font-size: 14px; color: #a0a0a0; }
+    textarea { width: 100%; height: 110px; background: #1e1e1e; color: #00ffcc; border: 1px solid #333; border-radius: 6px; padding: 10px; font-family: monospace; font-size: 12px; resize: vertical; }
+    button { background: #00e676; color: #000; font-weight: bold; border: none; padding: 14px; border-radius: 6px; width: 100%; margin: 15px 0; font-size: 16px; cursor: pointer; }
+    button:active { background: #00c853; }
+    .output-box { height: 180px; color: #fff; background: #0a0a0a; border-color: #00e676; }
+  </style>
+</head>
+<body>
+
+  <h2>⚡ Browser Code Minifier & Obfuscator</h2>
+
+  <label>1. HTML Code (Paste here):</label>
+  <textarea id="htmlInput" placeholder="<div class='box'>...</div>"></textarea>
+
+  <label>2. CSS Code (Paste here):</label>
+  <textarea id="cssInput" placeholder="/* CSS styles */ body { margin: 0; }"></textarea>
+
+  <label>3. JavaScript Code (Paste here):</label>
+  <textarea id="jsInput" placeholder="// JS code console.log('hello');"></textarea>
+
+  <button onclick="processCode()">🚀 Process Code For Production</button>
+
+  <label>Minified HTML Result:</label>
+  <textarea id="htmlOutput" class="output-box" readonly placeholder="Optimized HTML will appear here..."></textarea>
+
+  <label>Minified CSS Result:</label>
+  <textarea id="cssOutput" class="output-box" readonly placeholder="Optimized CSS will appear here..."></textarea>
+
+  <label>Obfuscated JS Result:</label>
+  <textarea id="jsOutput" class="output-box" readonly placeholder="Protected JS will appear here..."></textarea>
+
+  <script>
+    function minifyHTML(html) {
+      return html
+        .replace(/<!--[\s\S]*?-->/g, '') // Remove HTML comments
+        .replace(/\s+/g, ' ')            // Collapse multiple spaces/newlines
+        .replace(/>\s+</g, '><')         // Remove space between DOM tags
+        .trim();
+    }
+
+    function minifyCSS(css) {
+      return css
+        .replace(/\/\*[\s\S]*?\*\//g, '') // Remove CSS comments
+        .replace(/\s+/g, ' ')             // Collapse whitespace
+        .replace(/\s*([{}:;,])\s*/g, '$1') // Strip extra space around brackets & colons
+        .trim();
+    }
+
+    function processCode() {
+      const html = document.getElementById('htmlInput').value;
+      const css = document.getElementById('cssInput').value;
+      const js = document.getElementById('jsInput').value;
+
+      // 1. Minify HTML
+      if (html) {
+        document.getElementById('htmlOutput').value = minifyHTML(html);
+      }
+
+      // 2. Minify CSS
+      if (css) {
+        document.getElementById('cssOutput').value = minifyCSS(css);
+      }
+
+      // 3. Obfuscate JavaScript
+      if (js) {
+        try {
+          const obfuscated = JavaScriptObfuscator.obfuscate(js, {
+            compact: true,
+            controlFlowFlattening: false, // Turned off for mobile speed
+            stringArray: true,
+            stringArrayEncoding: ['base64']
+          }).getObfuscatedCode();
+
+          document.getElementById('jsOutput').value = obfuscated;
+        } catch (err) {
+          document.getElementById('jsOutput').value = '// Error obfuscating JS: ' + err.message;
+        }
+      }
+    }
+  </script>
+</body>
+</html>

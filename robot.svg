@@ -1,0 +1,49 @@
+<svg viewBox="0 0 300 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="robotTitle">
+  <title id="robotTitle">Neelaxmi Bot — a friendly study-helper mascot</title>
+
+  <defs>
+    <linearGradient id="headGradient" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#7dd3fc"/>
+      <stop offset="100%" stop-color="#38bdf8"/>
+    </linearGradient>
+    <linearGradient id="bodyGradient" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#2563eb"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Antenna -->
+  <line x1="150" y1="42" x2="150" y2="18" stroke="#38bdf8" stroke-width="5" stroke-linecap="round"/>
+  <circle class="robot-antenna-tip" cx="150" cy="14" r="8" fill="#38bdf8"/>
+
+  <!-- Left arm (static) -->
+  <path d="M 70 190 Q 30 200 34 240" fill="none" stroke="#2563eb" stroke-width="14" stroke-linecap="round"/>
+  <circle cx="34" cy="244" r="11" fill="#1e40af"/>
+
+  <!-- Right arm (waving) -->
+  <g class="robot-arm-wave">
+    <path d="M 230 190 Q 270 180 268 140" fill="none" stroke="#2563eb" stroke-width="14" stroke-linecap="round"/>
+    <circle cx="268" cy="136" r="11" fill="#1e40af"/>
+  </g>
+
+  <!-- Body -->
+  <rect x="72" y="168" width="156" height="128" rx="34" fill="url(#bodyGradient)"/>
+  <rect x="118" y="204" width="64" height="56" rx="14" fill="#0f172a" opacity="0.85"/>
+  <!-- chest icon: small graduation cap, ties the mascot to "study helper" -->
+  <path d="M150 216 L172 226 L150 236 L128 226 Z" fill="#38bdf8"/>
+  <path d="M138 231 v10 q12 6 24 0 v-10" fill="none" stroke="#38bdf8" stroke-width="3" stroke-linecap="round"/>
+
+  <!-- Head -->
+  <rect x="86" y="46" width="128" height="98" rx="30" fill="url(#headGradient)"/>
+
+  <!-- Eyes -->
+  <ellipse class="robot-eye eye-left" cx="122" cy="94" rx="10" ry="13" fill="#0f172a"/>
+  <ellipse class="robot-eye eye-right" cx="178" cy="94" rx="10" ry="13" fill="#0f172a"/>
+
+  <!-- Smile -->
+  <path d="M118 116 Q150 134 182 116" fill="none" stroke="#0f172a" stroke-width="5" stroke-linecap="round"/>
+
+  <!-- Cheeks (subtle warmth) -->
+  <ellipse cx="104" cy="112" rx="7" ry="4" fill="#0f172a" opacity="0.12"/>
+  <ellipse cx="196" cy="112" rx="7" ry="4" fill="#0f172a" opacity="0.12"/>
+</svg>
