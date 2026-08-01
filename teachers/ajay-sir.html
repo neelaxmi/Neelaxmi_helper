@@ -1,461 +1,544 @@
 <!DOCTYPE html>
 <html lang="en">
-   <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>AJAY SIR [AKM] Profile</title>
-      <script src="https://cdn.tailwindcss.com"></script>
-      <link rel="stylesheet" href="/style.css">
-      <link rel="icon" type="image/jpeg" href="/pictures/neelaxmi.png">
-      <meta name="google-site-verification" content="iatylsdA3ilcUEyKshZLLZmpDIh6TMUdj7qjgoLTWxw" />
-      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
-      <link rel="stylesheet" href="/css.teachers.css">
-      <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-      <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ajay Mishra Sir (AKM Sir) - Physical Chemistry | Neelaxmi</title>
 
-      
-   </head>
-   
-      <style>
-         :root {
-         --color-bg-page: #f9f9f9;
-         --color-bg-card: #ffffff;
-         --color-text-primary: #1f2937;
-         --color-text-secondary: #6b7280;
-         --color-accent: #2563eb; /* Blue Follow Button */
-         --color-accent-text: #ffffff;
-         --color-border: #e5e7eb;
-         --color-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
-         --sidebar-width: min(280px, 85vw);
-         --primary-gradient: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
-         --glass-bg: rgba(255, 255, 255, 0.05);
-         --glass-border: rgba(255, 255, 255, 0.1);
-         --text-dim: #94a3b8;
-        --transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
+    <meta name="description" content="AKM SIR, AKM MISHRA, AJAY MISHRA, akm sir module. Join Neelaxmi for expert Physics and Physical Chemistry masterclasses by Ajay Sir (AKM Sir). Access free quizzes, study materials, and daily exam updates. Click to learn more!">
+    <link rel="canonical" href="https://classupdates.netlify.app/">
+    <meta name="google-site-verification" content="iatylsdA3ilcUEyKshZLLZmpDIh6TMUdj7qjgoLTWxw">
 
-         /* Dark Mode */
-         body[data-theme='dark'] {
-         --color-bg-page: #111827;
-         --color-bg-card: #1f2937;
-         --color-text-primary: #f3f4f6;
-         --color-text-secondary: #9ca3af;
-         --color-accent: #4f46e5;
-         --color-accent-text: #ffffff;
-         --color-border: #374151;
-         --color-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -4px rgba(0, 0, 0, 0.3);
-         }
-         /* Vibrant UI */
-         body[data-theme='vibrant'] {
-         --color-bg-page: #f0fdf4;
-         --color-bg-card: #ffffff;
-         --color-text-primary: #16a34a; /* Green Text */
-         --color-text-secondary: #65a30d;
-         --color-accent: #10b981; 
-         --color-accent-text: #ffffff;
-         --color-border: #d1fae5;
-         --color-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.2), 0 2px 4px -2px rgba(16, 185, 129, 0.1);
-         }
-         /* Minimalist Theme */
-         body[data-theme='minimalist'] {
-         --color-bg-page: #ffffff;
-         --color-bg-card: #ffffff;
-         --color-text-primary: #000000;
-         --color-text-secondary: #374151;
-         --color-accent: #000000;
-         --color-accent-text: #ffffff;
-         --color-border: #d1d5db;
-         --color-shadow: none;
-         }
-         /* Unacademy-Inspired Theme */
-         body[data-theme='unacademy-inspired'] {
-         --color-bg-page: #ffffff;
-         --color-bg-card: #ffffff;
-         --color-text-primary: #212121;
-         --color-text-secondary: #9aa1a7;
-         --color-accent: #374151; /* Dark Gray Follow Button */
-         --color-accent-text: #ffffff;
-         --color-border: #e9e9e9;
-         --color-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px 0 rgba(0, 0, 0, 0.03);
-         }
-         /* Apply CSS variables */
-         body {
-         font-family: 'Inter', sans-serif;
-         transition: background-color 0.3s, color 0.3s;
-         background-color: var(--color-bg-page);
-         }
-         .card {
-         background-color: var(--color-bg-card);
-         color: var(--color-text-primary);
-         box-shadow: var(--color-shadow);
-         border: 1px solid var(--color-border);
-         transition: all 0.3s ease-in-out;
-         }
-         .card:hover {
-         transform: translateY(-4px); 
-         box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-         }
-         .text-primary { color: var(--color-text-primary); }
-         .text-secondary { color: var(--color-text-secondary); }
-         .bg-accent { background-color: var(--color-accent); }
-         .text-accent { color: var(--color-accent); }
-         .text-accent-text { color: var(--color-accent-text); }
-         .border-accent { border-color: var(--color-accent); }
-         .border-border { border-color: var(--color-border); }
-         /* Custom Tab Styles */
-         .tab {
-         color: var(--color-text-secondary);
-         transition: color 0.2s;
-         }
-         .tab:hover {
-         color: var(--color-text-primary);
-         }
-         .tab-active {
-         color: var(--color-text-primary);
-         font-weight: 600;
-         border-bottom: 2px solid var(--color-accent);
-         }
-         /* Filter Button Styles */
-         .filter-btn {
-         padding: 6px 14px;
-         border-radius: 9999px; /* full rounded */
-         font-size: 0.875rem; /* text-sm */
-         font-weight: 500;
-         transition: all 0.2s;
-         cursor: pointer;
-         border: 1px solid var(--color-border);
-         background-color: var(--color-bg-card);
-         color: var(--color-text-secondary);
-         }
-         .filter-btn:hover {
-         background-color: var(--color-bg-page);
-         color: var(--color-text-primary);
-         }
-         .filter-btn.active {
-         background-color: var(--color-accent);
-         color: var(--color-accent-text);
-         border-color: var(--color-accent);
-         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-         }
-         /* Theme Button Styles */
-         .theme-btn {
-         display: flex;
-         align-items: center;
-         padding: 8px 16px;
-         border-radius: 6px;
-         font-size: 14px;
-         font-weight: 500;
-         transition: all 0.2s ease;
-         cursor: pointer;
-         border: 1px solid var(--color-border);
-         background-color: var(--color-bg-card);
-         color: var(--color-text-primary);
-         }
-         .theme-btn:hover {
-         background-color: var(--color-bg-page);
-         }
-         .theme-btn.active {
-         background-color: var(--color-accent);
-         color: var(--color-accent-text);
-         border-color: var(--color-accent);
-         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-         }
-         .theme-btn.active .theme-icon {
-         fill: var(--color-accent-text);
-         }
-         /* Styling for the list/text content view */
-         .content-list-item {
-         background-color: var(--color-bg-card);
-         border: 1px solid var(--color-border);
-         transition: background-color 0.2s, border-color 0.2s;
-         }
-         .content-list-item:hover {
-         border-color: var(--color-accent);
-         }
-         /* --- Theme-Aware Animated Border Enhancements (VFX) --- */
-         @keyframes glow {
-         0% { box-shadow: 0 0 0 0px currentColor; opacity: 1; } 
-         70% { box-shadow: 0 0 0 10px currentColor; opacity: 0; }
-         100% { box-shadow: 0 0 0 0px currentColor; opacity: 0; }
-         }
-         .glowing-border {
-         border: 3px solid white; 
-         color: var(--color-accent); 
-         animation: glow 2s infinite cubic-bezier(0.4, 0, 0.6, 1);
-         }
-         .logo-vfx {
-         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), inset 0 0 8px rgba(255, 255, 255, 0.5);
-         }
-         .card .absolute.bottom-4.left-4 {
-         z-index: 10; 
-         }
-         /* Feature Block Styling */
-         .content-feature-block:hover .arrow-icon {
-         transform: translateX(4px); 
-         }
-         .content-feature-block .arrow-icon {
-         transition: transform 0.2s ease-out;
-         }
-         .content-feature-block {
-         text-decoration: none;
-         display: block; 
-         transition: all 0.3s ease-in-out;
-         }
-         /* NEW STYLES FOR MODULE GRID */
-         .module-card {
-         position: relative;
-         overflow: hidden;
-         }
-         .module-card::before {
-         content: '';
-         position: absolute;
-         top: 0; left: 0; right: 0; bottom: 0;
-         background: linear-gradient(135deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.1) 100%);
-         pointer-events: none;
-         }
-         
-        .cyber-grid {
-         display: grid;
-         grid-template-columns: repeat(12, 1fr);
-         gap: 1.5rem;
-         }
+    <meta property="og:title" content="Ajay Sir (AKM Sir) | Physical Chemistry | Neelaxmi">
+    <meta property="og:description" content="Master Physics & Physical Chemistry with AKM Sir. Join Neelaxmi for free quizzes and expert guidance.">
+    <meta property="og:image" content="/pictures/neelaxmi.png">
+    <meta property="og:url" content="https://classupdates.netlify.app/">
+    <meta property="og:type" content="website">
 
-.cyber-card {
-    background: rgba(255, 255, 255, 0.7);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    border-radius: 1.5rem;
-    padding: 1.5rem;
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    overflow: hidden;
-    position: relative;
+    <meta name="theme-color" content="#0b1220">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Neelaxmi">
+    <link rel="apple-touch-icon" href="/pictures/neelaxmi.png">
+    <link rel="icon" type="image/jpeg" href="/pictures/neelaxmi.png">
+    <link rel="manifest" href="/manifest.json">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/css.teachers.css">
+
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+</head>
+<style>
+/* ==========================================================================
+   DESIGN TOKENS — "Reaction Pathway" system
+   Signature: sections are steps in a syllabus reaction chain, connected by
+   a glowing dashed pathway; element-tile tags nod to the periodic table;
+   stat/question-range figures use a monospace "readout" face.
+   ========================================================================== */
+:root{
+    --color-bg-page:#0b1220;
+    --color-bg-alt:#0e1830;
+    --color-bg-card:#121c30;
+    --color-bg-card-hover:#16233b;
+    --color-text-primary:#eaf1fb;
+    --color-text-secondary:#8ea0bc;
+    --color-accent:#45e0c7;
+    --color-accent-text:#06251f;
+    --color-accent-2:#f5a524;
+    --color-pyq:#ff6b6b;
+    --color-border:rgba(148,163,184,0.16);
+    --color-shadow:0 16px 40px -16px rgba(0,0,0,0.55);
+    --font-display:'Space Grotesk', 'Inter', sans-serif;
+    --font-body:'Inter', sans-serif;
+    --font-mono:'JetBrains Mono', monospace;
+}
+body[data-theme='dark']{
+    --color-bg-page:#111827; --color-bg-alt:#0d1420; --color-bg-card:#1f2937; --color-bg-card-hover:#26313f;
+    --color-text-primary:#f3f4f6; --color-text-secondary:#9ca3af; --color-accent:#818cf8; --color-accent-text:#0f0d2b;
+    --color-border:#374151; --color-shadow:0 10px 15px -3px rgba(0,0,0,0.3);
+}
+body[data-theme='vibrant']{
+    --color-bg-page:#f0fdf4; --color-bg-alt:#e7fbee; --color-bg-card:#ffffff; --color-bg-card-hover:#f4fffa;
+    --color-text-primary:#14532d; --color-text-secondary:#4d7c58; --color-accent:#10b981; --color-accent-text:#ffffff;
+    --color-border:#d1fae5; --color-shadow:0 4px 6px -1px rgba(16,185,129,0.2);
+}
+body[data-theme='minimalist']{
+    --color-bg-page:#ffffff; --color-bg-alt:#fafafa; --color-bg-card:#ffffff; --color-bg-card-hover:#f7f7f7;
+    --color-text-primary:#000000; --color-text-secondary:#374151; --color-accent:#000000; --color-accent-text:#ffffff;
+    --color-border:#d1d5db; --color-shadow:none;
+}
+body[data-theme='unacademy-inspired']{
+    --color-bg-page:#ffffff; --color-bg-alt:#f7f7f8; --color-bg-card:#ffffff; --color-bg-card-hover:#fbfbfb;
+    --color-text-primary:#212121; --color-text-secondary:#9aa1a7; --color-accent:#374151; --color-accent-text:#ffffff;
+    --color-border:#e9e9e9; --color-shadow:0 1px 3px 0 rgba(0,0,0,0.05);
 }
 
-body[data-theme='dark'] .cyber-card {
-    background: rgba(30, 41, 59, 0.7);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+html{ scroll-behavior:smooth; }
+body{
+    font-family:var(--font-body);
+    background-color:var(--color-bg-page);
+    color:var(--color-text-primary);
+    transition:background-color .4s ease, color .4s ease;
+}
+h1,h2,h3,.font-display{ font-family:var(--font-display); }
+.font-mono{ font-family:var(--font-mono); }
+
+.text-primary{ color:var(--color-text-primary); }
+.text-secondary{ color:var(--color-text-secondary); }
+.bg-page{ background-color:var(--color-bg-page); }
+.bg-alt{ background-color:var(--color-bg-alt); }
+.bg-accent{ background-color:var(--color-accent); }
+.text-accent{ color:var(--color-accent); }
+.text-accent-text{ color:var(--color-accent-text); }
+.border-accent{ border-color:var(--color-accent); }
+.border-border{ border-color:var(--color-border); }
+
+/* Cards */
+.card{
+    background-color:var(--color-bg-card);
+    color:var(--color-text-primary);
+    box-shadow:var(--color-shadow);
+    border:1px solid var(--color-border);
+    transition:transform .35s cubic-bezier(.16,1,.3,1), box-shadow .35s ease, border-color .35s ease, background-color .4s ease;
+}
+.card:hover{ transform:translateY(-5px); background-color:var(--color-bg-card-hover); border-color:color-mix(in srgb, var(--color-accent) 45%, var(--color-border)); }
+
+/* Element-tile subject tag (periodic-table nod) */
+.element-tag{
+    position:relative;
+    display:inline-flex; flex-direction:column; align-items:flex-start; justify-content:center;
+    min-width:2.6rem; padding:.28rem .5rem;
+    border-radius:.4rem;
+    border:1px solid var(--color-border);
+    background:var(--color-bg-alt);
+    font-family:var(--font-mono);
+}
+.element-tag .el-sym{ font-size:.85rem; font-weight:700; line-height:1; color:var(--color-accent); }
+.element-tag .el-name{ font-size:.55rem; letter-spacing:.04em; text-transform:uppercase; color:var(--color-text-secondary); margin-top:.1rem; }
+
+/* Section rhythm */
+.app-section{ position:relative; padding:4.5rem 0; }
+.app-section.alt{ background-color:var(--color-bg-alt); }
+.section-eyebrow{
+    display:inline-flex; align-items:center; gap:.5rem;
+    font-family:var(--font-mono); font-size:.7rem; letter-spacing:.12em; text-transform:uppercase;
+    color:var(--color-accent); margin-bottom:.75rem;
+}
+.section-eyebrow .step-index{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:1.4rem; height:1.4rem; border-radius:.35rem;
+    border:1px solid var(--color-accent); font-size:.65rem;
 }
 
-.cyber-card:hover {
-    transform: translateY(-5px) scale(1.02);
-    box-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.2);
-    border-color: var(--color-accent);
+/* Reveal-on-scroll */
+.reveal{ opacity:0; transform:translateY(30px); transition:opacity .8s cubic-bezier(.16,1,.3,1), transform .8s cubic-bezier(.16,1,.3,1); }
+.reveal.is-visible{ opacity:1; transform:translateY(0); }
+.reveal-stagger > *{ opacity:0; transform:translateY(24px); transition:opacity .6s cubic-bezier(.16,1,.3,1), transform .6s cubic-bezier(.16,1,.3,1); }
+.reveal-stagger.is-visible > *{ opacity:1; transform:translateY(0); }
+.reveal-stagger.is-visible > *:nth-child(1){ transition-delay:.02s; }
+.reveal-stagger.is-visible > *:nth-child(2){ transition-delay:.08s; }
+.reveal-stagger.is-visible > *:nth-child(3){ transition-delay:.14s; }
+.reveal-stagger.is-visible > *:nth-child(4){ transition-delay:.2s; }
+.reveal-stagger.is-visible > *:nth-child(5){ transition-delay:.26s; }
+.reveal-stagger.is-visible > *:nth-child(6){ transition-delay:.32s; }
+@media (prefers-reduced-motion: reduce){
+    .reveal, .reveal-stagger > *{ opacity:1 !important; transform:none !important; transition:none !important; }
 }
 
-.cyber-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: -100%;
-    width: 100%; height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-    transition: 0.5s;
-    pointer-events: none;
+/* Reaction pathway connector between sections */
+.reaction-connector{ display:flex; justify-content:center; align-items:center; height:3.5rem; position:relative; }
+.reaction-connector::before{
+    content:''; position:absolute; top:0; bottom:0; left:50%; width:2px; transform:translateX(-50%);
+    background:repeating-linear-gradient(to bottom, var(--color-accent) 0 6px, transparent 6px 12px);
+    opacity:.5;
 }
-
-.cyber-card:hover::before {
-    left: 100%;
+.reaction-connector .node{
+    position:relative; width:.6rem; height:.6rem; border-radius:50%; background:var(--color-accent);
+    box-shadow:0 0 0 6px color-mix(in srgb, var(--color-accent) 18%, transparent), 0 0 18px 2px var(--color-accent);
+    animation:node-pulse 2.4s ease-in-out infinite;
 }
+@keyframes node-pulse{ 0%,100%{ opacity:.65; } 50%{ opacity:1; } }
 
-.text-gradient {
-    background: linear-gradient(135deg, #2563eb, #9333ea);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    font-weight: 800;
+/* Skeleton / blur-up image loader */
+.img-frame{ position:relative; overflow:hidden; background:var(--color-bg-alt); }
+.img-frame::before{
+    content:''; position:absolute; inset:0;
+    background:linear-gradient(110deg, var(--color-border) 8%, rgba(255,255,255,.08) 18%, var(--color-border) 33%);
+    background-size:200% 100%; animation:sheen 1.6s linear infinite;
 }
+.img-frame img{ position:relative; z-index:1; opacity:0; transition:opacity .5s ease; }
+.img-frame img.loaded{ opacity:1; }
+.img-frame img.loaded ~ .img-frame::before,
+.img-frame.loaded::before{ display:none; }
+@keyframes sheen{ 0%{ background-position:200% 0; } 100%{ background-position:-200% 0; } }
 
-.neon-badge {
-    box-shadow: 0 0 10px var(--color-accent);
-    animation: pulse-glow 2s infinite;
+/* Sticky quick nav */
+#quick-nav{
+    position:sticky; top:0; z-index:40;
+    backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+    background:color-mix(in srgb, var(--color-bg-page) 82%, transparent);
+    border-bottom:1px solid var(--color-border);
 }
-
-@keyframes pulse-glow {
-    0% { box-shadow: 0 0 5px var(--color-accent); }
-    50% { box-shadow: 0 0 15px var(--color-accent), 0 0 5px var(--color-accent); }
-    100% { box-shadow: 0 0 5px var(--color-accent); }
+#quick-nav a{
+    font-size:.78rem; font-weight:600; color:var(--color-text-secondary);
+    padding:.4rem .7rem; border-radius:.5rem; white-space:nowrap; transition:all .2s ease;
 }
+#quick-nav a:hover, #quick-nav a.active{ color:var(--color-text-primary); background:var(--color-bg-card); }
+#quick-nav .nav-scroll{ overflow-x:auto; scrollbar-width:none; }
+#quick-nav .nav-scroll::-webkit-scrollbar{ display:none; }
 
-.col-span-12 { grid-column: span 12; }
-.col-span-8 { grid-column: span 12; }
-.col-span-4 { grid-column: span 12; }
-
-@media (min-width: 768px) {
-    .col-span-8 { grid-column: span 8; }
-    .col-span-4 { grid-column: span 4; }
-    .col-span-6 { grid-column: span 6; }
+/* Hero */
+.hero-glow{
+    position:absolute; inset:0; pointer-events:none; overflow:hidden;
 }
-
-/* PDF Viewer Styles */
-#pdf-viewer-container {
-    display: none;
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.9);
-    z-index: 9999;
-    flex-direction: column;
+.hero-glow::before, .hero-glow::after{
+    content:''; position:absolute; width:38rem; height:38rem; border-radius:50%; filter:blur(90px); opacity:.28;
 }
-#pdf-frame {
-    width: 100%;
-    height: 100%;
-    border: none;
+.hero-glow::before{ background:var(--color-accent); top:-14rem; left:-10rem; }
+.hero-glow::after{ background:var(--color-accent-2); bottom:-16rem; right:-10rem; }
+.orbit-ring{
+    position:absolute; border:1px dashed rgba(148,163,184,.35); border-radius:50%;
+    animation:spin 26s linear infinite;
 }
-.close-pdf {
-    position: absolute;
-    top: 20px;
-    right: 30px;
-    color: white;
-    font-size: 30px;
-    cursor: pointer;
-    z-index: 10000;
+@keyframes spin{ to{ transform:rotate(360deg); } }
+.stat-value{ font-family:var(--font-mono); }
+
+/* Let's Study CTA + reveal panel */
+.study-cta{
+    position:relative; overflow:hidden;
+    box-shadow:0 14px 30px -10px color-mix(in srgb, var(--color-accent) 55%, transparent);
 }
-
-
-.j-star-bg {
-    background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
-    color: white;
+.study-cta::before{
+    content:''; position:absolute; inset:0;
+    background:linear-gradient(100deg, transparent, rgba(255,255,255,.35), transparent);
+    transform:translateX(-120%);
 }
+.study-cta:hover::before{ animation:sweep .9s ease forwards; }
+@keyframes sweep{ to{ transform:translateX(120%); } }
 
-@keyframes shimmer {
-    100% { transform: translateX(100%); }
+#free-classes-panel{
+    max-height:0; overflow:hidden; opacity:0;
+    transition:max-height .7s cubic-bezier(.16,1,.3,1), opacity .5s ease .1s;
 }
+#free-classes-panel.open{ max-height:5000px; opacity:1; }
 
-.cyber-card {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+/* Filter buttons */
+.filter-btn{
+    padding:6px 14px; border-radius:9999px; font-size:.8rem; font-weight:600; cursor:pointer;
+    border:1px solid var(--color-border); background-color:var(--color-bg-card); color:var(--color-text-secondary);
+    transition:all .2s ease;
 }
+.filter-btn:hover{ color:var(--color-text-primary); }
+.filter-btn.active{ background-color:var(--color-accent); color:var(--color-accent-text); border-color:var(--color-accent); }
 
-.cyber-card:hover {
-    box-shadow: 0 10px 30px -10px rgba(59, 130, 246, 0.2);
-    border-color: rgba(59, 130, 246, 0.4);
+/* Theme buttons */
+.theme-btn{
+    display:flex; align-items:center; gap:.4rem; padding:8px 14px; border-radius:8px; font-size:13px; font-weight:600;
+    cursor:pointer; border:1px solid var(--color-border); background-color:var(--color-bg-card); color:var(--color-text-primary);
+    transition:all .2s ease;
 }
+.theme-btn:hover{ background-color:var(--color-bg-alt); }
+.theme-btn.active{ background-color:var(--color-accent); color:var(--color-accent-text); border-color:var(--color-accent); }
 
-/* Dark mode adjustments if not already handled */
-.dark .text-primary { color: #f8fafc; }
-.dark .text-secondary { color: #94a3b8; }
+/* PYQ / J* accent styling */
+.jstar-card{
+    background:linear-gradient(150deg, #0f172a 0%, #1e1b4b 60%, #241533 100%);
+    color:#f1f5f9; border:1px solid rgba(245,165,36,.25);
+}
+.badge-gold{ background:linear-gradient(120deg,#f5a524,#f8d47a); color:#3a2a00; }
+.badge-red{ background:linear-gradient(120deg,#ff6b6b,#ff9b6b); color:#3a0a0a; }
 
+/* Question-range badge */
+.range-badge{
+    font-family:var(--font-mono); font-size:.72rem; font-weight:600; letter-spacing:.01em;
+    padding:.35rem .7rem; border-radius:.5rem; border:1px solid var(--color-border);
+    background:var(--color-bg-alt); color:var(--color-text-secondary); transition:all .2s ease; cursor:pointer;
+}
+.range-badge:hover{ border-color:var(--color-accent); color:var(--color-accent); transform:translateY(-2px); }
+
+/* PDF viewer */
+#pdf-viewer-container{ display:none; position:fixed; inset:0; background:rgba(0,0,0,.95); z-index:9999; flex-direction:column; }
+#pdf-frame{ width:100%; height:100%; border:none; }
+
+/* App banner shimmer */
+.shimmer-btn{ position:relative; overflow:hidden; }
+.shimmer-btn::after{
+    content:''; position:absolute; inset:0; transform:translateX(-100%);
+    background:linear-gradient(100deg, transparent, rgba(255,255,255,.25), transparent);
+}
+.shimmer-btn:hover::after{ animation:sweep 1.1s ease; }
+
+/* Footer */
+#site-footer{ background-color:#0b1220; color:#c9d3e3; }
+#site-footer a.footer-link{ color:#8ea0bc; transition:color .2s ease; }
+#site-footer a.footer-link:hover{ color:#f8fafc; }
+#site-footer h4{ color:#f8fafc; }
+
+/* Onboarding tour */
+#tour-overlay{ display:none; position:fixed; inset:0; z-index:10000; background:rgba(2,6,23,.6); }
+#tour-highlight-box{
+    position:fixed; border-radius:.75rem;
+    box-shadow:0 0 0 4px var(--color-accent), 0 0 0 9999px rgba(2,6,23,.65);
+    transition:top .3s ease, left .3s ease, width .3s ease, height .3s ease; pointer-events:none;
+}
+#tour-tooltip{
+    position:fixed; width:300px; max-width:calc(100vw - 32px);
+    background-color:var(--color-bg-card); color:var(--color-text-primary); border-radius:.9rem; padding:1.25rem;
+    box-shadow:0 20px 40px -8px rgba(0,0,0,.35); transition:top .3s ease, left .3s ease; z-index:10001;
+    border:1px solid var(--color-border);
+}
 </style>
-   
-   
-   <button class="menu-toggle" onclick="toggleSidebar()">
-    <i class="fas fa-bars"></i>
-    </button>
+<body data-theme="reaction-lab">
 
-<nav class="sidebar" id="sidebar">
-    <a href="/index.html" class="nav-link active"><i class="fas fa-home"></i> Home</a>
-            <a href="/quiz/DASHBOARD.HTML" class="nav-link"><i class="fas fa-brain"></i> DASHBOARD</a>
-
-    
-    <a href="https://akmsirdiscussion.netlify.app/" target="_blank" class="nav-link"><i class="fas fa-comments"></i> AKM SIR DISCUSSION</a>
-    <a href="https://neetcountdown2026.netlify.app/" target="_blank" class="nav-link"><i class="fas fa-clock"></i> NEET COUNTDOWN</a>
-    <a href="https://saksenquiz.netlify.app/" target="_blank" class="nav-link"><i class="fas fa-lightbulb"></i> SAKSEN QUIZ CORNER</a>
-    <a href="https://dppanalysis.netlify.app/" target="_blank" class="nav-link"><i class="fas fa-chart-bar"></i> DPP ANALYSIS</a>
-    <a href="#" target="_blank" class="nav-link"><i class="fas fa-calendar-check"></i> SCHEDULE TRACKER</a>
-    <a href="http://diwalisak.netlify.app/" target="_blank" class="nav-link"><i class="fas fa-firework"></i> DIWALI VFX</a>
-    
-    <a href="https://telegram.me/saksen_main_bot" target="_blank" class="nav-link"><i class="fab fa-telegram"></i> MAIN BOT</a>
-
-    <div style="margin-top: auto; padding: 20px; font-size: 0.75rem; color: #64748b;">
-        © <span id="year"></span> TEAM SAKSEN
+<!-- ============================================================ -->
+<!-- QUICK NAV — smooth-scroll section index                       -->
+<!-- ============================================================ -->
+<nav id="quick-nav">
+    <div class="max-w-6xl mx-auto px-4 md:px-8 py-2.5 flex items-center gap-4">
+        <a href="#hero" class="flex items-center gap-2 shrink-0">
+            <img src="/pictures/neelaxmi.png" onerror="this.style.display='none'" class="w-6 h-6 rounded" alt="Neelaxmi">
+            <span class="font-display font-bold text-sm text-primary hidden sm:inline">NEELAXMI</span>
+        </a>
+        <div class="nav-scroll flex items-center gap-1 flex-1">
+            <a href="#free-classes" class="quick-link">Free Classes</a>
+            <a href="#courses" class="quick-link">Courses</a>
+            <a href="#pyq" class="quick-link">PYQ / J*</a>
+            <a href="#quizzes" class="quick-link">Quizzes</a>
+            <a href="#study-material" class="quick-link">PDFs</a>
+            <a href="#about" class="quick-link">About</a>
+        </div>
+        <a href="https://unacademy.com/@ajaymishraakm382-9673" target="_blank" class="shrink-0 text-xs font-bold px-3 py-1.5 rounded-full bg-accent text-accent-text">Follow</a>
     </div>
 </nav>
 
-   <body data-theme="default-ui">
-      <div class="max-w-6xl mx-auto px-4 md:px-8 pt-4">
-         
+<!-- ============================================================ -->
+<!-- SECTION 1 — HERO & PROFILE BANNER                              -->
+<!-- ============================================================ -->
+<header id="hero" class="app-section relative overflow-hidden pt-14 pb-16 md:pt-20 md:pb-20">
+    <div class="hero-glow"></div>
+    <div class="orbit-ring hidden md:block" style="width:30rem;height:30rem;top:-6rem;right:-8rem;"></div>
+    <div class="orbit-ring hidden md:block" style="width:20rem;height:20rem;top:-1rem;right:-3rem;animation-direction:reverse;"></div>
 
-           
-         <div id="theme-switcher" class="flex flex-wrap gap-2 p-2 card rounded-xl shadow-lg border-none">
-         </div>
-         
-      </div>
-      
-      <div class="max-w-6xl mx-auto p-4 md:p-8">
-         <header class="flex flex-col md:flex-row items-start md:items-center space-y-4 md:space-y-0 md:space-x-8 pb-6 border-b border-border">
-            <div class="flex items-center space-x-4">
-               <div class="w-24 h-24 sm:w-32 sm:h-32 rounded-full overflow-hidden border-2 border-border flex-shrink-0">
-                  <img src="/pictures/akmsir.jpg" onerror="this.src='https://placehold.co/128x128/000/fff?text=AKM'" alt="AJAY SIR [AKM]" class="w-full h-full object-cover">
-               </div>
-               <h1 class="text-3xl font-extrabold text-primary">AJAY SIR [AKM]</h1>
+    <div class="max-w-6xl mx-auto px-4 md:px-8 relative reveal">
+        <div class="flex flex-col lg:flex-row items-start lg:items-center gap-10">
+            <div class="flex items-center gap-5">
+                <div class="relative w-24 h-24 sm:w-28 sm:h-28 rounded-full overflow-hidden border-2 border-white/15 flex-shrink-0 img-frame">
+                    <img data-src="/pictures/akmsir.jpg" onerror="this.onerror=null;this.src='https://placehold.co/128x128/0b1220/45e0c7?text=AKM';this.classList.add('loaded')" alt="AJAY SIR (AKM)" class="lazy-img w-full h-full object-cover">
+                </div>
+                <div>
+                    <p class="section-eyebrow"><span class="step-index">01</span> Educator Profile</p>
+                    <h1 class="text-3xl sm:text-4xl font-extrabold leading-tight text-primary">AJAY MISHRA SIR <span class="text-accent">[AKM SIR]</span></h1>
+                    <p class="text-sm sm:text-base text-secondary mt-1">Physical Chemistry &mdash; NEET UG &amp; JEE Main</p>
+                </div>
             </div>
-            <div class="flex flex-col md:flex-row md:ml-auto items-start md:items-center space-y-4 md:space-y-0 md:space-x-8">
-               <div class="flex space-x-6 text-center">
-                  <div class="text-primary">
-                     <div class="text-xl font-bold" id="watchMinsDisplay">...</div>
-                     <div class="text-xs text-secondary">WATCH MINS</div>
-                  </div>
-                  <div class="text-primary">
-                     <div class="text-xl font-bold flex items-center justify-center">
-                        <span id="dedicationsDisplay">...</span>
-                        <span class="ml-1 text-yellow-500">
-                           <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-                           </svg>
-                        </span>
-                     </div>
-                     <div class="text-xs text-secondary">DEDICATIONS</div>
-                  </div>
-                  <div class="text-primary">
-                     <div class="text-xl font-bold" id="followersDisplay">...</div>
-                     <div class="text-xs text-secondary">FOLLOWERS</div>
-                  </div>
-                  </div>
-               <a href="https://unacademy.com/@ajaymishraakm382-9673" target="_blank" 
-                  class="px-6 py-2 rounded-lg font-semibold bg-accent text-accent-text hover:opacity-90 transition w-full md:w-w-auto text-center inline-block">
-               Follow
-               </a>
-            </div>
-         </header>
-         <nav class="mt-8">
-            <div class="flex space-x-6 overflow-x-auto whitespace-nowrap border-b border-border">
-               <a href="#" class="tab nav-tab py-3 text-sm font-semibold tab-active" data-tab="Free classes">FREE CLASSES </a>
-               <a href="#" class="tab nav-tab py-3 text-sm font-semibold" data-tab="Courses">COURSES</a>
-                <a href="#" class="tab nav-tab py-3 text-sm font-semibold " data-tab="module_pdf">MODULE PDF</a>
 
-               <a href="#" class="tab nav-tab py-3 text-sm font-semibold" data-tab="modules">MODULE DISCUSSION</a>
-               <a href="#" class="tab nav-tab py-3 text-sm font-semibold" data-tab="Quizzes">QUIZZES</a> <a href="#" class="tab nav-tab py-3 text-sm font-semibold " data-tab="PYQ Series">PYQ SERIES</a>
-               <a href="#" class="tab nav-tab py-3 text-sm font-semibold hidden" data-tab="Module">Module</a>
-               <a href="#" class="tab nav-tab py-3 text-sm font-semibold " data-tab="About">ABOUT</a>
+            <div class="flex flex-wrap items-center gap-8 lg:ml-auto">
+                <div class="text-left">
+                    <div class="text-2xl font-bold stat-value text-primary" id="watchMinsDisplay">&hellip;</div>
+                    <div class="text-[11px] text-secondary uppercase tracking-wide">Watch Mins</div>
+                </div>
+                <div class="text-left">
+                    <div class="text-2xl font-bold stat-value text-primary flex items-center gap-1">
+                        <span id="dedicationsDisplay">&hellip;</span>
+                        <svg class="w-4 h-4 fill-current text-accent-2" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                    </div>
+                    <div class="text-[11px] text-secondary uppercase tracking-wide">Dedications</div>
+                </div>
+                <div class="text-left">
+                    <div class="text-2xl font-bold stat-value text-primary" id="followersDisplay">&hellip;</div>
+                    <div class="text-[11px] text-secondary uppercase tracking-wide">Followers</div>
+                </div>
             </div>
-         </nav>
-         <div id="filter-area" class="mt-6 flex space-x-4">
-            <button id="filter-latest" class="filter-btn hidden" data-sort-order="desc">Latest</button>
-            <button id="filter-oldest" class="filter-btn hidden" data-sort-order="asc">Oldest
+
+            <div class="flex items-center gap-3 w-full lg:w-auto">
+                <a href="#free-classes" class="flex-1 lg:flex-none text-center px-6 py-3 rounded-xl font-semibold text-sm border border-border text-primary hover:border-accent transition">
+                    Explore Platform
+                </a>
+                <a href="https://unacademy.com/@ajaymishraakm382-9673" target="_blank" class="study-cta flex-1 lg:flex-none text-center px-6 py-3 rounded-xl font-semibold text-sm bg-accent text-accent-text hover:opacity-90 transition">
+                    Follow on Unacademy
+                </a>
+            </div>
+        </div>
+    </div>
+</header>
+
+<div class="reaction-connector"><span class="node"></span></div>
+
+<!-- ============================================================ -->
+<!-- SECTION 2 — FREE CLASSES & "LET'S STUDY" INTERACTION           -->
+<!-- ============================================================ -->
+<section id="free-classes" class="app-section reveal">
+    <div class="max-w-6xl mx-auto px-4 md:px-8">
+        <p class="section-eyebrow"><span class="step-index">02</span> Free High-Yield Content</p>
+        <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-8">
+            <div class="max-w-2xl">
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-primary">Master Physical Chemistry for <span class="text-accent">FREE</span> with structured daily masterclasses</h2>
+                <p class="text-secondary mt-2">Live, recorded and drop-in sessions — pulled straight from the daily class feed. No sign-up walls, just press play.</p>
+            </div>
+            <button id="lets-study-btn" class="study-cta self-start px-7 py-3.5 rounded-xl font-bold text-sm bg-accent text-accent-text hover:opacity-90 transition flex items-center gap-2">
+                <i class="fas fa-flask"></i> Let's Study
+                <i class="fas fa-chevron-down text-xs transition-transform" id="lets-study-chevron"></i>
             </button>
         </div>
-       
-         <div id="dynamic-content-area" class="mt-8">       </div>
-      </div>
-      
-<div id="pdf-viewer-container" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:9999; flex-direction:column;">
-    <div class="pdf-toolbar" style="display:flex; justify-content:space-between; align-items:center; padding:15px 25px; background:#1a1a1a; color:white;">
+
+        <div id="free-classes-panel">
+            <div id="filter-area" class="mb-5 flex gap-3">
+                <button id="filter-latest" class="filter-btn" data-sort-order="desc">Latest</button>
+                <button id="filter-oldest" class="filter-btn" data-sort-order="asc">Oldest</button>
+            </div>
+            <div id="free-classes-content" class="min-h-[120px]"></div>
+        </div>
+    </div>
+</section>
+
+<div class="reaction-connector"><span class="node"></span></div>
+
+<!-- ============================================================ -->
+<!-- SECTION 3 — COURSES & TOPIC-WISE MODULE DISCUSSIONS            -->
+<!-- ============================================================ -->
+<section id="courses" class="app-section alt reveal">
+    <div class="max-w-6xl mx-auto px-4 md:px-8">
+        <p class="section-eyebrow"><span class="step-index">03</span> Structured Learning</p>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-primary max-w-2xl">Full courses, and every topic broken down question-range by question-range</h2>
+        <p class="text-secondary mt-2 max-w-2xl">From Mole Concept to Chemical Kinetics — jump straight to the discussion that covers your doubt.</p>
+
+        <div class="mt-10">
+            <h3 class="text-lg font-bold text-primary mb-4 flex items-center gap-2"><i class="fas fa-graduation-cap text-accent"></i> Full Courses</h3>
+            <div id="courses-content" class="min-h-[100px]"></div>
+        </div>
+
+        <div class="mt-14">
+            <h3 class="text-lg font-bold text-primary mb-4 flex items-center gap-2"><i class="fas fa-comments text-accent"></i> Topic-wise Module Discussion</h3>
+            <div id="modules-content" class="min-h-[100px]"></div>
+        </div>
+    </div>
+</section>
+
+<div class="reaction-connector"><span class="node"></span></div>
+
+<!-- ============================================================ -->
+<!-- SECTION 4 — PYQ & J* SERIES                                    -->
+<!-- ============================================================ -->
+<section id="pyq" class="app-section reveal">
+    <div class="max-w-6xl mx-auto px-4 md:px-8">
+        <p class="section-eyebrow"><span class="step-index">04</span> High-Yield Problem Solving</p>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-primary max-w-2xl">Previous Year Questions &amp; the <span class="text-accent-2">J&#42; Series</span></h2>
+        <p class="text-secondary mt-2 max-w-2xl">"Jahar" questions — the toughest, most exam-relevant problems, organized by chapter.</p>
+        <div id="pyq-content" class="mt-10 min-h-[120px]"></div>
+    </div>
+</section>
+
+<div class="reaction-connector"><span class="node"></span></div>
+
+<!-- ============================================================ -->
+<!-- SECTION 5 — LIVE QUIZZES & ASSESSMENTS                         -->
+<!-- ============================================================ -->
+<section id="quizzes" class="app-section alt reveal">
+    <div class="max-w-6xl mx-auto px-4 md:px-8">
+        <p class="section-eyebrow"><span class="step-index">05</span> Test Yourself</p>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-primary max-w-2xl">Live quizzes &amp; assessments</h2>
+        <p class="text-secondary mt-2 max-w-2xl">Timed, subject-tagged tests pulled straight from the assessment bank. Tap to attempt.</p>
+        <div id="quiz-content" class="mt-10 min-h-[120px]"></div>
+    </div>
+</section>
+
+<div class="reaction-connector"><span class="node"></span></div>
+
+<!-- ============================================================ -->
+<!-- SECTION 6 — STUDY MATERIAL & MODULE PDFs                      -->
+<!-- ============================================================ -->
+<section id="study-material" class="app-section reveal">
+    <div class="max-w-6xl mx-auto px-4 md:px-8">
+        <p class="section-eyebrow"><span class="step-index">06</span> Reference Library</p>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-primary max-w-2xl">Comprehensive study material &amp; module PDFs</h2>
+        <p class="text-secondary mt-2 max-w-2xl">Every module sheet, viewable in-browser. Nothing to download unless you want to.</p>
+        <div id="pdf-content" class="mt-10 min-h-[120px]"></div>
+    </div>
+</section>
+
+<div class="reaction-connector"><span class="node"></span></div>
+
+<!-- ============================================================ -->
+<!-- SECTION 7 — ABOUT AKM SIR, APP DOWNLOAD & FOOTER               -->
+<!-- ============================================================ -->
+<section id="about" class="app-section alt reveal">
+    <div class="max-w-6xl mx-auto px-4 md:px-8">
+        <p class="section-eyebrow"><span class="step-index">07</span> The Educator</p>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-primary">About AKM Sir</h2>
+        <div id="about-section-content" class="mt-8"></div>
+    </div>
+</section>
+
+<footer id="site-footer">
+    <div class="max-w-6xl mx-auto px-4 md:px-8 py-12 grid grid-cols-2 sm:grid-cols-4 gap-8">
+        <div>
+            <h4 class="font-bold text-sm uppercase tracking-wide mb-4">Explore</h4>
+            <ul class="space-y-2.5 text-sm">
+                <li><a href="#hero" class="footer-link"><i class="fas fa-home w-4"></i> Home</a></li>
+                <li><a href="/quiz/DASHBOARD.HTML" class="footer-link"><i class="fas fa-brain w-4"></i> Dashboard</a></li>
+                <li><a href="#about" class="footer-link"><i class="fas fa-user w-4"></i> About AKM Sir</a></li>
+            </ul>
+        </div>
+        <div>
+            <h4 class="font-bold text-sm uppercase tracking-wide mb-4">Community</h4>
+            <ul class="space-y-2.5 text-sm">
+                <li><a href="https://akmsirdiscussion.netlify.app/" target="_blank" class="footer-link"><i class="fas fa-comments w-4"></i> AKM Sir Discussion</a></li>
+                <li><a href="https://saksenquiz.netlify.app/" target="_blank" class="footer-link"><i class="fas fa-lightbulb w-4"></i> Saksen Quiz Corner</a></li>
+                <li><a href="https://telegram.me/saksen_main_bot" target="_blank" class="footer-link"><i class="fab fa-telegram w-4"></i> Main Telegram Bot</a></li>
+            </ul>
+        </div>
+        <div>
+            <h4 class="font-bold text-sm uppercase tracking-wide mb-4">Tools</h4>
+            <ul class="space-y-2.5 text-sm">
+                <li><a href="https://neetcountdown2026.netlify.app/" target="_blank" class="footer-link"><i class="fas fa-clock w-4"></i> NEET Countdown</a></li>
+                <li><a href="https://dppanalysis.netlify.app/" target="_blank" class="footer-link"><i class="fas fa-chart-bar w-4"></i> DPP Analysis</a></li>
+                <li><a href="#" class="footer-link"><i class="fas fa-calendar-check w-4"></i> Schedule Tracker</a></li>
+                <li><a href="http://diwalisak.netlify.app/" target="_blank" class="footer-link"><i class="fas fa-star w-4"></i> Diwali VFX</a></li>
+            </ul>
+        </div>
+        <div>
+            <h4 class="font-bold text-sm uppercase tracking-wide mb-4">Appearance</h4>
+            <div id="theme-switcher" class="flex flex-wrap gap-2"></div>
+        </div>
+    </div>
+    <div class="border-t border-white/10">
+        <div class="max-w-6xl mx-auto px-4 md:px-8 py-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-400">
+            <span>&copy; <span id="year"></span> TEAM SAKSEN. All rights reserved.</span>
+            <span class="text-center sm:text-right leading-relaxed">
+                CREATED BY - SAKSHAM<br>
+                UNDER THE - NEELAXMI -: THE UNION
+            </span>
+        </div>
+    </div>
+</footer>
+
+<!-- PDF Viewer (toolbar version, used by openPdf/closePdf/sharePdfLink) -->
+<div id="pdf-viewer-container">
+    <div class="pdf-toolbar" style="display:flex; justify-content:space-between; align-items:center; padding:15px 25px; background:#0b1220; color:white; border-bottom:1px solid rgba(148,163,184,.2);">
         <div class="pdf-info flex items-center gap-3">
-            <img src="/pictures/neelaxmi.png" style="height:30px;" alt="Logo">
+            <img src="/pictures/neelaxmi.png" style="height:28px;" alt="Logo" onerror="this.style.display='none'">
             <span id="pdf-title-display" class="font-bold truncate max-w-[200px] md:max-w-md">PDF Viewer</span>
         </div>
         <div class="flex items-center gap-4">
             <button onclick="sharePdfLink()" title="Share Link" style="background:none; border:none; color:white; cursor:pointer;"><i class="fas fa-share-nodes"></i></button>
             <a id="download-btn" title="Download" style="color:white; text-decoration:none;" target="_blank"><i class="fas fa-download"></i></a>
-            <button onclick="closePdf()" style="background:none; border:none; color:white; font-size:30px; cursor:pointer;">&times;</button>
+            <button onclick="closePdf()" style="background:none; border:none; color:white; font-size:26px; cursor:pointer; line-height:1;">&times;</button>
         </div>
     </div>
-
     <div style="flex-grow:1; position:relative; display:flex; justify-content:center; background:#333; overflow:hidden;">
-        <img src="/pictures/neelaxmi.png" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); opacity:0.1; width:300px; pointer-events:none; z-index:1;">
-        
+        <img src="/pictures/neelaxmi.png" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); opacity:0.1; width:300px; pointer-events:none; z-index:1;" onerror="this.style.display='none'">
         <iframe id="pdf-frame" src="" style="width:100%; height:100%; border:none; position:relative; z-index:2; background:white;"></iframe>
     </div>
 </div>
 
-<script >
-    
-    
-    /* -------------------------------------------------------------------------- */
-/* CONFIGURATION                               */
-/* -------------------------------------------------------------------------- */
-
+<script>
 const firebaseConfig = {
     apiKey: "AIzaSyDAZ_xwRd_uJcf-Gzv58HA9f_HZ7BCCJ8g",
     authDomain: "gallery-83144.firebaseapp.com",
@@ -465,7 +548,6 @@ const firebaseConfig = {
     appId: "1:1005577519231:web:638899904126ae78cdff4a"
 };
 
-// Initialize Firebase
 if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
 }
@@ -477,16 +559,13 @@ const COMPANY_LOGO_URL = "/pictures/neelaxmi.png";
 
 const body = document.body;
 const themeSwitcher = document.getElementById('theme-switcher');
-const contentArea = document.getElementById('dynamic-content-area');
 const filterArea = document.getElementById('filter-area');
 
-let currentActiveTab = 'free_classes';
 let currentSortOrder = 'desc';
 
 /* -------------------------------------------------------------------------- */
-/* STATIC JSON DATA                             */
+/* STATIC JSON DATA                                                            */
 /* -------------------------------------------------------------------------- */
-
 const modulesData = {
     "metadata": {
         "instructor": "AJAY SIR [AKM] SIR",
@@ -495,169 +574,115 @@ const modulesData = {
         "credits": ["SAKSHAM"]
     },
     "courses": [
-        {
-            "title": "Mole Concept",
-            "modules": [
-                { "range": "From Q1 to Q15", "link": "https://unacademy.app.link/8TKTVArmhzb" },
-                { "range": "From Q16 to Q41", "link": "https://unacademy.com/class/module-discussion-i/MF8WKVAX" },
-                { "range": "From Q42 to Q61", "link": "https://unacademy.com/class/module-discussion-ii/HXBCEN9Z" },
-                { "range": "From Q62 to Q71", "link": "https://unacademy.com/class/module-discussion/L3Z4HZ5B" },
-                { "range": "From Q72 to Q90", "link": "https://unacademy.com/class/doubt-clearing-session/NHZHH8K4" },
-                { "range": "From Q91 to Q103", "link": "https://unacademy.com/class/module-discussion-mole-concept-i/R0EWGXHR" },
-                { "range": "From Q104 to Q118", "link": "https://unacademy.com/class/module-discussion-mole-concept-ii/4N9RRY5O" },
-                { "range": "From Q119 to Last", "link": "https://unacademy.com/class/doubt-clearing-session/N18LZG5K" }
-            ]
-        },
-        {
-            "title": "Atomic Structure",
-            "modules": [
-                { "range": "From Q1 to Q11", "link": "https://unacademy.com/class/doubt-clearing-session/9O6OUBHK" },
-                { "range": "From Q12 to Q30", "link": "https://unacademy.com/class/module-discussion-mole-concept/B34X537A" },
-                { "range": "From Q31 to Q85", "link": "https://unacademy.com/course/module-discussion-jstar-series-2023/ASBJBNVP" },
-                { "range": "From Q86 to Q180", "link": "https://unacademy.com/course/module-discussion-jstar-series-atomic-structure/K748UA4B" },
-                { "range": "Part 1", "link": "https://unacademy.com/course/module-discussion-jstar-series-atomic-structure/K748UA4B" },
-                { "range": "Part 2", "link": "https://unacademy.com/course/module-discussion-jstar-series-2023/ASBJBNVP" },
-                { "range": "Part 3", "link": "https://unacademy.app.link/Ivu0D0k0grb" }
-            ]
-        },
-        {
-            "title": "Chemical Equilibrium",
-            "modules": [
-                { "range": "From Q1 to Q29", "link": "https://unacademy.com/class/module-discussion-iii/B8FOZN2Z" },
-                { "range": "From Q30 to Last", "link": "https://unacademy.com/course/module-discussion-jstar-series/ITRNUJI3" }
-            ]
-        },
-        {
-            "title": "Thermodynamics",
-            "modules": [
-                { "range": "From Q1 to Q25", "link": "https://unacademy.com/class/module-discussion-part-iiii/N4Q060PD" },
-                { "range": "From Q26 to Q158", "link": "https://unacademy.com/course/course-on-module-discussion-jstar-series-thermodynamics/0H1L15TI" },
-                { "range": "From Q159 to Last", "link": "https://unacademy.com/course/course-on-module-discussion-jstar-series-thermodynamics/0H1L15TI" },
-                { "range": "Part 1", "link": "https://unacademy.com/course/course-on-module-discussion-jstar-series-solution-and-thermodynamics/PF9AQD9R" },
-                { "range": "Part 2", "link": "https://unacademy.com/course/course-on-module-discussion-jstar-series-thermodynamics-and-electrochemistry/YL579OPT" },
-                { "range": "Part 3", "link": "https://unacademy.com/course/course-on-module-discussion-jstar-series-thermodynamics/0H1L15TI" }
-            ]
-        },
-        {
-            "title": "Ionic Equilibrium",
-            "modules": [
-                { "range": "Open", "link": "https://unacademy.com/course/course-on-module-discussion-jstar-series-ionic-equilibrium/6M45BE7C" }
-            ]
-        },
-        {
-            "title": "Redox Reactions",
-            "modules": [
-                { "range": "Not Yet Discussed", "link": "https://telegram.me/saksen_journey_offical" }
-            ]
-        },
-        {
-            "title": "Solutions",
-            "modules": [
-                { "range": "From Q1 to Q76", "link": "https://unacademy.com/course/course-on-module-discussion-jstar-series-2022/TTZTV36O" },
-                { "range": "From Q77 to Last", "link": "https://unacademy.com/course/course-on-module-discussion-jstar-series-solution/R8ZBJVKP" },
-                { "range": "PYQs", "link": "https://unacademy.com/class/module-discussion-part-i/7RNIFBZ3" },
-                { "range": "Ques Last Lecture", "link": "https://unacademy.com/class/module-discussion-part-i/7RNIFBZ3" }
-            ]
-        },
-        {
-            "title": "Electrochemistry",
-            "modules": [
-                { "range": "Q1 to Q4 (01:13:13)", "link": "https://unacademy.com/class/module-discussion-part-iv/6L0FDZES" },
-                { "range": "Q5 to Q23", "link": "https://unacademy.com/class/module-discussion-part-v/2AME24U3" },
-                { "range": "Q24 to Q43", "link": "https://unacademy.com/class/module-discussion-part-vi/29AR28YQ" },
-                { "range": "Q44 to Q59", "link": "https://unacademy.com/class/ionic-equilibrium-part-iv/RJPMGN5U" },
-                { "range": "Q60 to Q70", "link": "https://unacademy.com/class/ionic-equilibrium-part-i/LEM21UEJ" },
-                { "range": "Q71 to Q84", "link": "https://unacademy.com/class/ionic-equilibrium-part-ii/0FGRJ31L" },
-                { "range": "Q85 to Q102", "link": "https://unacademy.com/class/doubt-clearing-session/FG4MD60A" },
-                { "range": "Q103 to Q120 (Last Lecture 31st May)", "link": "https://unacademy.com/course/course-on-module-discussion-jstar-series-ionic-equilibrium/ZT34ZWGT" }
-            ]
-        },
-        {
-            "title": "Chemical Kinetics",
-            "modules": [
-                { "range": "Q1 to Q19", "link": "https://unacademy.com/class/module-discussion-chemical-kinetics-i/POQWVIQP" },
-                { "range": "Q20 to Q45", "link": "https://unacademy.com/class/doubt-clearing-session/UKR5O2T9" },
-                { "range": "Q46 to Q68", "link": "https://unacademy.com/class/module-discussion-chemical-kinetics-ii/BOMWCSDX" },
-                { "range": "Q69 to Last", "link": "https://unacademy.com/class/module-discussion-solution/W6FOWOZD" },
-                { "range": "OUR MAIN CHANNEL", "link": "https://t.me/saksen_journey_offical" }
-            ]
-        }
+        { "title": "Mole Concept", "modules": [
+            { "range": "From Q1 to Q15", "link": "https://unacademy.app.link/8TKTVArmhzb" },
+            { "range": "From Q16 to Q41", "link": "https://unacademy.com/class/module-discussion-i/MF8WKVAX" },
+            { "range": "From Q42 to Q61", "link": "https://unacademy.com/class/module-discussion-ii/HXBCEN9Z" },
+            { "range": "From Q62 to Q71", "link": "https://unacademy.com/class/module-discussion/L3Z4HZ5B" },
+            { "range": "From Q72 to Q90", "link": "https://unacademy.com/class/doubt-clearing-session/NHZHH8K4" },
+            { "range": "From Q91 to Q103", "link": "https://unacademy.com/class/module-discussion-mole-concept-i/R0EWGXHR" },
+            { "range": "From Q104 to Q118", "link": "https://unacademy.com/class/module-discussion-mole-concept-ii/4N9RRY5O" },
+            { "range": "From Q119 to Last", "link": "https://unacademy.com/class/doubt-clearing-session/N18LZG5K" }
+        ]},
+        { "title": "Atomic Structure", "modules": [
+            { "range": "From Q1 to Q11", "link": "https://unacademy.com/class/doubt-clearing-session/9O6OUBHK" },
+            { "range": "From Q12 to Q30", "link": "https://unacademy.com/class/module-discussion-mole-concept/B34X537A" },
+            { "range": "From Q31 to Q85", "link": "https://unacademy.com/course/module-discussion-jstar-series-2023/ASBJBNVP" },
+            { "range": "From Q86 to Q180", "link": "https://unacademy.com/course/module-discussion-jstar-series-atomic-structure/K748UA4B" },
+            { "range": "Part 1", "link": "https://unacademy.com/course/module-discussion-jstar-series-atomic-structure/K748UA4B" },
+            { "range": "Part 2", "link": "https://unacademy.com/course/module-discussion-jstar-series-2023/ASBJBNVP" },
+            { "range": "Part 3", "link": "https://unacademy.app.link/Ivu0D0k0grb" }
+        ]},
+        { "title": "Chemical Equilibrium", "modules": [
+            { "range": "From Q1 to Q29", "link": "https://unacademy.com/class/module-discussion-iii/B8FOZN2Z" },
+            { "range": "From Q30 to Last", "link": "https://unacademy.com/course/module-discussion-jstar-series/ITRNUJI3" }
+        ]},
+        { "title": "Thermodynamics", "modules": [
+            { "range": "From Q1 to Q25", "link": "https://unacademy.com/class/module-discussion-part-iiii/N4Q060PD" },
+            { "range": "From Q26 to Q158", "link": "https://unacademy.com/course/course-on-module-discussion-jstar-series-thermodynamics/0H1L15TI" },
+            { "range": "From Q159 to Last", "link": "https://unacademy.com/course/course-on-module-discussion-jstar-series-thermodynamics/0H1L15TI" },
+            { "range": "Part 1", "link": "https://unacademy.com/course/course-on-module-discussion-jstar-series-solution-and-thermodynamics/PF9AQD9R" },
+            { "range": "Part 2", "link": "https://unacademy.com/course/course-on-module-discussion-jstar-series-thermodynamics-and-electrochemistry/YL579OPT" },
+            { "range": "Part 3", "link": "https://unacademy.com/course/course-on-module-discussion-jstar-series-thermodynamics/0H1L15TI" }
+        ]},
+        { "title": "Ionic Equilibrium", "modules": [
+            { "range": "Open", "link": "https://unacademy.com/course/course-on-module-discussion-jstar-series-ionic-equilibrium/6M45BE7C" }
+        ]},
+        { "title": "Redox Reactions", "modules": [
+            { "range": "Not Yet Discussed", "link": "https://telegram.me/saksen_journey_offical" }
+        ]},
+        { "title": "Solutions", "modules": [
+            { "range": "From Q1 to Q76", "link": "https://unacademy.com/course/course-on-module-discussion-jstar-series-2022/TTZTV36O" },
+            { "range": "From Q77 to Last", "link": "https://unacademy.com/course/course-on-module-discussion-jstar-series-solution/R8ZBJVKP" },
+            { "range": "PYQs", "link": "https://unacademy.com/class/module-discussion-part-i/7RNIFBZ3" },
+            { "range": "Ques Last Lecture", "link": "https://unacademy.com/class/module-discussion-part-i/7RNIFBZ3" }
+        ]},
+        { "title": "Electrochemistry", "modules": [
+            { "range": "Q1 to Q4 (01:13:13)", "link": "https://unacademy.com/class/module-discussion-part-iv/6L0FDZES" },
+            { "range": "Q5 to Q23", "link": "https://unacademy.com/class/module-discussion-part-v/2AME24U3" },
+            { "range": "Q24 to Q43", "link": "https://unacademy.com/class/module-discussion-part-vi/29AR28YQ" },
+            { "range": "Q44 to Q59", "link": "https://unacademy.com/class/ionic-equilibrium-part-iv/RJPMGN5U" },
+            { "range": "Q60 to Q70", "link": "https://unacademy.com/class/ionic-equilibrium-part-i/LEM21UEJ" },
+            { "range": "Q71 to Q84", "link": "https://unacademy.com/class/ionic-equilibrium-part-ii/0FGRJ31L" },
+            { "range": "Q85 to Q102", "link": "https://unacademy.com/class/doubt-clearing-session/FG4MD60A" },
+            { "range": "Q103 to Q120 (Last Lecture 31st May)", "link": "https://unacademy.com/course/course-on-module-discussion-jstar-series-ionic-equilibrium/ZT34ZWGT" }
+        ]},
+        { "title": "Chemical Kinetics", "modules": [
+            { "range": "Q1 to Q19", "link": "https://unacademy.com/class/module-discussion-chemical-kinetics-i/POQWVIQP" },
+            { "range": "Q20 to Q45", "link": "https://unacademy.com/class/doubt-clearing-session/UKR5O2T9" },
+            { "range": "Q46 to Q68", "link": "https://unacademy.com/class/module-discussion-chemical-kinetics-ii/BOMWCSDX" },
+            { "range": "Q69 to Last", "link": "https://unacademy.com/class/module-discussion-solution/W6FOWOZD" },
+            { "range": "OUR MAIN CHANNEL", "link": "https://t.me/saksen_journey_offical" }
+        ]}
     ],
     "pyq_series": [
-        {
-            "title": "Mole Concept - PYQ",
-            "modules": [
-                { "range": "PYQ Discussion 1", "link": "https://unacademy.com/class/pyq-jstar-series-chemical-kinetics/BYGE8X4U" },
-                { "range": "PYQ Discussion 2", "link": "https://unacademy.com/class/pyq-jstar-series-mole-concept/Y9QCER4B" },
-                { "range": "PYQ Course Link", "link": "https://unacademy.com/course/pyq-jstar-series-mole-concept/FPRU1RH3" }
-            ]
-        },
-        {
-            "title": "Atomic Structure - PYQ",
-            "modules": [
-                { "range": "PYQ Discussion", "link": "https://unacademy.com/class/pyq-jstar-series-atomic-structure/11267ZWJ" }
-            ]
-        },
-        {
-            "title": "Chemical Equilibrium - PYQ",
-            "modules": [
-                { "range": "PYQ Discussion 1", "link": "https://unacademy.com/class/pyq-jstar-series-chemical-equilibrium/OTBTTJYW" },
-                { "range": "PYQ Discussion 2", "link": "https://unacademy.com/class/pyq-jstar-series-chemical-equilibrium/PH00C0DO" },
-                { "range": "PYQ Discussion 3", "link": "https://unacademy.com/class/pyq-jstar-series-chemical-equilibrium-776/C2F1B49" },
-                { "range": "PYQ Series I", "link": "https://unacademy.com/class/pyqs-jstar-series-chemical-equilibrium-i/B6BTWUK5" },
-                { "range": "PYQ Series II", "link": "https://unacademy.com/class/pyqs-jstar-series-chemical-equilibrium-ii/LIQKXA37" }
-            ]
-        },
-        {
-            "title": "Thermodynamics - PYQ",
-            "modules": [
-                { "range": "PYQ Discussion 1", "link": "https://unacademy.app.link/DAhscD15Mtb" },
-                { "range": "Module/PYQ Part I", "link": "https://unacademy.com/class/module-discussion-part-i/7RNIFBZ3" },
-                { "range": "Module/PYQ Part II", "link": "https://unacademy.com/class/module-discussion-part-ii/ESQ2Z46Z" }
-            ]
-        },
-        {
-            "title": "Ionic Equilibrium - PYQ",
-            "modules": [
-                { "range": "PYQ Discussion I", "link": "https://unacademy.com/class/pyq-jstar-series-ionic-equilibrium-200/6VOCNHDQ" },
-                { "range": "PYQ Discussion II", "link": "https://unacademy.com/class/pyq-jstar-series-ionic-equilibrium-ii/WUU84NMS" },
-                { "range": "PYQ Course Link", "link": "https://unacademy.com/course/pyq-jstar-series-solution/U0L2ZRT5" }
-            ]
-        },
-        {
-            "title": "Redox Reactions - PYQ",
-            "modules": [
-                { "range": "PYQ Discussion", "link": "https://unacademy.com/class/pyq-jstar-series-redox-reaction-453/1F8EKTSE" }
-            ]
-        },
-        {
-            "title": "Solutions - PYQ",
-            "modules": [
-                { "range": "PYQ Discussion 1", "link": "https://unacademy.com/class/pyq-jstar-series-solutions/EANC670M" },
-                { "range": "PYQ Discussion 2", "link": "https://unacademy.com/class/pyq-jstar-series-solutions-847/2EA5JXAE" },
-                { "range": "PYQ Discussion 3", "link": "https://unacademy.com/class/pyq-jstar-series-solutions/SFRKFMRO" },
-                { "range": "PYQ Series 4", "link": "https://unacademy.com/class/pyqs-jstar-series-solutions/ALW4DGEN" },
-                { "range": "PYQ Discussion 5", "link": "https://unacademy.com/class/pyq-jstar-series-solution/W3LG7VUE" },
-                { "range": "PYQ Solid State (Related)", "link": "https://unacademy.com/class/pyq-jstar-series-solid-state/HUYH0G3R" },
-                { "range": "PYQ Discussion 6", "link": "https://unacademy.com/class/pyq-jstar-series-solutions/YTOUM8D7" }
-            ]
-        },
-        {
-            "title": "Electrochemistry - PYQ",
-            "modules": [
-                { "range": "PYQ Course I", "link": "https://unacademy.com/course/pyq-jstar-series-electrochemistry/SNRJFGA8" },
-                { "range": "PYQ Course II", "link": "https://unacademy.com/course/pyq-jstar-series-electrochemistry-ii/IKKXIIPI" }
-            ]
-        },
-        {
-            "title": "Chemical Kinetics - PYQ",
-            "modules": [
-                { "range": "PYQ Discussion 1", "link": "https://unacademy.com/class/pyq-jstar-series-chemical-kinetics/BYGE8X4U" },
-                { "range": "PYQ Series 2", "link": "https://unacademy.com/class/pyqs-jstar-series-chemical-kinetics/CHUCOY49" },
-                { "range": "PYQ Discussion 3", "link": "https://unacademy.com/class/pyq-jstar-series-chemical-kinetics/F3L0KEHW" },
-                { "range": "PYQ Series 4", "link": "https://unacademy.com/class/pyqs-jstar-series-chemical-kinetics/ZGB5YVJN" }
-            ]
-        }
+        { "title": "Mole Concept - PYQ", "modules": [
+            { "range": "PYQ Discussion 1", "link": "https://unacademy.com/class/pyq-jstar-series-chemical-kinetics/BYGE8X4U" },
+            { "range": "PYQ Discussion 2", "link": "https://unacademy.com/class/pyq-jstar-series-mole-concept/Y9QCER4B" },
+            { "range": "PYQ Course Link", "link": "https://unacademy.com/course/pyq-jstar-series-mole-concept/FPRU1RH3" }
+        ]},
+        { "title": "Atomic Structure - PYQ", "modules": [
+            { "range": "PYQ Discussion", "link": "https://unacademy.com/class/pyq-jstar-series-atomic-structure/11267ZWJ" }
+        ]},
+        { "title": "Chemical Equilibrium - PYQ", "modules": [
+            { "range": "PYQ Discussion 1", "link": "https://unacademy.com/class/pyq-jstar-series-chemical-equilibrium/OTBTTJYW" },
+            { "range": "PYQ Discussion 2", "link": "https://unacademy.com/class/pyq-jstar-series-chemical-equilibrium/PH00C0DO" },
+            { "range": "PYQ Discussion 3", "link": "https://unacademy.com/class/pyq-jstar-series-chemical-equilibrium-776/C2F1B49" },
+            { "range": "PYQ Series I", "link": "https://unacademy.com/class/pyqs-jstar-series-chemical-equilibrium-i/B6BTWUK5" },
+            { "range": "PYQ Series II", "link": "https://unacademy.com/class/pyqs-jstar-series-chemical-equilibrium-ii/LIQKXA37" }
+        ]},
+        { "title": "Thermodynamics - PYQ", "modules": [
+            { "range": "PYQ Discussion 1", "link": "https://unacademy.app.link/DAhscD15Mtb" },
+            { "range": "Module/PYQ Part I", "link": "https://unacademy.com/class/module-discussion-part-i/7RNIFBZ3" },
+            { "range": "Module/PYQ Part II", "link": "https://unacademy.com/class/module-discussion-part-ii/ESQ2Z46Z" }
+        ]},
+        { "title": "Ionic Equilibrium - PYQ", "modules": [
+            { "range": "PYQ Discussion I", "link": "https://unacademy.com/class/pyq-jstar-series-ionic-equilibrium-200/6VOCNHDQ" },
+            { "range": "PYQ Discussion II", "link": "https://unacademy.com/class/pyq-jstar-series-ionic-equilibrium-ii/WUU84NMS" },
+            { "range": "PYQ Course Link", "link": "https://unacademy.com/course/pyq-jstar-series-solution/U0L2ZRT5" }
+        ]},
+        { "title": "Redox Reactions - PYQ", "modules": [
+            { "range": "PYQ Discussion", "link": "https://unacademy.com/class/pyq-jstar-series-redox-reaction-453/1F8EKTSE" }
+        ]},
+        { "title": "Solutions - PYQ", "modules": [
+            { "range": "PYQ Discussion 1", "link": "https://unacademy.com/class/pyq-jstar-series-solutions/EANC670M" },
+            { "range": "PYQ Discussion 2", "link": "https://unacademy.com/class/pyq-jstar-series-solutions-847/2EA5JXAE" },
+            { "range": "PYQ Discussion 3", "link": "https://unacademy.com/class/pyq-jstar-series-solutions/SFRKFMRO" },
+            { "range": "PYQ Series 4", "link": "https://unacademy.com/class/pyqs-jstar-series-solutions/ALW4DGEN" },
+            { "range": "PYQ Discussion 5", "link": "https://unacademy.com/class/pyq-jstar-series-solution/W3LG7VUE" },
+            { "range": "PYQ Solid State (Related)", "link": "https://unacademy.com/class/pyq-jstar-series-solid-state/HUYH0G3R" },
+            { "range": "PYQ Discussion 6", "link": "https://unacademy.com/class/pyq-jstar-series-solutions/YTOUM8D7" }
+        ]},
+        { "title": "Electrochemistry - PYQ", "modules": [
+            { "range": "PYQ Course I", "link": "https://unacademy.com/course/pyq-jstar-series-electrochemistry/SNRJFGA8" },
+            { "range": "PYQ Course II", "link": "https://unacademy.com/course/pyq-jstar-series-electrochemistry-ii/IKKXIIPI" }
+        ]},
+        { "title": "Chemical Kinetics - PYQ", "modules": [
+            { "range": "PYQ Discussion 1", "link": "https://unacademy.com/class/pyq-jstar-series-chemical-kinetics/BYGE8X4U" },
+            { "range": "PYQ Series 2", "link": "https://unacademy.com/class/pyqs-jstar-series-chemical-kinetics/CHUCOY49" },
+            { "range": "PYQ Discussion 3", "link": "https://unacademy.com/class/pyq-jstar-series-chemical-kinetics/F3L0KEHW" },
+            { "range": "PYQ Series 4", "link": "https://unacademy.com/class/pyqs-jstar-series-chemical-kinetics/ZGB5YVJN" }
+        ]}
     ],
     "social_links": [
         { "title": "JOIN US", "url": "https://telegram.me/saksen_journey_offical" },
@@ -666,28 +691,67 @@ const modulesData = {
 };
 
 /* -------------------------------------------------------------------------- */
-/* UTILITY FUNCTIONS                           */
+/* UTILITIES                                                                   */
 /* -------------------------------------------------------------------------- */
-
 function formatStat(num) {
     if (num === null || num === undefined) return '0';
     if (num >= 1000000) return (num / 1000000).toFixed(0) + 'M';
     if (num >= 1000) return (num / 1000).toFixed(0) + 'K';
     return num;
-};
-
+}
 function formatViewCount(num) {
     if (num >= 1000000000) return (num / 1000000000).toFixed(1) + 'B';
     if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
     if (num >= 1000) return (num / 1000).toFixed(0) + 'K';
     return num;
 }
+// Element-tile subject tag, periodic-table styled
+function elementTag(subject) {
+    const s = (subject || 'Chem').trim();
+    const sym = s.slice(0, 2);
+    return `<span class="element-tag"><span class="el-sym">${sym}</span><span class="el-name">${s}</span></span>`;
+}
+// Blur-up / skeleton image with onerror fallback
+function imgFrame(src, alt, fallback, extraClass) {
+    const fb = fallback || 'https://placehold.co/480x270/121c30/45e0c7?text=Neelaxmi';
+    return `<div class="img-frame ${extraClass || ''}">
+        <img data-src="${src}" alt="${(alt || '').replace(/"/g, '&quot;')}" loading="lazy" class="lazy-img w-full h-full object-cover"
+             onerror="this.onerror=null;this.src='${fb}';this.classList.add('loaded')">
+    </div>`;
+}
+
+const MAX_CARDS_PER_VIEW = 6;
+const IN_FEED_AD_HTML = `
+    <div class="col-span-1 sm:col-span-2 xl:col-span-3 w-full my-2">
+        <div class="w-full border-2 border-dashed rounded-xl min-h-[100px] flex flex-col items-center justify-center text-secondary py-6" style="border-color:var(--color-border)">
+            <span class="text-[10px] uppercase tracking-widest font-bold mb-1 opacity-60">Advertisement</span>
+            <span class="text-xs opacity-50">Search NEELAXMI for more</span>
+        </div>
+    </div>
+`;
+function capItems(items) { return items.slice(0, MAX_CARDS_PER_VIEW); }
+function joinCardsWithAd(cardsHtmlArray) {
+    if (cardsHtmlArray.length <= 3) return cardsHtmlArray.join('');
+    const before = cardsHtmlArray.slice(0, 3).join('');
+    const after = cardsHtmlArray.slice(3).join('');
+    return before + IN_FEED_AD_HTML + after;
+}
+
+/* Activates lazy blur-up loading for any <img data-src> inside a container */
+function activateLazyImages(container) {
+    const imgs = container.querySelectorAll('img.lazy-img[data-src]');
+    imgs.forEach(img => {
+        const src = img.getAttribute('data-src');
+        img.removeAttribute('data-src');
+        const done = () => img.classList.add('loaded');
+        if (img.complete) { /* noop */ }
+        img.addEventListener('load', done, { once: true });
+        img.addEventListener('error', done, { once: true });
+        img.src = src;
+    });
+}
 
 function fetchAndRenderStats() {
-    document.getElementById('watchMinsDisplay').textContent = '...';
-    document.getElementById('dedicationsDisplay').textContent = '...';
-    document.getElementById('followersDisplay').textContent = '...';
-
     db.doc(EDUCATOR_DOC_PATH).get()
         .then((doc) => {
             if (doc.exists) {
@@ -699,21 +763,16 @@ function fetchAndRenderStats() {
                 console.log("No such document for stats!");
             }
         })
-        .catch((error) => {
-            console.error("Error fetching document: ", error);
-        });
+        .catch((error) => console.error("Error fetching document: ", error));
 }
 
 /* -------------------------------------------------------------------------- */
-/* RENDER FUNCTIONS                             */
+/* RENDER FUNCTIONS — each writes into its own section container              */
 /* -------------------------------------------------------------------------- */
+let currentTabContent = {};
 
-let currentTabContent = {}; // Cache
-
-async function fetchAndRenderContent(collectionName, sortOrder = 'desc') {
-    contentArea.innerHTML = `<div class="p-8 text-center text-secondary">Loading ${collectionName}...</div>`;
-    currentSortOrder = sortOrder;
-
+async function fetchAndRenderContent(collectionName, sortOrder, targetEl) {
+    targetEl.innerHTML = `<div class="p-8 text-center text-secondary">Loading ${collectionName}&hellip;</div>`;
     try {
         const snapshot = await db.doc(EDUCATOR_DOC_PATH).collection(collectionName)
             .where('status', '==', 'approved')
@@ -730,419 +789,340 @@ async function fetchAndRenderContent(collectionName, sortOrder = 'desc') {
         currentTabContent[collectionName] = contentArray;
 
         if (collectionName === 'free_classes') {
-            renderFreeClassCards(contentArray);
+            renderFreeClassCards(contentArray, targetEl);
         } else if (collectionName === 'courses') {
-            renderCourseCards(contentArray);
+            renderCourseCards(contentArray, targetEl);
         }
     } catch (error) {
         console.error("Error fetching content:", error);
-        contentArea.innerHTML = `<div class="p-8 text-center text-red-500">Error loading content: ${error.message}</div>`;
+        targetEl.innerHTML = `<div class="p-8 text-center text-red-400">Error loading content: ${error.message}</div>`;
     }
-    updateFilterButtonStyling(sortOrder);
+    if (collectionName === 'free_classes') updateFilterButtonStyling(sortOrder);
 }
 
-function renderFreeClassCards(contentArray) {
+function renderFreeClassCards(contentArrayFull, targetEl) {
+    const contentArray = capItems(contentArrayFull);
     if (contentArray.length === 0) {
-        contentArea.innerHTML = `<div class="p-8 text-center text-secondary">No free classes found.</div>`;
+        targetEl.innerHTML = `<div class="p-8 text-center text-secondary">No free classes found.</div>`;
         return;
     }
-
-    const cardsHtml = contentArray.map(item => {
-        const thumb = MAIN_THUMBNAIL_URL;
-        const logo = COMPANY_LOGO_URL;
+    const cardsHtmlArr = contentArray.map(item => {
         const dateDisplay = item.timeText || 'Date N/A';
-
         return `
-            <a href="${item.link}" target="_blank" class="card block bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-xl transition-all duration-300 group h-full flex flex-col">
+            <a href="${item.link}" target="_blank" class="card block rounded-xl overflow-hidden group h-full flex flex-col">
                 <div class="relative w-full h-44 overflow-hidden">
-                    <img src="${thumb}" alt="${item.title}" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500">
-                    <div class="absolute bottom-3 left-3 w-10 h-10 rounded-full border-2 border-white overflow-hidden shadow-md">
-                        <img src="${logo}" class="w-full h-full object-cover">
+                    ${imgFrame(MAIN_THUMBNAIL_URL, item.title, null, 'h-44')}
+                    <div class="absolute bottom-3 left-3 w-10 h-10 rounded-full border-2 border-white/70 overflow-hidden shadow-md z-10">
+                        <img src="${COMPANY_LOGO_URL}" class="w-full h-full object-cover" onerror="this.style.display='none'">
                     </div>
-                    ${item.viewsCount ? `<div class="absolute top-3 right-3 bg-black/60 text-white text-xs px-2 py-1 rounded backdrop-blur-sm flex items-center"><svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>${formatViewCount(item.viewsCount)}</div>` : ''}
+                    ${item.viewsCount ? `<div class="absolute top-3 right-3 bg-black/60 text-white text-xs px-2 py-1 rounded backdrop-blur-sm flex items-center z-10"><svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>${formatViewCount(item.viewsCount)}</div>` : ''}
                 </div>
                 <div class="p-4 flex flex-col flex-grow">
-                    <div class="flex items-center mb-2">
-                        <span class="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-100 uppercase tracking-wide">
-                            ${item.subject || 'Physics'}
-                        </span>
-                    </div>
-                    <h3 class="text-lg font-bold text-gray-900 leading-snug mb-3 group-hover:text-blue-600 transition-colors">
-                        ${item.title}
-                    </h3>
+                    <div class="flex items-center mb-2">${elementTag(item.subject || 'Physics')}</div>
+                    <h3 class="text-lg font-bold text-primary leading-snug mb-3 group-hover:text-accent transition-colors">${item.title}</h3>
                     <div class="flex items-center gap-3 mb-4 text-sm">
-                        <div class="flex items-center text-gray-600 bg-gray-100 px-2 py-1 rounded">
-                            <span class="font-medium">Starts: ${dateDisplay}</span>
-                        </div>
+                        <div class="flex items-center text-secondary bg-page px-2 py-1 rounded font-mono text-xs">Starts: ${dateDisplay}</div>
                     </div>
-                    <div class="relative bg-gray-50 rounded-lg p-3 mb-4 border border-gray-100">
-                        <p class="text-sm text-gray-600 leading-relaxed">
-                            ${item.description || 'No description provided.'}
-                        </p>
+                    <div class="rounded-lg p-3 mb-4 border border-border bg-page">
+                        <p class="text-sm text-secondary leading-relaxed">${item.description || 'No description provided.'}</p>
                     </div>
-                    <div class="mt-auto pt-3 border-t border-gray-100 flex items-center justify-between">
-                        <span class="text-xs text-gray-400 font-medium">${item.language || 'Hindi'}</span>
-                        <span class="text-sm font-semibold text-blue-600 flex items-center">
-                            Watch Now 
+                    <div class="mt-auto pt-3 border-t border-border flex items-center justify-between">
+                        <span class="text-xs text-secondary font-medium">${item.language || 'Hindi'}</span>
+                        <span class="text-sm font-semibold text-accent flex items-center">
+                            Watch Now
                             <svg class="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
                         </span>
                     </div>
                 </div>
             </a>
         `;
-    }).join('');
-
-    contentArea.innerHTML = `<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">${cardsHtml}</div>`;
+    });
+    targetEl.innerHTML = `<div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 reveal-stagger">${joinCardsWithAd(cardsHtmlArr)}</div>`;
+    activateLazyImages(targetEl);
+    requestAnimationFrame(() => targetEl.querySelector('.reveal-stagger')?.classList.add('is-visible'));
 }
 
-function renderCourseCards(courseArray) {
+function renderCourseCards(courseArrayFull, targetEl) {
+    const courseArray = capItems(courseArrayFull);
     if (courseArray.length === 0) {
-        contentArea.innerHTML = `<div class="p-8 text-center text-secondary">No courses found.</div>`;
+        targetEl.innerHTML = `<div class="p-8 text-center text-secondary">No courses found.</div>`;
         return;
     }
-
-    const cardsHtml = courseArray.map(course => {
-        const thumb = MAIN_THUMBNAIL_URL;
+    const cardsHtmlArr = courseArray.map(course => {
         const dateDisplay = course.timeText || 'Date N/A';
-
         return `
-            <a href="${course.link}" target="_blank" class="card block bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-xl transition-all duration-300 group h-full flex flex-col">
+            <a href="${course.link}" target="_blank" class="card block rounded-xl overflow-hidden group h-full flex flex-col">
                 <div class="relative w-full h-44 overflow-hidden">
-                    <img src="${thumb}" alt="${course.name}" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-60"></div>
-                    <div class="absolute bottom-3 left-4 text-white font-bold flex items-center">
-                         Full Course
-                    </div>
+                    ${imgFrame(MAIN_THUMBNAIL_URL, course.name, null, 'h-44')}
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-60 z-10"></div>
+                    <div class="absolute bottom-3 left-4 text-white font-bold z-10">Full Course</div>
                 </div>
                 <div class="p-5 flex flex-col flex-grow">
-                    <h3 class="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">${course.name}</h3>
+                    <h3 class="text-xl font-bold text-primary mb-3 group-hover:text-accent transition-colors">${course.name}</h3>
                     <div class="flex flex-wrap gap-2 mb-4">
-                        <span class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-green-100 text-green-800">
-                            Start: ${dateDisplay}
-                        </span>
-                        <span class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-purple-100 text-purple-800">
-                            ${course.duration || 'N/A Duration'}
-                        </span>
+                        <span class="range-badge">Start: ${dateDisplay}</span>
+                        <span class="range-badge">${course.duration || 'N/A Duration'}</span>
                     </div>
-                    <div class="bg-gray-50 p-3 rounded-lg border border-gray-100 mb-4">
-                        <p class="text-sm text-gray-600 leading-relaxed">
-                            <span class="font-bold text-gray-800">Summary:</span> ${course.description || 'No description available.'}
-                        </p>
+                    <div class="rounded-lg p-3 border border-border bg-page mb-4">
+                        <p class="text-sm text-secondary leading-relaxed"><span class="font-bold text-primary">Summary:</span> ${course.description || 'No description available.'}</p>
                     </div>
                     <div class="mt-auto">
-                        <button class="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors shadow-md flex justify-center items-center">
-                            View Course
-                        </button>
+                        <button class="w-full py-2 bg-accent text-accent-text font-semibold rounded-lg transition-colors shadow-md">View Course</button>
                     </div>
                 </div>
             </a>
         `;
-    }).join('');
-
-    contentArea.innerHTML = `<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">${cardsHtml}</div>`;
+    });
+    targetEl.innerHTML = `<div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 reveal-stagger">${joinCardsWithAd(cardsHtmlArr)}</div>`;
+    activateLazyImages(targetEl);
+    requestAnimationFrame(() => targetEl.querySelector('.reveal-stagger')?.classList.add('is-visible'));
 }
 
-function renderModulesGridFromJSON() {
-    const courses = modulesData.courses;
-
+function renderModulesGridFromJSON(targetEl) {
+    const courses = capItems(modulesData.courses);
     if (courses.length === 0) {
-        contentArea.innerHTML = `<div class="p-8 text-center text-gray-500">😔 No module data found in JSON.</div>`;
+        targetEl.innerHTML = `<div class="p-8 text-center text-secondary">No module data found.</div>`;
         return;
     }
-
-    const headerHtml = `
-        <div class="mb-10 border-l-4 border-indigo-500 pl-6">
-            <h2 class="text-3xl font-extrabold text-gray-800 tracking-tight">📚 Topic-wise Module Discussion Links</h2>
-            <p class="text-md text-gray-500 mt-1">Detailed discussions by question range, organized by subject.</p>
-        </div>
-    `;
-
-    const cardsHtml = courses.map(course => `
-        <div class="module-card relative card bg-white rounded-2xl p-6 shadow-xl overflow-hidden transform hover:scale-[1.02] hover:shadow-2xl transition-all duration-500 ring-1 ring-gray-100 group">
-            <div class="absolute inset-0 opacity-10 bg-gradient-to-br from-indigo-50 to-white"></div>
-            <span class="absolute top-0 right-0 bg-indigo-500 text-white text-xs font-bold px-3 py-1 rounded-bl-xl tracking-wider status">
-                ${course.status || 'Active'} 
-            </span>
-            <div class="relative z-10">
-                <div class="mb-4 p-2 inline-block rounded-full bg-indigo-100 text-indigo-600 shadow-lg">
-                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.46 9.248 5 7.5 5S4.168 5.46 3 6.253v13C4.168 18.46 5.752 18 7.5 18s3.332.46 4.5 1.253m0-13C13.168 5.46 14.752 5 16.5 5s3.332.46 4.5 1.253v13C19.832 18.46 18.248 18 16.5 18s-3.332.46-4.5 1.253"></path>
-                    </svg>
-                </div>
-                <h3 class="text-2xl font-bold text-gray-900 mb-5 leading-snug border-b pb-3 border-gray-100">${course.title}</h3>
+    const cardsHtmlArr = courses.map(course => `
+        <div class="card rounded-2xl p-6 relative overflow-hidden">
+            <span class="absolute top-0 right-0 badge-gold text-xs font-bold px-3 py-1 rounded-bl-xl tracking-wider">${course.status || 'Active'}</span>
+            <div class="mb-4 p-2 inline-flex rounded-full bg-page text-accent">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.46 9.248 5 7.5 5S4.168 5.46 3 6.253v13C4.168 18.46 5.752 18 7.5 18s3.332.46 4.5 1.253m0-13C13.168 5.46 14.752 5 16.5 5s3.332.46 4.5 1.253v13C19.832 18.46 18.248 18 16.5 18s-3.332.46-4.5 1.253"></path></svg>
             </div>
-            <ul class="space-y-4 relative z-10">
-                ${course.modules.map(module => `
-                    <li class="flex justify-between items-center text-sm border-b border-gray-100 last:border-b-0 pb-3">
-                        <span class="font-medium text-gray-700">${module.range}</span>
-                        <a href="${module.link}" target="_blank"
-                            class="text-xs bg-indigo-500 text-white py-1 px-3 rounded-full hover:bg-indigo-600 transition-colors shadow-md flex items-center group-hover:shadow-lg">
-                            Watch Now
-                        </a>
-                    </li>
-                `).join('')}
-            </ul>
+            <h3 class="text-xl font-bold text-primary mb-4 leading-snug border-b border-border pb-3">${course.title}</h3>
+            <div class="flex flex-wrap gap-2">
+                ${course.modules.map(module => `<a href="${module.link}" target="_blank" class="range-badge">${module.range}</a>`).join('')}
+            </div>
         </div>
-    `).join('');
-
-    contentArea.innerHTML = `<div class="animate-fade-in p-4 sm:p-0">${headerHtml}<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">${cardsHtml}</div></div>`;
+    `);
+    targetEl.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 reveal-stagger">${joinCardsWithAd(cardsHtmlArr)}</div>`;
+    requestAnimationFrame(() => targetEl.querySelector('.reveal-stagger')?.classList.add('is-visible'));
 }
 
-async function loadQuizCards() {
-    toggleFilterButtons(false);
-    contentArea.innerHTML = `<div class="p-8 text-center text-secondary">Loading Quizzes from Firebase...</div>`;
-    const companyLogo = COMPANY_LOGO_URL;
+function renderPYQGridFromJSON(targetEl) {
+    const courses = capItems(modulesData.pyq_series || []);
+    if (courses.length === 0) {
+        targetEl.innerHTML = `<div class="p-8 text-center text-secondary">No PYQ data found.</div>`;
+        return;
+    }
+    const cardsHtmlArr = courses.map(course => `
+        <div class="jstar-card rounded-2xl p-6 relative overflow-hidden">
+            <span class="absolute top-0 right-0 badge-red text-xs font-bold px-3 py-1 rounded-bl-xl tracking-wider">PYQ</span>
+            <div class="mb-4 p-2 inline-flex rounded-full bg-white/10 overflow-hidden">
+                <img src="/pictures/neelaxmi.png" alt="Neelaxmi" class="w-10 h-10 object-cover rounded-full" onerror="this.style.display='none'">
+            </div>
+            <h3 class="text-xl font-bold mb-4 leading-snug border-b border-white/10 pb-3">${course.title}</h3>
+            <div class="flex flex-wrap gap-2">
+                ${course.modules.map(module => `<a href="${module.link}" target="_blank" class="range-badge" style="border-color:rgba(245,165,36,.35)">${module.range}</a>`).join('')}
+            </div>
+        </div>
+    `);
+    targetEl.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 reveal-stagger">${joinCardsWithAd(cardsHtmlArr)}</div>`;
+    requestAnimationFrame(() => targetEl.querySelector('.reveal-stagger')?.classList.add('is-visible'));
+}
 
+async function loadQuizCards(targetEl) {
+    targetEl.innerHTML = `<div class="p-8 text-center text-secondary">Loading quizzes&hellip;</div>`;
     try {
         const snapshot = await db.doc(EDUCATOR_DOC_PATH).collection('quizzes').get();
         let quizzesArray = [];
         snapshot.forEach(doc => {
             const data = doc.data();
-            quizzesArray.push({
-                id: doc.id,
-                targetQuizId: data.targetQuizId,
-                ...data
-            });
+            quizzesArray.push({ id: doc.id, targetQuizId: data.targetQuizId, ...data });
         });
 
         if (quizzesArray.length === 0) {
-            contentArea.innerHTML = `<div class="p-8 text-center text-gray-500">😔 No quizzes found on Firebase.</div>`;
+            targetEl.innerHTML = `<div class="p-8 text-center text-secondary">No quizzes found.</div>`;
             return;
         }
+        quizzesArray = capItems(quizzesArray);
 
-        const cardsHtml = quizzesArray.map(quiz => {
+        const cardsHtmlArr = quizzesArray.map(quiz => {
             const activeQuizID = quiz.targetQuizId ? quiz.targetQuizId : quiz.id;
             const title = quiz.title || 'Untitled Quiz';
             const subject = quiz.subject || 'General';
             const questions = quiz.questions || 'N/A';
             const duration = quiz.duration || 'N/A';
-            const thumbnailHtml = companyLogo ? `<img src="${companyLogo}" alt="Company Logo" class="w-10 h-10 rounded-full object-cover border border-border flex-shrink-0">` : '';
-
             return `
-                <div class="card p-6 rounded-xl transform hover:scale-[1.02] transition duration-300 h-full flex flex-col justify-between">
+                <div class="card p-6 rounded-xl h-full flex flex-col justify-between">
                     <div class="flex justify-between items-start mb-4">
-                        <span class="text-xs font-bold text-accent bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-full border border-border uppercase tracking-wide inline-block">
-                            ${subject}
-                        </span>
-                        ${thumbnailHtml}
+                        ${elementTag(subject)}
+                        <img src="${COMPANY_LOGO_URL}" alt="Logo" class="w-10 h-10 rounded-full object-cover border border-border" onerror="this.style.display='none'">
                     </div>
-                    <div>
-                        <h3 class="text-xl font-bold text-primary mb-5 leading-snug">
-                            ${title}
-                        </h3>
+                    <h3 class="text-xl font-bold text-primary mb-5 leading-snug">${title}</h3>
+                    <div class="space-y-2 mb-6 font-mono text-sm text-secondary">
+                        <div><span class="font-semibold text-primary">${questions}</span> Questions</div>
+                        <div><span class="font-semibold text-primary">${duration}</span> Mins</div>
                     </div>
-                    <div class="space-y-3 mb-6">
-                        <div class="flex items-center text-sm text-secondary">
-                             <span class="font-semibold text-primary mr-1">${questions}</span> Questions
-                        </div>
-                        <div class="flex items-center text-sm text-secondary">
-                             <span class="font-semibold text-primary mr-1">${duration}</span> Mins
-                        </div>
-                    </div>
-                    <a href="/quiz/quizzes.html?uid=${activeQuizID}" 
-                       class="w-full text-center py-3 border border-transparent text-sm font-semibold rounded-lg text-accent-text bg-accent hover:opacity-90 transition-colors flex items-center justify-center shadow-md">
-                        Attempt Quiz <span class="ml-2">🚀</span>
+                    <a href="/quiz/quizzes.html?uid=${activeQuizID}" class="w-full text-center py-3 rounded-lg text-sm font-semibold text-accent-text bg-accent hover:opacity-90 transition-colors flex items-center justify-center shadow-md">
+                        Attempt Quiz <span class="ml-2">&#128640;</span>
                     </a>
                 </div>
             `;
-        }).join('');
+        });
 
-        contentArea.innerHTML = `
-            <div class="mb-10 border-l-4 border-accent pl-6">
-                <h2 class="text-3xl font-extrabold text-primary tracking-tight">🎯 Available Quizzes & Assessments</h2>
-                <p class="text-md text-secondary mt-1">Clicking a quiz will open it in a new tab.</p>
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">${cardsHtml}</div>
-        `;
-
+        targetEl.innerHTML = `<div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 reveal-stagger">${joinCardsWithAd(cardsHtmlArr)}</div>`;
+        requestAnimationFrame(() => targetEl.querySelector('.reveal-stagger')?.classList.add('is-visible'));
     } catch (error) {
         console.error("Error fetching quizzes:", error);
-        contentArea.innerHTML = `<div class="p-8 text-center text-red-500">Error loading quizzes from Firebase: ${error.message}</div>`;
+        targetEl.innerHTML = `<div class="p-8 text-center text-red-400">Error loading quizzes: ${error.message}</div>`;
     }
 }
 
-function renderPYQGridFromJSON() {
-    toggleFilterButtons(false);
-    const courses = modulesData.pyq_series || [];
+async function fetchAndRenderModulePdfs(targetEl) {
+    targetEl.innerHTML = `<div class="p-8 text-center text-secondary">Loading modules&hellip;</div>`;
+    try {
+        const snapshot = await db.doc(EDUCATOR_DOC_PATH).collection('module_pdfs')
+            .where('status', '==', 'approved')
+            .orderBy('createdAt', 'desc')
+            .get();
 
-    if (courses.length === 0) {
-        contentArea.innerHTML = `<div class="p-8 text-center text-gray-500">😔 No PYQ data found in JSON.</div>`;
-        return;
-    }
+        let pdfArray = [];
+        snapshot.forEach(doc => pdfArray.push(doc.data()));
 
-    const headerHtml = `
-        <div class="mb-10 border-l-4 border-red-500 pl-6">
-            <h2 class="text-3xl font-extrabold text-gray-800 tracking-tight">🏆 Previous Year Questions (PYQ) Series Links</h2>
-        </div>
-    `;
+        if (pdfArray.length === 0) {
+            targetEl.innerHTML = `<div class="p-8 text-center text-secondary">No PDF modules found.</div>`;
+            return;
+        }
+        pdfArray = capItems(pdfArray);
 
-    const cardsHtml = courses.map(course => `
-        <div class="module-card relative card bg-white rounded-2xl p-6 shadow-xl overflow-hidden transform hover:scale-[1.02] hover:shadow-2xl transition-all duration-500 ring-1 ring-gray-100 group">
-            <div class="absolute inset-0 opacity-10 bg-gradient-to-br from-red-50 to-white"></div>
-            <span class="absolute top-0 right-0 bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-bl-xl tracking-wider status">PYQ</span>
-            <div class="relative z-10">
-                <div class="mb-4 p-2 inline-block rounded-full bg-red-100 shadow-lg overflow-hidden">
-                    <img src="/pictures/neelaxmi.png" alt="Company Logo" class="w-20 h-20 object-cover rounded-full">
-                </div>
-                <h3 class="text-2xl font-bold text-gray-900 mb-5 leading-snug border-b pb-3 border-gray-100">${course.title}</h3>
-            </div>
-            <ul class="space-y-4 relative z-10">
-                ${course.modules.map(module => `
-                    <li class="flex justify-between items-center text-sm border-b border-gray-100 last:border-b-0 pb-3">
-                        <span class="font-medium text-gray-700">${module.range}</span>
-                        <a href="${module.link}" target="_blank"
-                            class="text-xs bg-red-500 text-white py-1 px-3 rounded-full hover:bg-red-600 transition-colors shadow-md flex items-center group-hover:shadow-lg">
-                            Watch Now
-                        </a>
-                    </li>
-                `).join('')}
-            </ul>
-        </div>
-    `).join('');
-
-    contentArea.innerHTML = `<div class="animate-fade-in p-4 sm:p-0">${headerHtml}<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">${cardsHtml}</div></div>`;
-}
-
-    function renderAboutSection() {
-        toggleFilterButtons(false);
-        const akmData = {
-            name: "Ajay Kumar Mishra",
-            shortName: "AKM Sir",
-            title: "No.1 Physical Chemistry Educator",
-            experience: "10+ Years",
-            birthday: "12th December",
-            institutes: ["Unacademy (Current)", "Ex-Allen (Kota)", "Ex-Sarvottam (Kota)"],
-            nicknames: ["Chachu", "Jahar Chachu"],
-            vibes: ["Deep Lines", "Singer", "Shayari Master", "Meme Reviewer"],
-            tagline: "Gussa kam hai, par Concept Jahar hai!",
-            links: {
-                instagram: "https://www.instagram.com/ajay.mishra.56481379/?hl=en",
-                unacademy: "https://unacademy.com/@ajaymishraakm382-9673"
-            }
-        };
-    
-        const content = `
-        <div class="animate-fade-in max-w-6xl mx-auto pb-10">
-            <div class="cyber-grid mb-8">
-                <div class="cyber-card col-span-12 md:col-span-8 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden group">
-                    <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                        <svg class="w-64 h-64 text-blue-600" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L1 21h22L12 2zm0 3.99L19.53 19H4.47L12 5.99z"/></svg>
+        const cardsHtmlArr = pdfArray.map(item => `
+            <div onclick="openPdf('${item.link}', '${(item.title || '').replace(/'/g, "\\'")}')" class="card cursor-pointer rounded-xl overflow-hidden group h-full flex flex-col relative">
+                <div class="relative w-full h-44 overflow-hidden">
+                    ${imgFrame(MAIN_THUMBNAIL_URL, 'Module Thumbnail', null, 'h-44')}
+                    <div class="absolute bottom-3 left-3 w-10 h-10 rounded-full border-2 border-white/70 overflow-hidden shadow-md z-10">
+                        <img src="${COMPANY_LOGO_URL}" class="w-full h-full object-cover" onerror="this.style.display='none'">
                     </div>
-                    <div class="w-40 h-40 md:w-48 md:h-48 rounded-full p-1 bg-gradient-to-tr from-blue-500 to-purple-600 neon-badge flex-shrink-0">
-                        <img src="/pictures/akmsir.jpg" onerror="this.src='https://placehold.co/200x200?text=AKM'" class="w-full h-full object-cover rounded-full border-4 border-white dark:border-gray-800">
-                    </div>
-                    <div class="text-center md:text-left z-10">
-                        <h2 class="text-4xl md:text-5xl font-black text-gradient mb-2">${akmData.name}</h2>
-                        <p class="text-xl text-secondary font-medium mb-4 tracking-wide">[ ${akmData.shortName} ]</p>
-                        <div class="flex flex-wrap justify-center md:justify-start gap-2">
-                            <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-bold uppercase tracking-wider">NEET UG Specialist</span>
-                            <span class="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-bold uppercase tracking-wider">Physical Chemistry</span>
+                    <div class="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors z-10"></div>
+                    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                        <div class="bg-white/90 rounded-full p-3 shadow-lg">
+                            <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
                         </div>
                     </div>
                 </div>
-                <div class="cyber-card col-span-12 md:col-span-4 flex flex-col justify-center items-center text-center bg-gradient-to-br from-blue-600 to-indigo-700 text-white border-none shadow-lg shadow-blue-500/30">
-                    <h3 class="text-6xl font-black mb-1">${akmData.experience}</h3>
-                    <p class="text-blue-100 text-sm font-semibold tracking-widest uppercase">Teaching Excellence</p>
-                    <div class="mt-4 text-xs text-blue-200">${akmData.institutes.join(" • ")}</div>
+                <div class="p-4 flex flex-col flex-grow">
+                    <div class="flex items-center mb-2">${elementTag(item.subject || 'PDF')}</div>
+                    <h3 class="text-lg font-bold text-primary leading-snug mb-1 group-hover:text-accent transition-colors">${item.title}</h3>
+                    <p class="text-xs text-secondary mt-auto pt-2 flex items-center">
+                        <span class="w-2 h-2 rounded-full bg-accent mr-2"></span> Click to open PDF
+                    </p>
                 </div>
             </div>
-            <div class="cyber-grid mb-8">
-                <div class="cyber-card col-span-12 md:col-span-4">
-                    <div class="flex items-center gap-3 mb-4"><span class="text-2xl">😎</span><h3 class="text-xl font-bold text-primary">The "Chachu" Vibe</h3></div>
-                    <p class="text-secondary text-sm leading-relaxed mb-4">Known lovingly as <strong>"${akmData.nicknames.join('" & "')}"</strong>.</p>
-                    <div class="flex flex-wrap gap-2">${akmData.vibes.map(vibe => `<span class="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded text-xs text-secondary border border-border">${vibe}</span>`).join('')}</div>
-                </div>
-                <div class="cyber-card col-span-12 md:col-span-4 j-star-bg border-none relative overflow-hidden group">
-                    <h3 class="text-2xl font-black text-yellow-400 mb-2 italic">J* Series</h3>
-                    <p class="text-gray-300 text-sm mb-4">"Jahar" questions designed to build advanced conceptual clarity.</p>
-                </div>
-                 <div class="cyber-card col-span-12 md:col-span-4 flex flex-col justify-between">
-                    <div><h3 class="text-sm font-bold text-secondary uppercase tracking-widest mb-2">Birthday</h3><div class="flex items-center gap-3"><span class="text-3xl">🎂</span><span class="text-2xl font-bold text-primary">${akmData.birthday}</span></div></div>
-                    <div class="mt-6 pt-4 border-t border-border"><h3 class="text-sm font-bold text-secondary uppercase tracking-widest mb-2">Famous For</h3><p class="italic text-primary">"${akmData.tagline}"</p></div>
-                </div>
+        `);
+
+        targetEl.innerHTML = `<div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 reveal-stagger">${joinCardsWithAd(cardsHtmlArr)}</div>`;
+        activateLazyImages(targetEl);
+        requestAnimationFrame(() => targetEl.querySelector('.reveal-stagger')?.classList.add('is-visible'));
+    } catch (error) {
+        console.error("Error fetching PDFs:", error);
+        targetEl.innerHTML = `<div class="p-8 text-center text-red-400">Error loading PDFs: ${error.message}</div>`;
+    }
+}
+
+function renderAboutSection() {
+    const aboutTarget = document.getElementById('about-section-content');
+    if (!aboutTarget) return;
+    const akmData = {
+        name: "Ajay Kumar Mishra",
+        shortName: "AKM Sir",
+        experience: "10+ Years",
+        birthday: "12th December",
+        institutes: ["Unacademy (Current)", "Ex-Allen (Kota)", "Ex-Sarvottam (Kota)"],
+        nicknames: ["Chachu", "Jahar Chachu"],
+        vibes: ["Deep Lines", "Singer", "Shayari Master", "Meme Reviewer"],
+        tagline: "Gussa kam hai, par Concept Jahar hai!",
+        links: {
+            instagram: "https://www.instagram.com/ajay.mishra.56481379/?hl=en",
+            unacademy: "https://unacademy.com/@ajaymishraakm382-9673"
+        }
+    };
+
+    const content = `
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-6 mb-6">
+        <div class="card md:col-span-8 rounded-2xl p-8 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden">
+            <div class="w-36 h-36 md:w-44 md:h-44 rounded-full p-1 bg-gradient-to-tr from-accent to-accent-2 flex-shrink-0 img-frame" style="border-radius:9999px;">
+                <img data-src="/pictures/akmsir.jpg" onerror="this.onerror=null;this.src='https://placehold.co/200x200/121c30/45e0c7?text=AKM';this.classList.add('loaded')" class="lazy-img w-full h-full object-cover rounded-full border-4" style="border-color:var(--color-bg-card)">
             </div>
-            
-<div class="cyber-grid mb-8">
-    <div class="cyber-card col-span-12 flex flex-col md:flex-row items-center justify-between gap-6 bg-gradient-to-r from-slate-50 to-blue-50 dark:from-gray-800 dark:to-gray-900 border-blue-200 dark:border-blue-900">
-        <div class="flex items-center gap-6">
-            <!-- Left Side: Logo -->
-            <div class="w-25 h-25 md:w-24 md:h-24 rounded-2xl ">
-                <img src="/pictures/logo.png" onerror="this.src='/pictures/neelaxmi.png'" alt="APK Logo" class="w-full h-full object-contain rounded-lg">
-            </div>
-            
-            <!-- Center: Description -->
             <div class="text-center md:text-left">
-                <h3 class="text-xl font-bold text-primary mb-1">APK App</h3>
-                <p class="text-secondary text-sm max-w-xs leading-relaxed">
-                    Get exclusive access to Jahar concepts, practice sheets, and live updates directly on your phone.
-                </p>
+                <h3 class="text-3xl md:text-4xl font-extrabold text-primary mb-1">${akmData.name}</h3>
+                <p class="text-lg text-secondary font-medium mb-4">[ ${akmData.shortName} ]</p>
+                <div class="flex flex-wrap justify-center md:justify-start gap-2">
+                    <span class="range-badge">NEET UG Specialist</span>
+                    <span class="range-badge">Physical Chemistry</span>
+                </div>
             </div>
         </div>
+        <div class="card md:col-span-4 rounded-2xl p-8 flex flex-col justify-center items-center text-center bg-accent" style="color:var(--color-accent-text)">
+            <h3 class="text-5xl font-black mb-1">${akmData.experience}</h3>
+            <p class="text-sm font-semibold tracking-widest uppercase opacity-80">Teaching Excellence</p>
+            <div class="mt-4 text-xs opacity-80">${akmData.institutes.join(" &bull; ")}</div>
+        </div>
+    </div>
 
-        <!-- Right Side: Download Button -->
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-6 mb-6">
+        <div class="card md:col-span-4 rounded-2xl p-6">
+            <div class="flex items-center gap-3 mb-4"><span class="text-2xl">&#128526;</span><h3 class="text-xl font-bold text-primary">The "Chachu" Vibe</h3></div>
+            <p class="text-secondary text-sm leading-relaxed mb-4">Known lovingly as <strong class="text-primary">"${akmData.nicknames.join('" & "')}"</strong>.</p>
+            <div class="flex flex-wrap gap-2">${akmData.vibes.map(v => `<span class="range-badge">${v}</span>`).join('')}</div>
+        </div>
+        <div class="jstar-card md:col-span-4 rounded-2xl p-6">
+            <h3 class="text-2xl font-black text-accent-2 mb-2 italic">J&#42; Series</h3>
+            <p class="text-gray-300 text-sm">"Jahar" questions designed to build advanced conceptual clarity.</p>
+        </div>
+        <div class="card md:col-span-4 rounded-2xl p-6 flex flex-col justify-between">
+            <div>
+                <h3 class="text-sm font-bold text-secondary uppercase tracking-widest mb-2">Birthday</h3>
+                <div class="flex items-center gap-3"><span class="text-3xl">&#127874;</span><span class="text-2xl font-bold text-primary">${akmData.birthday}</span></div>
+            </div>
+            <div class="mt-6 pt-4 border-t border-border">
+                <h3 class="text-sm font-bold text-secondary uppercase tracking-widest mb-2">Famous For</h3>
+                <p class="italic text-primary">"${akmData.tagline}"</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="card rounded-2xl p-6 md:p-8 mb-6 flex flex-col md:flex-row items-center justify-between gap-6">
+        <div class="flex items-center gap-6">
+            <div class="w-20 h-20 rounded-2xl flex-shrink-0">
+                <img src="/pictures/logo.png" onerror="this.src='/pictures/neelaxmi.png'" alt="APK Logo" class="w-full h-full object-contain rounded-lg">
+            </div>
+            <div class="text-center md:text-left">
+                <h3 class="text-xl font-bold text-primary mb-1">APK App</h3>
+                <p class="text-secondary text-sm max-w-xs leading-relaxed">Get exclusive access to Jahar concepts, practice sheets, and live updates directly on your phone.</p>
+            </div>
+        </div>
         <div class="flex-shrink-0 w-full md:w-auto">
-            <a href="https://classupdates.netlify.app/akmsir.apk" target="_blank" 
-               class="group relative flex items-center justify-center gap-3 px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition-all transform hover:-translate-y-1 shadow-lg shadow-blue-500/25 overflow-hidden">
-                <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></div>
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
-                </svg>
+            <a href="https://classupdates.netlify.app/akmsir.apk" target="_blank" class="shimmer-btn flex items-center justify-center gap-3 px-8 py-4 bg-accent text-accent-text rounded-xl font-bold transition-all transform hover:-translate-y-1 shadow-lg">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
                 <span>Download Now</span>
             </a>
         </div>
     </div>
-</div>
 
-
-            <div class="cyber-card p-0 overflow-hidden bg-gradient-to-r from-gray-900 to-gray-800 text-white">
-                <div class="p-6 md:p-8 flex flex-col md:flex-row justify-between items-center gap-6">
-                    <div><h3 class="text-2xl font-bold mb-1">Connect with AKM Sir</h3></div>
-                    <div class="flex gap-4">
-                        <a href="${akmData.links.instagram}" target="_blank" class="px-6 py-3 rounded-full bg-gradient-to-r from-pink-500 to-yellow-500 font-bold">Instagram</a>
-                        <a href="${akmData.links.unacademy}" target="_blank" class="px-6 py-3 rounded-full bg-blue-600 font-bold">Unacademy</a>
-                    </div>
-                </div>
+    <div class="card rounded-2xl p-0 overflow-hidden" style="background:linear-gradient(120deg,#0f172a,#1e1b4b); color:#f1f5f9; border:none;">
+        <div class="p-6 md:p-8 flex flex-col md:flex-row justify-between items-center gap-6">
+            <h3 class="text-2xl font-bold">Connect with AKM Sir</h3>
+            <div class="flex gap-4">
+                <a href="${akmData.links.instagram}" target="_blank" class="px-6 py-3 rounded-full font-bold" style="background:linear-gradient(120deg,#ec4899,#f5a524)">Instagram</a>
+                <a href="${akmData.links.unacademy}" target="_blank" class="px-6 py-3 rounded-full font-bold bg-accent text-accent-text">Unacademy</a>
             </div>
-        </div>`;
-        contentArea.innerHTML = content;
-    }
-
-function renderLegacyContent(tabName) {
-    toggleFilterButtons(false);
-    const contentMap = {
-        'Module': {
-            title: "Main Module Repository",
-            text: "This repository hosts the comprehensive, downloadable study MODULE DISCUSSION (PDFs, notes, and handouts).",
-            link: { href: modulesData.social_links.find(l => l.title === 'AJAY SIR sir other material')?.url || '#', text: "Access Module Repository" }
-        }
-    };
-    const data = contentMap[tabName];
-    if (!data) return '';
-    return `
-        <div class="max-w-4xl mx-auto">
-            <a href="${data.link.href}" target="_blank" class="cyber-card flex flex-col md:flex-row md:items-center space-y-4 md:space-y-0 md:space-x-6 hover:shadow-xl transition-all cursor-pointer group">
-                <div class="flex-grow">
-                    <h3 class="text-2xl font-bold text-primary mb-2">${data.title}</h3>
-                    <p class="text-secondary mb-4">${data.text}</p>
-                    <span class="text-accent font-semibold flex items-center group-hover:underline">${data.link.text}</span>
-                </div>
-            </a>
         </div>
-    `;
+    </div>`;
+    aboutTarget.innerHTML = content;
+    activateLazyImages(aboutTarget);
 }
 
 /* -------------------------------------------------------------------------- */
-/* NEW PDF VIEWER LOGIC                                */
+/* PDF VIEWER                                                                  */
 /* -------------------------------------------------------------------------- */
-
 function injectPdfViewer() {
     if (!document.getElementById('pdf-viewer-container')) {
         const viewerHTML = `
             <div id="pdf-viewer-container" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:9999; flex-direction:column; align-items:center; justify-content:center;">
                 <button onclick="closePdf()" style="position:absolute; top:20px; right:30px; color:white; font-size:40px; background:none; border:none; cursor:pointer;">&times;</button>
                 <iframe id="pdf-frame" src="" style="width:90%; height:90%; border:none; border-radius:8px; background:white;"></iframe>
-            </div>
-        `;
+            </div>`;
         document.body.insertAdjacentHTML('beforeend', viewerHTML);
     }
 }
@@ -1150,12 +1130,12 @@ function injectPdfViewer() {
 let currentPdfUrl = '';
 let currentPdfTitle = '';
 
-function openPdf(link, title = 'Module PDF') {
+function openPdf(link, title) {
+    title = title || 'Module PDF';
     currentPdfUrl = link;
     currentPdfTitle = title;
-    
+
     let displayLink = link;
-    // Force Google Drive links into Preview Mode to avoid "Invalid Structure" errors
     if (link.includes('drive.google.com')) {
         displayLink = link.replace(/\/view.*/, '/preview').replace(/\/edit.*/, '/preview');
     }
@@ -1165,249 +1145,258 @@ function openPdf(link, title = 'Module PDF') {
     const titleText = document.getElementById('pdf-title-display');
     const dlBtn = document.getElementById('download-btn');
 
-    if(container && frame) {
-        titleText.innerText = title;
-        dlBtn.href = link; 
+    if (container && frame) {
+        if (titleText) titleText.innerText = title;
+        if (dlBtn) dlBtn.href = link;
         frame.src = displayLink;
         container.style.display = 'flex';
         document.body.style.overflow = 'hidden';
     }
 }
-
 function closePdf() {
     const container = document.getElementById('pdf-viewer-container');
     const frame = document.getElementById('pdf-frame');
-    if(container && frame) {
-        frame.src = ''; 
+    if (container && frame) {
+        frame.src = '';
         container.style.display = 'none';
         document.body.style.overflow = 'auto';
     }
 }
-
 function sharePdfLink() {
     if (!currentPdfTitle) return;
-
-    // Convert "Mole Concept Part 1" to "mole-concept-part-1"
-    const slug = currentPdfTitle
-        .toLowerCase()
-        .trim()
-        .replace(/[^\w\s-]/g, '')
-        .replace(/[\s_-]+/g, '-')
-        .replace(/^-+|-+$/g, '');
-
+    const slug = currentPdfTitle.toLowerCase().trim().replace(/[^\w\s-]/g, '').replace(/[\s_-]+/g, '-').replace(/^-+|-+$/g, '');
     const baseUrl = window.location.origin + window.location.pathname;
-    const shareUrl = `${baseUrl}?module=${slug}`; // NO MORE DATA PARAMETER!
-
-    navigator.clipboard.writeText(shareUrl).then(() => {
-        alert("Clean link copied: " + slug);
-    });
-}
-//-------------------------------------------------------------------------- */
-//* DYNAMIC PDF FETCHING                        */
-//* -------------------------------------------------------------------------- */
-
-async function fetchAndRenderModulePdfs() {
-    toggleFilterButtons(false);
-    contentArea.innerHTML = `<div class="p-8 text-center text-secondary">Loading Modules...</div>`;
-    
-    try {
-        const snapshot = await db.doc(EDUCATOR_DOC_PATH).collection('module_pdfs')
-            .where('status', '==', 'approved')
-            .orderBy('createdAt', 'desc')
-            .get();
-
-        let pdfArray = [];
-        snapshot.forEach(doc => {
-            pdfArray.push(doc.data());
-        });
-
-        if (pdfArray.length === 0) {
-            contentArea.innerHTML = `<div class="p-8 text-center text-secondary">No PDF modules found in database.</div>`;
-            return;
-        }
-
-        const cardsHtml = pdfArray.map(item => {
-            return `
-                <div onclick="openPdf('${item.link}', '${item.title.replace(/'/g, "\\'")}')" class="card cursor-pointer block bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-xl transition-all duration-300 group h-full flex flex-col relative">
-                    <div class="relative w-full h-44 overflow-hidden">
-                        <img src="${MAIN_THUMBNAIL_URL}" alt="Class Thumbnail" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500">
-                        <div class="absolute bottom-3 left-3 w-10 h-10 rounded-full border-2 border-white overflow-hidden shadow-md z-10">
-                            <img src="${COMPANY_LOGO_URL}" class="w-full h-full object-cover">
-                        </div>
-                        <div class="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors"></div>
-                        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                             <div class="bg-white/90 rounded-full p-3 shadow-lg">
-                                <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
-                             </div>
-                        </div>
-                    </div>
-                    <div class="p-4 flex flex-col flex-grow">
-                         <div class="flex items-center mb-2">
-                             <span class="text-xs font-bold text-red-600 bg-red-50 px-2 py-0.5 rounded border border-red-100 uppercase tracking-wide">
-                                 ${item.subject || 'PDF Module'}
-                             </span>
-                         </div>
-                         <h3 class="text-lg font-bold text-primary leading-snug mb-1 group-hover:text-accent transition-colors">
-                             ${item.title}
-                         </h3>
-                         <p class="text-xs text-secondary mt-auto pt-2 flex items-center">
-                            <span class="w-2 h-2 rounded-full bg-green-500 mr-2"></span> Click to Open PDF
-                         </p>
-                    </div>
-                </div>
-            `;
-        }).join('');
-
-        contentArea.innerHTML = `
-            <div class="mb-6 border-l-4 border-red-500 pl-4">
-                 <h2 class="text-2xl font-bold text-primary">📄 Module PDFs</h2>
-                 <p class="text-sm text-secondary">Fetched dynamically from Firebase. Click to read.</p>
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">${cardsHtml}</div>
-        `;
-        
-        injectPdfViewer();
-
-    } catch (error) {
-        console.error("Error fetching PDFs:", error);
-        contentArea.innerHTML = `<div class="p-8 text-center text-red-500">Error loading PDFs: ${error.message}</div>`;
-    }
+    const shareUrl = `${baseUrl}?module=${slug}`;
+    navigator.clipboard.writeText(shareUrl).then(() => alert("Clean link copied: " + slug));
 }
 
 /* -------------------------------------------------------------------------- */
-/* CORE LOGIC & INIT                             */
+/* SECTION FILTER (Free Classes: latest / oldest)                             */
 /* -------------------------------------------------------------------------- */
-
-function toggleFilterButtons(show) {
-    filterArea.style.display = show ? 'flex' : 'none';
-}
-
 function updateFilterButtonStyling(activeOrder) {
     document.querySelectorAll('.filter-btn').forEach(btn => {
-        if (btn.dataset.sortOrder === activeOrder) {
-            btn.classList.add('active');
-        } else {
-            btn.classList.remove('active');
-        }
+        btn.classList.toggle('active', btn.dataset.sortOrder === activeOrder);
     });
 }
-
 function handleFilterClick(event) {
     const button = event.currentTarget;
     const newSortOrder = button.dataset.sortOrder;
     if (newSortOrder === currentSortOrder) return;
-    loadTabContent(currentActiveTab, newSortOrder);
+    currentSortOrder = newSortOrder;
+    fetchAndRenderContent('free_classes', currentSortOrder, document.getElementById('free-classes-content'));
 }
 
-// Map tab names to render functions
-const tabContentRenderers = {
-    'Free classes': (sortOrder = 'desc') => { toggleFilterButtons(true); fetchAndRenderContent('free_classes', sortOrder); },
-    'Courses': (sortOrder = 'desc') => { toggleFilterButtons(true); fetchAndRenderContent('courses', sortOrder); },
-    'About': () => renderAboutSection(),
-    'modules': () => { toggleFilterButtons(false); renderModulesGridFromJSON(); },
-    'PYQ Series': () => renderPYQGridFromJSON(),
-    'Quizzes': () => loadQuizCards(),
-    'module_pdf': () => fetchAndRenderModulePdfs(),  
-    'Module': () => contentArea.innerHTML = renderLegacyContent('Module'),
-};
+/* -------------------------------------------------------------------------- */
+/* "LET'S STUDY" INTERACTION                                                   */
+/* -------------------------------------------------------------------------- */
+let freeClassesLoaded = false;
+function initLetsStudy() {
+    const btn = document.getElementById('lets-study-btn');
+    const panel = document.getElementById('free-classes-panel');
+    const chevron = document.getElementById('lets-study-chevron');
+    if (!btn || !panel) return;
 
-function loadTabContent(tabName, sortOrder = currentSortOrder) {
-    currentActiveTab = tabName;
-    currentSortOrder = sortOrder;
-
-    document.querySelectorAll('.nav-tab').forEach(tab => {
-        if (tab.getAttribute('data-tab') === tabName) {
-            tab.classList.add('tab-active');
-        } else {
-            tab.classList.remove('tab-active');
+    btn.addEventListener('click', () => {
+        const opening = !panel.classList.contains('open');
+        panel.classList.toggle('open');
+        chevron.style.transform = opening ? 'rotate(180deg)' : 'rotate(0deg)';
+        if (opening && !freeClassesLoaded) {
+            freeClassesLoaded = true;
+            fetchAndRenderContent('free_classes', currentSortOrder, document.getElementById('free-classes-content'));
+        }
+        if (opening) {
+            setTimeout(() => panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 250);
         }
     });
-
-    if (tabName === 'Free classes' || tabName === 'Courses') {
-        tabContentRenderers[tabName](sortOrder);
-    } else if (tabContentRenderers[tabName]) {
-        toggleFilterButtons(false);
-        tabContentRenderers[tabName]();
-    } else {
-        contentArea.innerHTML = `<div class="p-8 text-center text-red-500">Content not available for ${tabName}.</div>`;
-    }
 }
 
+/* -------------------------------------------------------------------------- */
+/* SCROLL-TRIGGERED SECTION REVEAL + LAZY SECTION DATA LOADING                */
+/* -------------------------------------------------------------------------- */
+const sectionLoaders = {
+    'courses': () => {
+        fetchAndRenderContent('courses', 'desc', document.getElementById('courses-content'));
+        renderModulesGridFromJSON(document.getElementById('modules-content'));
+    },
+    'pyq': () => renderPYQGridFromJSON(document.getElementById('pyq-content')),
+    'quizzes': () => loadQuizCards(document.getElementById('quiz-content')),
+    'study-material': () => fetchAndRenderModulePdfs(document.getElementById('pdf-content')),
+};
+const loadedSectionKeys = new Set();
+
+function initScrollReveal() {
+    const revealEls = document.querySelectorAll('.reveal');
+    const io = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('is-visible');
+                const key = entry.target.id;
+                if (sectionLoaders[key] && !loadedSectionKeys.has(key)) {
+                    loadedSectionKeys.add(key);
+                    sectionLoaders[key]();
+                }
+                io.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+    revealEls.forEach(el => io.observe(el));
+}
+
+/* Highlight active quick-nav link while scrolling */
+function initQuickNavHighlight() {
+    const links = document.querySelectorAll('#quick-nav .quick-link');
+    const map = {};
+    links.forEach(l => { map[l.getAttribute('href').slice(1)] = l; });
+    const targets = Object.keys(map).map(id => document.getElementById(id)).filter(Boolean);
+    const io = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            const link = map[entry.target.id];
+            if (!link) return;
+            if (entry.isIntersecting) {
+                links.forEach(l => l.classList.remove('active'));
+                link.classList.add('active');
+            }
+        });
+    }, { threshold: 0.4, rootMargin: '-30% 0px -50% 0px' });
+    targets.forEach(t => io.observe(t));
+}
+
+/* -------------------------------------------------------------------------- */
+/* THEME ENGINE                                                                */
+/* -------------------------------------------------------------------------- */
 const THEME_KEY = 'pj_profile_theme';
 const themes = [
-    { id: 'default-ui', name: 'Default', icon: '☀️' },
-    { id: 'dark', name: 'Dark', icon: '🌙' },
-    { id: 'vibrant', name: 'Vibrant', icon: '🟢' },
-    { id: 'minimalist', name: 'Minimalist', icon: '⚪' },
-    { id: 'unacademy-inspired', name: 'Unacademy', icon: '⚫' },
+    { id: 'reaction-lab', name: 'Reaction Lab', icon: '&#9879;' },
+    { id: 'dark', name: 'Midnight', icon: '&#127769;' },
+    { id: 'vibrant', name: 'Vibrant', icon: '&#128994;' },
+    { id: 'minimalist', name: 'Minimalist', icon: '&#9898;' },
+    { id: 'unacademy-inspired', name: 'Unacademy', icon: '&#9899;' },
 ];
-
+function renderThemeButtons(currentTheme) {
+    themeSwitcher.innerHTML = themes.map(theme => `
+        <button class="theme-btn ${theme.id === currentTheme ? 'active' : ''}" data-theme-id="${theme.id}">
+            <span>${theme.icon}</span> ${theme.name}
+        </button>
+    `).join('');
+}
+function updateThemeButtons(activeTheme) {
+    document.querySelectorAll('.theme-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.themeId === activeTheme);
+    });
+}
 function switchTheme(themeId) {
     body.setAttribute('data-theme', themeId);
     localStorage.setItem(THEME_KEY, themeId);
     updateThemeButtons(themeId);
 }
 
-function renderThemeButtons(currentTheme) {
-    themeSwitcher.innerHTML = themes.map(theme => `
-        <button class="theme-btn ${theme.id === currentTheme ? 'active' : ''}" data-theme-id="${theme.id}" >
-            ${theme.icon} ${theme.name}
-        </button>
-    `).join('');
+/* -------------------------------------------------------------------------- */
+/* LIGHTWEIGHT ONBOARDING TOUR                                                 */
+/* -------------------------------------------------------------------------- */
+const TOUR_SEEN_KEY = 'akm_site_tour_seen_v2';
+const tourSteps = [
+    { target: '#quick-nav', title: '&#128072; Jump Anywhere', text: 'Use this bar to hop straight to Free Classes, Courses, Quizzes, PDFs and more.' },
+    { target: '#lets-study-btn', title: '&#9879; Let\u2019s Study', text: 'Tap this to reveal the latest free masterclasses instantly.' },
+    { target: '#about', title: '&#128587; About AKM Sir', text: 'Everything about your teacher, plus the app download, lives here.' },
+    { target: '#site-footer', title: '&#128204; Quick Links & Community', text: 'All community links, tools, and appearance settings live in the footer.' }
+];
+let tourIndex = 0, tourOverlayEl = null, tourBoxEl = null, tourTooltipEl = null;
+
+function buildTourDOM() {
+    if (tourOverlayEl) return;
+    tourOverlayEl = document.createElement('div');
+    tourOverlayEl.id = 'tour-overlay';
+    tourOverlayEl.innerHTML = `
+        <div id="tour-highlight-box"></div>
+        <div id="tour-tooltip">
+            <div id="tour-tooltip-title" class="font-bold text-lg mb-1"></div>
+            <div id="tour-tooltip-text" class="text-sm text-secondary mb-4"></div>
+            <div class="flex items-center justify-between">
+                <button id="tour-skip-btn" class="text-xs text-secondary hover:text-primary underline">Skip tour</button>
+                <div class="flex items-center gap-2">
+                    <span id="tour-step-indicator" class="text-xs text-secondary mr-2"></span>
+                    <button id="tour-next-btn" class="px-4 py-2 rounded-lg bg-accent text-accent-text text-sm font-semibold">Next</button>
+                </div>
+            </div>
+        </div>`;
+    document.body.appendChild(tourOverlayEl);
+    tourBoxEl = document.getElementById('tour-highlight-box');
+    tourTooltipEl = document.getElementById('tour-tooltip');
+    document.getElementById('tour-skip-btn').addEventListener('click', endTour);
+    document.getElementById('tour-next-btn').addEventListener('click', advanceTour);
+}
+function positionTourStep(step) {
+    const target = document.querySelector(step.target);
+    if (!target) { advanceTour(); return; }
+    target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    setTimeout(() => {
+        const tourBtn = document.getElementById('start-tour-btn');
+        if (tourBtn) tourBtn.addEventListener('click', startTour);
+        
+        // COMMENT OUT OR REMOVE THIS LINE TO DISABLE AUTO-START:
+        // if (!localStorage.getItem(TOUR_SEEN_KEY)) startTour();
+    }, 1400);
+}
+function advanceTour() {
+    tourIndex++;
+    if (tourIndex >= tourSteps.length) { endTour(); return; }
+    positionTourStep(tourSteps[tourIndex]);
+}
+function startTour() {
+    buildTourDOM();
+    tourIndex = 0;
+    tourOverlayEl.style.display = 'block';
+    positionTourStep(tourSteps[0]);
+}
+function endTour() {
+    if (tourOverlayEl) tourOverlayEl.style.display = 'none';
+    localStorage.setItem(TOUR_SEEN_KEY, '1');
 }
 
-function updateThemeButtons(activeTheme) {
-    document.querySelectorAll('.theme-btn').forEach(btn => {
-        if (btn.dataset.themeId === activeTheme) {
-            btn.classList.add('active');
-        } else {
-            btn.classList.remove('active');
-        }
-    });
-}
-
+/* -------------------------------------------------------------------------- */
+/* INIT                                                                        */
+/* -------------------------------------------------------------------------- */
 document.addEventListener('DOMContentLoaded', async () => {
-    const savedTheme = localStorage.getItem(THEME_KEY) || 'default-ui';
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    const savedTheme = localStorage.getItem(THEME_KEY) || 'reaction-lab';
     renderThemeButtons(savedTheme);
     body.setAttribute('data-theme', savedTheme);
-    const params = new URLSearchParams(window.location.search);
-    const moduleSlug = params.get('module');    // Inject viewer initially
-    injectPdfViewer();
 
-    const navTabs = document.querySelectorAll('.nav-tab');
-    navTabs.forEach(tab => {
-        tab.addEventListener('click', (e) => {
-            e.preventDefault();
-            const tabName = e.currentTarget.getAttribute('data-tab');
-            loadTabContent(tabName, 'desc');
-        });
-    });
+    injectPdfViewer();
+    activateLazyImages(document);
 
     themeSwitcher.addEventListener('click', (e) => {
         const themeButton = e.target.closest('.theme-btn');
-        if (themeButton && themeButton.dataset.themeId) {
-            switchTheme(themeButton.dataset.themeId);
-        }
+        if (themeButton && themeButton.dataset.themeId) switchTheme(themeButton.dataset.themeId);
     });
-    
-if (moduleSlug) {
+
+    document.getElementById('filter-latest').addEventListener('click', handleFilterClick);
+    document.getElementById('filter-oldest').addEventListener('click', handleFilterClick);
+    updateFilterButtonStyling(currentSortOrder);
+
+    initLetsStudy();
+    initScrollReveal();
+    initQuickNavHighlight();
+
+    fetchAndRenderStats();
+    renderAboutSection();
+
+    // Deep link into a shared PDF module (?module=slug)
+    const params = new URLSearchParams(window.location.search);
+    const moduleSlug = params.get('module');
+    if (moduleSlug) {
         try {
-            // Search Firebase for the module with this title
             const snapshot = await db.doc(EDUCATOR_DOC_PATH)
                 .collection('module_pdfs')
                 .where('status', '==', 'approved')
                 .get();
 
             let foundFile = null;
-
             snapshot.forEach(doc => {
                 const data = doc.data();
-                // Create a slug from the database title to compare
                 const dbSlug = data.title.toLowerCase().trim().replace(/[^\w\s-]/g, '').replace(/[\s_-]+/g, '-');
-                
-                if (dbSlug === moduleSlug) {
-                    foundFile = data;
-                }
+                if (dbSlug === moduleSlug) foundFile = data;
             });
 
             if (foundFile) {
@@ -1415,33 +1404,22 @@ if (moduleSlug) {
             } else {
                 console.log("Module not found in database.");
             }
-            
-            
-            // Cleanup the URL bar to keep it pretty
             const cleanURL = window.location.origin + window.location.pathname;
             window.history.replaceState({}, '', cleanURL);
-
         } catch (error) {
             console.error("Error finding shared module:", error);
         }
     }
-                
-                
-                
-                
-    document.getElementById('filter-latest').addEventListener('click', handleFilterClick);
-    document.getElementById('filter-oldest').addEventListener('click', handleFilterClick);
 
-    fetchAndRenderStats();
-    loadTabContent('Free classes', 'desc');
-    
-    
+    setTimeout(() => {
+        const tourBtn = document.getElementById('start-tour-btn');
+        if (tourBtn) tourBtn.addEventListener('click', startTour);
+        if (!localStorage.getItem(TOUR_SEEN_KEY)) startTour();
+    }, 1400);
 });
-
-    
-    
-</script>     
+</script>
 
 <script src="/history.js"></script>
-   </body>
+<script src="/js/head-loader.js"></script>
+</body>
 </html>

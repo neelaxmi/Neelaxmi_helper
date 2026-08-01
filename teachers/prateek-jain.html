@@ -3,155 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prateek Jain Profile</title>
+    
+    <!-- Title & SEO Description -->
+    <title>Prateek Jain - Physics Masterclass for IIT JEE & NEET UG | Neelaxmi</title>
+    <meta name="description" content="Join Prateek Jain for expert Physics classes tailored for IIT JEE & NEET UG. Access free quizzes and daily exam updates on Neelaxmi - The Helper.">
+    <link rel="canonical" href="https://classupdates.netlify.app/prateek-jain"> <!-- Remember to update this URL -->
+    
+    <!-- Open Graph (Social Sharing) -->
+    <meta property="og:title" content="Prateek Jain - Physics for IIT JEE & NEET UG | Neelaxmi">
+    <meta property="og:description" content="Expert Physics guidance for IIT JEE and NEET UG. Join Neelaxmi for free quizzes and updates.">
+    <meta property="og:image" content="/pictures/neelaxmi.png">
+    <meta property="og:url" content="https://classupdates.netlify.app/prateek-jain">
+    <meta property="og:type" content="website">
+    
+    <!-- Browser & App Metadata -->
+    <meta name="theme-color" content="#0f172a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Neelaxmi">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="icon" type="image/jpeg" href="/pictures/neelaxmi.png">
+    <link rel="apple-touch-icon" href="/pictures/neelaxmi.png">
+    
+    <!-- Search Engine Verification -->
+    <meta name="google-site-verification" content="iatylsdA3ilcUEyKshZLLZmpDIh6TMUdj7qjgoLTWxw">
+    
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <!-- CSS Files -->
     <link rel="stylesheet" href="/style.css">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
-    <meta name="google-site-verification" content="iatylsdA3ilcUEyKshZLLZmpDIh6TMUdj7qjgoLTWxw" />
     <link rel="stylesheet" type="text/css" href="/css/teacher.css">
-
+    
+    <!-- Scripts -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-
-    <style>
-        /* PDF Viewer Styles Copied from Ajay Sir Profile */
-        #pdf-viewer-container {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.95);
-            z-index: 9999;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-        #pdf-frame {
-            width: 90%;
-            height: 90%;
-            border: none;
-            border-radius: 8px;
-            background: white;
-        }
-        .close-pdf {
-            position: absolute;
-            top: 20px;
-            right: 30px;
-            color: white;
-            font-size: 40px;
-            cursor: pointer;
-            z-index: 10000;
-            background: none;
-            border: none;
-        }
-        
-        /* High VFX Animations */
-@keyframes float {
-    0% { transform: translateY(0px); }
-    50% { transform: translateY(-10px); }
-    100% { transform: translateY(0px); }
-}
-
-@keyframes gradient-bg {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-}
-
-.about-card {
-    background: rgba(255, 255, 255, 0.7);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-.about-card:hover {
-    transform: translateY(-5px) scale(1.01);
-    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-    border-color: var(--accent);
-}
-
-.glow-text {
-    text-shadow: 0 0 15px rgba(var(--accent-rgb), 0.3);
-}
-
-.stat-pill {
-    background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
-    background-size: 400% 400%;
-    animation: gradient-bg 15s ease infinite;
-    color: white;
-}
-
-.accomplishment-item {
-    border-left: 3px solid transparent;
-    transition: all 0.3s ease;
-}
-
-.accomplishment-item:hover {
-    border-left-color: #3b82f6;
-    background: rgba(59, 130, 246, 0.05);
-    padding-left: 1rem;
-}
-
-
-/* Pro Filter Container */
-#filter-area {
-    display: flex;
-    gap: 12px;
-    overflow-x: auto;
-    padding: 15px 5px; /* Added padding for shadow clearance */
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-    -webkit-overflow-scrolling: touch;
-}
-
-#filter-area::-webkit-scrollbar {
-    display: none;
-}
-
-/* Pro Filter Pills */
-.filter-btn {
-    all: unset; /* Resets default button behavior */
-    cursor: pointer;
-    white-space: nowrap;
-    padding: 10px 24px;
-    border-radius: 14px; /* Squircle look instead of pill */
-    font-size: 14px;
-    font-weight: 500;
-    letter-spacing: -0.2px;
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-    background: #f1f5f9;
-    color: #475569;
-    border: 1px solid transparent;
-}
-
-/* Hover State - Subtle Lift */
-.filter-btn:hover:not(.active) {
-    background: #ffffff;
-    color: #1e293b;
-    border-color: #e2e8f0;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-}
-
-/* Active State - Gradient & Glow */
-.filter-btn.active {
-    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-    color: #ffffff;
-    font-weight: 600;
-    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
-    transform: scale(1.05);
-}
-
-/* Tap Effect for Mobile */
-.filter-btn:active {
-    transform: scale(0.95);
-}
-
-
-    </style>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1485462286791974" crossorigin="anonymous"></script>
 </head>
-
 <body data-theme="default-ui">
     
     <button class="menu-toggle" onclick="toggleSidebar()">
@@ -1090,5 +981,6 @@ const tabContentRenderers = {
     </script>
     
     <script src="/history.js"></script>
+    <script src="/js/head-loader.js"></script>
 </body>
 </html>
