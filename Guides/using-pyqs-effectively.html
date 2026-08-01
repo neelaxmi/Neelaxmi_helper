@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How to Actually Use PYQs (Not Just Solve Them) | Neelaxmi Guides</title>
+<meta name="description" content="The Error-Log & Reverse Engineering methodology for using previous year questions to close conceptual gaps and spot repeated patterns.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = { darkMode: 'class', theme: { extend: { fontFamily: { display: ['Sora','sans-serif'], sans: ['Inter','sans-serif'] } } } }
+</script>
+<style>
+  body { font-family:'Inter',sans-serif; }
+  h1,h2,h3,.font-display { font-family:'Sora',sans-serif; }
+  .callout-tip { background:#FFF7ED; border-left:4px solid #F97316; }
+  .callout-warn { background:#FEF2F2; border-left:4px solid #DC2626; }
+</style>
+</head>
+<body class="bg-gray-50 text-gray-800 dark:bg-gray-950 dark:text-gray-100 transition-colors">
+
+<header class="sticky top-0 z-40 bg-white/90 dark:bg-gray-950/90 backdrop-blur border-b border-gray-100 dark:border-gray-800">
+  <div class="max-w-6xl mx-auto px-5 py-4 flex items-center justify-between">
+    <a href="/index.html" class="flex items-center gap-2 font-display font-extrabold text-xl">
+      <span class="w-9 h-9 rounded-xl bg-gradient-to-br from-red-600 to-orange-500 flex items-center justify-center text-white font-bold">N</span>Neelaxmi
+    </a>
+    <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-gray-600 dark:text-gray-300">
+      <a href="/index.html" class="hover:text-red-600">Home</a>
+      <a href="/guides/index.html" class="hover:text-red-600">Guides</a>
+      <a href="/blog/index.html" class="hover:text-red-600">Blog</a>
+    </nav>
+    <a href="/guides/index.html" class="inline-flex items-center gap-2 text-sm font-semibold px-4 py-2 rounded-full bg-red-600 text-white hover:bg-red-700 transition">
+      <i class="fa-solid fa-arrow-left text-xs"></i> Back to Guides
+    </a>
+  </div>
+</header>
+
+<section class="relative overflow-hidden bg-gradient-to-br from-red-600 via-red-500 to-orange-500 text-white">
+  <div class="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_30%_80%,white,transparent_35%)]"></div>
+  <div class="max-w-4xl mx-auto px-5 py-16 relative">
+    <p class="uppercase tracking-widest text-xs font-semibold text-orange-100 mb-3"><i class="fa-solid fa-magnifying-glass mr-2"></i>Methodology Guide</p>
+    <h1 class="font-display text-3xl md:text-5xl font-extrabold leading-tight">How to Actually Use PYQs (Not Just Solve Them)</h1>
+    <p class="mt-4 text-lg text-red-50 max-w-2xl">Solving 10 years of previous year questions is not preparation by itself. What toppers do differently is reverse-engineer them.</p>
+    <div class="mt-6 flex flex-wrap gap-3 text-sm">
+      <span class="bg-white/15 px-3 py-1.5 rounded-full"><i class="fa-regular fa-clock mr-1"></i> 14 min read</span>
+      <span class="bg-white/15 px-3 py-1.5 rounded-full"><i class="fa-solid fa-file-lines mr-1"></i> NEET / JEE</span>
+    </div>
+  </div>
+</section>
+
+<main class="max-w-4xl mx-auto px-5 py-12 space-y-14">
+
+<p class="text-lg leading-relaxed">Almost every serious aspirant "does PYQs." Almost none of them extract the full value from the exercise. Solving a decade of previous year questions and simply checking your score against the answer key is like reading a textbook and closing it immediately after — you'll retain far less than the effort deserves. The method below, which we call <strong>Error-Log & Reverse Engineering</strong>, treats PYQs as a diagnostic dataset about the exam itself, not just a practice set.</p>
+
+<section>
+  <h2 class="font-display text-2xl md:text-3xl font-bold mb-4"><i class="fa-solid fa-triangle-exclamation text-red-600 mr-2"></i>Why "Just Solving" PYQs Fails Most Students</h2>
+  <div class="callout-warn p-4 rounded-r-xl text-sm">
+    <i class="fa-solid fa-circle-xmark text-red-600 mr-2"></i>The typical pattern: solve a paper → check the answer key → move to the next paper. Repeat for 10 years of papers. This tells you your raw accuracy, but nothing about <em>why</em> you're missing marks, whether the same mistake is recurring, or which chapters are quietly costing you 15-20 marks every single year.
+  </div>
+  <p class="mt-4">The goal of proper PYQ analysis is to answer three questions that a raw score can never answer: What kind of mistake am I making? Is it the same mistake repeating across papers? And which specific sub-topics does the exam keep testing, regardless of the year?</p>
+</section>
+
+<section>
+  <h2 class="font-display text-2xl md:text-3xl font-bold mb-4"><i class="fa-solid fa-list-ol text-red-600 mr-2"></i>The Error-Log & Reverse Engineering Method, Step by Step</h2>
+
+  <h3 class="font-display text-xl font-bold mt-6 mb-2">Step 1 — Solve Under Real Conditions</h3>
+  <p>Attempt each PYQ paper as a full timed test, not a leisurely chapter-wise practice. Real exam pressure changes how you make mistakes, and you need that authentic error data, not a relaxed-conditions version of it.</p>
+
+  <h3 class="font-display text-xl font-bold mt-8 mb-2">Step 2 — Build a Structured Error Log</h3>
+  <p>For every question you got wrong, skipped, or guessed correctly on, add one row to a running spreadsheet. Don't skip the ones you guessed right — a lucky guess hides a real gap.</p>
+  <div class="overflow-x-auto rounded-2xl shadow-sm border border-gray-200 dark:border-gray-800 mt-4">
+    <table class="w-full text-sm">
+      <thead class="bg-red-600 text-white">
+        <tr>
+          <th class="p-3 text-left">Column</th>
+          <th class="p-3 text-left">What to Record</th>
+        </tr>
+      </thead>
+      <tbody class="bg-white dark:bg-gray-900">
+        <tr class="border-b border-gray-100 dark:border-gray-800"><td class="p-3 font-semibold">Chapter / Sub-topic</td><td class="p-3">Exact sub-topic, not just "Physics" — e.g. "Rotational Mechanics → Rolling without slipping"</td></tr>
+        <tr class="border-b border-gray-100 dark:border-gray-800"><td class="p-3 font-semibold">Error Type</td><td class="p-3">Concept Gap / Silly Mistake / Time Pressure / Misread Question / Guess</td></tr>
+        <tr class="border-b border-gray-100 dark:border-gray-800"><td class="p-3 font-semibold">Year & Paper</td><td class="p-3">So you can later check if this sub-topic repeats across years</td></tr>
+        <tr><td class="p-3 font-semibold">Fix Action</td><td class="p-3">What you'll specifically do differently next time — a note, a re-derivation, a flagged formula</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 class="font-display text-xl font-bold mt-8 mb-2">Step 3 — Reverse Engineer the Pattern</h3>
+  <p>After 5-6 years of papers logged, sort your spreadsheet by Chapter/Sub-topic. You will almost always find that a small handful of sub-topics — often less than 15 across the entire syllabus — account for a disproportionate share of your errors and of the exam's actual repeated questions. This is the reverse-engineering step: you're no longer guessing what's "important," you're reading it directly off real exam behavior.</p>
+  <div class="callout-tip p-4 rounded-r-xl mt-4 text-sm">
+    <i class="fa-solid fa-lightbulb text-orange-500 mr-2"></i><strong>Example pattern toppers commonly find:</strong> Rotational Mechanics rolling-without-slipping problems, Equilibrium common-ion effect numericals, and Genetics pedigree-analysis questions tend to reappear with only cosmetic changes year after year. Once you spot a pattern like this in your own log, that sub-topic gets prioritized revision until the error type disappears entirely.
+  </div>
+
+  <h3 class="font-display text-xl font-bold mt-8 mb-2">Step 4 — Categorize Conceptual Gaps Precisely</h3>
+  <p>Not all "Concept Gap" errors are equal. Split them further into three depths so your fix matches the actual problem:</p>
+  <ul class="space-y-2 mt-3">
+    <li class="flex gap-2"><i class="fa-solid fa-layer-group text-red-600 mt-1"></i><span><strong>Surface gap:</strong> You forgot a formula or a specific NCERT line — fix with a quick flashcard review.</span></li>
+    <li class="flex gap-2"><i class="fa-solid fa-layer-group text-red-600 mt-1"></i><span><strong>Structural gap:</strong> You know the formula but don't understand when to apply it — fix by re-deriving it from first principles and solving 5 varied problems.</span></li>
+    <li class="flex gap-2"><i class="fa-solid fa-layer-group text-red-600 mt-1"></i><span><strong>Foundational gap:</strong> An earlier, more basic chapter is shaky and it's silently breaking a later one — fix by stepping back to that earlier chapter entirely.</span></li>
+  </ul>
+
+  <h3 class="font-display text-xl font-bold mt-8 mb-2">Step 5 — Close the Loop With Spaced Re-Testing</h3>
+  <p>A week after logging an error, re-attempt a similar question on the same sub-topic without looking at your notes first. If you get it right, mark that log entry closed. If not, it goes back into active revision — this spaced re-test is what actually confirms learning happened, rather than just feeling like it did.</p>
+</section>
+
+<section>
+  <h2 class="font-display text-2xl md:text-3xl font-bold mb-4"><i class="fa-solid fa-repeat text-red-600 mr-2"></i>Tracking Repeated Patterns Across a Decade of Papers</h2>
+  <p>Once your error log spans multiple years of PYQs, build a simple frequency table. This becomes one of the most valuable documents you'll create during your entire preparation, because it's derived from real exam data rather than any coaching institute's opinion of what's "important."</p>
+  <div class="overflow-x-auto rounded-2xl shadow-sm border border-gray-200 dark:border-gray-800 mt-4">
+    <table class="w-full text-sm">
+      <thead class="bg-orange-500 text-white">
+        <tr><th class="p-3 text-left">Sub-topic</th><th class="p-3 text-left">Years Appeared</th><th class="p-3 text-left">Your Error Rate</th><th class="p-3 text-left">Status</th></tr>
+      </thead>
+      <tbody class="bg-white dark:bg-gray-900">
+        <tr class="border-b border-gray-100 dark:border-gray-800"><td class="p-3">Rolling Without Slipping</td><td class="p-3">7 of 10 years</td><td class="p-3">60%</td><td class="p-3 text-red-600 font-semibold">Priority Fix</td></tr>
+        <tr class="border-b border-gray-100 dark:border-gray-800"><td class="p-3">Common-Ion Effect</td><td class="p-3">6 of 10 years</td><td class="p-3">20%</td><td class="p-3 text-orange-500 font-semibold">Monitor</td></tr>
+        <tr><td class="p-3">Pedigree Analysis</td><td class="p-3">8 of 10 years</td><td class="p-3">10%</td><td class="p-3 text-green-600 font-semibold">Stable</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="mt-4 text-sm text-gray-500 dark:text-gray-400">(This is an illustrative example — build your own table from your actual solved papers; the exact repeated sub-topics vary slightly year to year.)</p>
+</section>
+
+<section class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6">
+  <h2 class="font-display text-xl font-bold mb-3"><i class="fa-solid fa-circle-check text-red-600 mr-2"></i>Quick Checklist</h2>
+  <ul class="space-y-2 text-sm">
+    <li><i class="fa-regular fa-square mr-2 text-gray-400"></i>Am I logging every wrong, skipped, and guessed question — not just the wrong ones?</li>
+    <li><i class="fa-regular fa-square mr-2 text-gray-400"></i>Have I split "Concept Gap" into surface / structural / foundational?</li>
+    <li><i class="fa-regular fa-square mr-2 text-gray-400"></i>Have I sorted my log by sub-topic to find repeated patterns?</li>
+    <li><i class="fa-regular fa-square mr-2 text-gray-400"></i>Am I spaced-re-testing closed errors instead of assuming they're fixed?</li>
+  </ul>
+</section>
+
+</main>
+
+<footer class="mt-16 bg-gray-900 text-gray-300">
+  <div class="max-w-6xl mx-auto px-5 py-10 grid md:grid-cols-3 gap-8">
+    <div>
+      <p class="flex items-center gap-2 font-display font-extrabold text-white text-lg mb-2">
+        <span class="w-8 h-8 rounded-lg bg-gradient-to-br from-red-600 to-orange-500 flex items-center justify-center">N</span>Neelaxmi
+      </p>
+      <p class="text-sm text-gray-400">Built by students, for students preparing for NEET UG and JEE Main.</p>
+    </div>
+    <div>
+      <p class="font-semibold text-white mb-2">Explore</p>
+      <ul class="space-y-1 text-sm">
+        <li><a href="/guides/index.html" class="hover:text-orange-400">All Guides</a></li>
+        <li><a href="/blog/index.html" class="hover:text-orange-400">Blog</a></li>
+      </ul>
+    </div>
+    <div>
+      <p class="font-semibold text-white mb-2">Related Reads</p>
+      <ul class="space-y-1 text-sm">
+        <li><a href="/guides/neet-ug-roadmap.html" class="hover:text-orange-400">NEET UG Roadmap</a></li>
+        <li><a href="/guides/jee-main-study-plan.html" class="hover:text-orange-400">JEE Main Study Plan</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="border-t border-gray-800 py-4 text-center text-xs text-gray-500">© 2026 Neelaxmi. All rights reserved.</div>
+</footer>
+
+</body>
+</html>
