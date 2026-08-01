@@ -1,55 +1,127 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!-- Generated: 2026-08-01 -->
   <url>
-    <loc>https://classupdates.netlify.app/</loc>
+    <loc>https://neelaxmi.site/</loc>
+    <lastmod>2026-08-01</lastmod>
+    <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
+
+  <!-- Main site pages -->
   <url>
-    <loc>https://classupdates.netlify.app/quiz/auth.html</loc>
+    <loc>https://neelaxmi.site/index.html</loc>
+    <lastmod>2026-08-01</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://neelaxmi.site/about-neet-ug.html</loc>
+    <lastmod>2026-08-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://neelaxmi.site/updates.html</loc>
+    <lastmod>2026-08-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://neelaxmi.site/privacy.html</loc>
+    <lastmod>2026-08-01</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.2</priority>
+  </url>
+
+  <!-- Guides -->
+  <url>
+    <loc>https://neelaxmi.site/Guides/neet-ug-roadmap.html</loc>
+    <lastmod>2026-08-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://neelaxmi.site/Guides/jee-main-study-plan.html</loc>
+    <lastmod>2026-08-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://neelaxmi.site/Guides/using-pyqs-effectively.html</loc>
+    <lastmod>2026-08-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Blogs -->
+  <url>
+    <loc>https://neelaxmi.site/blogs/five-free-tools.html</loc>
+    <lastmod>2026-08-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://neelaxmi.site/blogs/why-we-rebuilt.html</loc>
+    <lastmod>2026-08-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://neelaxmi.site/blogs/handling-exam-anxiety.html</loc>
+    <lastmod>2026-08-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <!-- Resource subdomains under neelaxmi.site (included as full URLs) -->
+  <url>
+    <loc>https://notes.neelaxmi.site/</loc>
+    <lastmod>2026-08-01</lastmod>
+    <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://classupdates.netlify.app/quiz/dashboard.html</loc>
+    <loc>https://neetquiz.neelaxmi.site/</loc>
+    <lastmod>2026-08-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://jeequiz.neelaxmi.site/</loc>
+    <lastmod>2026-08-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://resources.neelaxmi.site/</loc>
+    <lastmod>2026-08-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://flashcards.neelaxmi.site/</loc>
+    <lastmod>2026-08-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://pyq.neelaxmi.site/neet</loc>
+    <lastmod>2026-08-01</lastmod>
+    <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://classupdates.netlify.app/quiz/gemini.html</loc>
+    <loc>https://pyq.neelaxmi.site/jee</loc>
+    <lastmod>2026-08-01</lastmod>
+    <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://classupdates.netlify.app/quiz/quizmain.html</loc>
-    <priority>0.8</priority>
+    <loc>https://cbse.neelaxmi.site/</loc>
+    <lastmod>2026-08-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
   </url>
-  <url>
-    <loc>https://classupdates.netlify.app/quiz/quizzes.html</loc>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://classupdates.netlify.app/teachers/about-owner.html</loc>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://classupdates.netlify.app/teachers/ajay-sir.html</loc>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://classupdates.netlify.app/teachers/amit-gupta-sir.html</loc>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://classupdates.netlify.app/teachers/prateek-jain.html</loc>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://classupdates.netlify.app/teachers/ramesh-sharda.html</loc>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://classupdates.netlify.app/teachers/seep-mam.html</loc>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://classupdates.netlify.app/teachers/test-series.html</loc>
-    <priority>0.7</priority>
-  </url>
+
 </urlset>
