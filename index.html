@@ -1681,7 +1681,8 @@ const ICONS = {
    2. DOM HELPERS
    ---------------------------------------------------------------------- */
 const $ = (sel, ctx = document) => ctx.querySelector(sel);
-const $$ = (sel, ctx = document) => Array.from(ctx.querySelectorAll(sel));
+const $ = (sel, ctx = document) => Array.from(ctx.querySelectorAll(sel));
+const escapeHTML = (value) => String(value ?? '').replace(/[&<>\"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '\"': '&quot;', "'": '&#39;' }[char]));
 const prefersReducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 function formatTime(seconds) {
@@ -2131,7 +2132,7 @@ async function pushToFirestore(collectionName, payload) {
   const record = { ...payload, submittedAt: new Date().toISOString() };
   if (!firebaseReady) {
     console.log(`[Neelaxmi] (offline mode) would save to "${collectionName}":`, record);
-    return { ok: true, offline: true };
+    return { ok: false, offline: true };
   }
   try {
     await firestoreDB.collection(collectionName).add(record);
@@ -2206,11 +2207,11 @@ function initJoinTeamForm() {
     collectionName: 'teamApplications',
     buildSummary: (form) => {
       const name = $('#joinName', form).value || 'there';
-      return `Thanks! Sent my details as <strong>${name}</strong> 👋`;
+      return `Thanks! Sent my details as <strong>${escapeHTML(name)}</strong> 👋`;
     },
     buildReply: (form) => {
       const firstName = ($('#joinName', form).value || 'there').split(' ')[0];
-      return `Awesome, ${firstName}! Your application is logged — Team Neelaxmi usually replies on Telegram within 2–3 days. 🚀`;
+      return `Awesome, ${escapeHTML(firstName)}! Your application is logged — Team Neelaxmi usually replies on Telegram within 2–3 days. 🚀`;
     },
     buildPayload: (form) => ({
       name: $('#joinName', form).value,
