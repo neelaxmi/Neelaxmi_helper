@@ -1,256 +1,506 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="en" data-theme="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <!-- SEO & Title -->
-    <title>Quiz Land | NEET UG & JEE Main Practice Tests | Neelaxmi</title>
-    <meta name="description" content="Access Quiz Land at Neelaxmi: The ultimate practice hub for NEET UG and JEE Main. Take free CBT-based quizzes, test your preparation, and track your progress daily.">
-    <link rel="canonical" href="https://classupdates.netlify.app/quiz-land"> <!-- Update with your actual URL -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NEET Quiz Station — 2 Lakh+ Questions, CBT & Easy Mode | NEELAXMI</title>
+<meta name="description" content="NEET Quiz Station by NEELAXMI — 2 lakh+ NEET questions with full solutions, real CBT mode and Easy mode. Launching 2 Nov. Register now for a free subscription.">
+<meta property="og:title" content="NEET Quiz Station — Launching 2 Nov">
+<meta property="og:description" content="2 lakh+ questions with solutions. CBT mode + Easy mode. Register before launch and get a free subscription.">
+<meta name="theme-color" content="#0b1020">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0b1020; --bg2:#10172e; --card:#141c38; --card2:#19234a;
+  --text:#eef1ff; --muted:#a3accb; --line:rgba(255,255,255,.10);
+  --brand:#5b8cff; --brand2:#22d3a6; --accent:#ffb84d; --danger:#ff6b81;
+  --grad:linear-gradient(135deg,#5b8cff 0%,#22d3a6 100%);
+  --shadow:0 20px 60px rgba(0,0,0,.45);
+  --radius:20px;
+}
+[data-theme="light"]{
+  --bg:#f5f7ff; --bg2:#eaefff; --card:#ffffff; --card2:#f0f4ff;
+  --text:#0d1330; --muted:#566086; --line:rgba(13,19,48,.10);
+  --shadow:0 20px 50px rgba(40,60,140,.15);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'IBM Plex Sans',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4,.display{font-family:'Space Grotesk',sans-serif;line-height:1.12;letter-spacing:-.02em}
+a{color:inherit;text-decoration:none}
+img{max-width:100%;display:block}
+.wrap{max-width:1160px;margin:0 auto;padding:0 20px}
+section{padding:84px 0;position:relative}
+.eyebrow{display:inline-block;font:600 12px 'Space Grotesk';letter-spacing:.14em;text-transform:uppercase;color:var(--brand2);margin-bottom:12px}
+.h2{font-size:clamp(28px,4.2vw,44px);margin-bottom:14px}
+.lead{color:var(--muted);font-size:clamp(16px,2vw,18px);max-width:640px}
+.center{text-align:center}.center .lead{margin:0 auto}
+.grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
 
-    <!-- Open Graph (Social Sharing) -->
-    <meta property="og:title" content="Quiz Land | NEET & JEE Quizzes | Neelaxmi">
-    <meta property="og:description" content="Practice for NEET & JEE with Neelaxmi's Quiz Land. Fast, free, and exam-oriented tests.">
-    <meta property="og:image" content="/pictures/neelaxmi.png">
-    <meta property="og:url" content="https://classupdates.netlify.app/quiz-land">
-    <meta property="og:type" content="website">
+/* top ribbon */
+.ribbon{background:var(--grad);color:#04101f;text-align:center;font:600 13.5px 'Space Grotesk';padding:9px 14px}
+.ribbon b{font-weight:700}
 
-    <!-- Browser & App Meta -->
-    <meta name="theme-color" content="#667eea">
-    <meta name="google-site-verification" content="iatylsdA3ilcUEyKshZLLZmpDIh6TMUdj7qjgoLTWxw">
-    <link rel="icon" type="image/jpeg" href="/pictures/neelaxmi.png">
+/* nav */
+nav{position:sticky;top:0;z-index:50;backdrop-filter:blur(14px);background:color-mix(in srgb,var(--bg) 78%,transparent);border-bottom:1px solid var(--line)}
+.nav-in{display:flex;align-items:center;justify-content:space-between;height:66px;gap:14px}
+.brand{display:flex;align-items:center;gap:10px;font:700 18px 'Space Grotesk'}
+.logo{width:34px;height:34px;border-radius:10px;background:var(--grad);display:grid;place-items:center;color:#04101f;font:700 16px 'Space Grotesk';overflow:hidden}
+.logo img{width:100%;height:100%;object-fit:cover}
+.brand small{display:block;font:500 10.5px 'IBM Plex Sans';color:var(--muted);letter-spacing:.12em;text-transform:uppercase;margin-top:-2px}
+.links{display:flex;gap:26px;font-size:14.5px;color:var(--muted)}
+.links a:hover{color:var(--text)}
+.nav-r{display:flex;align-items:center;gap:10px}
+.icon-btn{width:40px;height:40px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--text);cursor:pointer;font-size:17px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 22px;border-radius:14px;font:600 15px 'Space Grotesk';border:0;cursor:pointer;transition:transform .15s,box-shadow .2s}
+.btn:hover{transform:translateY(-2px)}
+.btn-p{background:var(--grad);color:#04101f;box-shadow:0 10px 30px rgba(91,140,255,.35)}
+.btn-g{background:var(--card);color:var(--text);border:1px solid var(--line)}
+.btn-lg{padding:16px 28px;font-size:16.5px}
+@media(max-width:820px){.links{display:none}}
 
-    <!-- Fonts & Preload -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-    
-    <!-- External Scripts & Loader -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1485462286791974" crossorigin="anonymous"></script>
-    
+/* hero */
+.hero{padding:70px 0 90px;overflow:hidden}
+.hero::before,.hero::after{content:"";position:absolute;border-radius:50%;filter:blur(90px);opacity:.35;z-index:0}
+.hero::before{width:480px;height:480px;background:#5b8cff;top:-120px;left:-120px}
+.hero::after{width:420px;height:420px;background:#22d3a6;bottom:-140px;right:-100px;opacity:.25}
+.hero-grid{position:relative;z-index:1;display:grid;grid-template-columns:1.1fr .9fr;gap:48px;align-items:center}
+@media(max-width:940px){.hero-grid{grid-template-columns:1fr}}
+.pill{display:inline-flex;align-items:center;gap:8px;padding:7px 14px;border:1px solid var(--line);background:var(--card);border-radius:99px;font-size:13.5px;color:var(--muted);margin-bottom:22px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--brand2);box-shadow:0 0 0 0 rgba(34,211,166,.7);animation:pulse 1.8s infinite}
+@keyframes pulse{70%{box-shadow:0 0 0 10px rgba(34,211,166,0)}100%{box-shadow:0 0 0 0 rgba(34,211,166,0)}}
+.hero h1{font-size:clamp(38px,6.4vw,70px);margin-bottom:20px}
+.hero p.lead{margin-bottom:28px}
+.cta-row{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:26px}
+.trust{display:flex;flex-wrap:wrap;gap:20px;color:var(--muted);font-size:14px}
+.trust span::before{content:"✓ ";color:var(--brand2);font-weight:700}
 
-    <!-- CSS -->
-</head>
-    <style>
-        :root {
-            --primary: #6c5ce7;
-            --secondary: #a29bfe;
-            --dark: #2d3436;
-            --light: #dfe6e9;
-            --white: #ffffff;
-            --glass: rgba(255, 255, 255, 0.95);
-            --shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-        }
+/* countdown */
+.count{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:6px 0 20px}
+.count div{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 6px;text-align:center}
+.count b{display:block;font:700 clamp(26px,4vw,38px) 'Space Grotesk';font-variant-numeric:tabular-nums}
+.count small{font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
 
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            margin: 0;
-            padding: 0;
-            min-height: 100vh;
-            color: var(--dark);
-        }
+/* mock */
+.mock{background:var(--card);border:1px solid var(--line);border-radius:24px;box-shadow:var(--shadow);overflow:hidden}
+.mock-top{display:flex;align-items:center;gap:7px;padding:12px 16px;border-bottom:1px solid var(--line);background:var(--card2)}
+.mock-top i{width:10px;height:10px;border-radius:50%;background:#ff5f57}.mock-top i:nth-child(2){background:#febc2e}.mock-top i:nth-child(3){background:#28c840}
+.mock-top span{margin-left:auto;font:600 12.5px 'Space Grotesk';color:var(--accent)}
+.mock-b{padding:20px}
+.mock-q{font-size:15.5px;margin-bottom:14px}
+.opt{display:flex;gap:10px;align-items:center;padding:11px 14px;border:1px solid var(--line);border-radius:12px;margin-bottom:9px;font-size:14.5px;background:var(--bg2)}
+.opt b{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;background:var(--card2);font:600 12.5px 'Space Grotesk'}
+.opt.ok{border-color:var(--brand2);background:rgba(34,211,166,.12)}.opt.ok b{background:var(--brand2);color:#04101f}
+.sol{margin-top:12px;padding:12px 14px;border-radius:12px;background:rgba(91,140,255,.12);border:1px dashed var(--brand);font-size:13.5px;color:var(--muted)}
+.sol strong{color:var(--text)}
+.palette{display:flex;gap:6px;margin-top:14px;flex-wrap:wrap}
+.palette i{width:24px;height:24px;border-radius:7px;background:var(--card2);display:block}
+.palette i.a{background:var(--brand2)}.palette i.m{background:var(--accent)}.palette i.c{background:var(--brand)}
 
-        /* Navbar with Logo */
-        nav {
-            background: var(--glass);
-            padding: 1rem 5%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            backdrop-filter: blur(4px);
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
+/* stats */
+.stats{padding:0}
+.stats-in{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+.stats-in div{background:var(--card);padding:28px 16px;text-align:center}
+.stats-in b{display:block;font:700 clamp(28px,4.5vw,44px) 'Space Grotesk'}
+.stats-in span{color:var(--muted);font-size:14px}
+@media(max-width:700px){.stats-in{grid-template-columns:repeat(2,1fr)}}
 
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--primary);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+/* cards */
+.grid{display:grid;gap:18px;margin-top:44px}
+.g3{grid-template-columns:repeat(3,1fr)}.g2{grid-template-columns:repeat(2,1fr)}
+@media(max-width:900px){.g3{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:620px){.g3,.g2{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:26px;transition:transform .2s,border-color .2s}
+.card:hover{transform:translateY(-4px);border-color:var(--brand)}
+.ic{width:48px;height:48px;border-radius:14px;background:var(--card2);display:grid;place-items:center;font-size:23px;margin-bottom:16px}
+.card h3{font-size:20px;margin-bottom:8px}
+.card p{color:var(--muted);font-size:15px}
 
-        .logo span { color: var(--dark); }
+/* modes */
+.modes{background:var(--bg2)}
+.mode{padding:32px;border-radius:24px;border:1px solid var(--line);background:var(--card);position:relative;overflow:hidden}
+.mode.cbt{border-color:rgba(91,140,255,.55)}
+.mode.easy{border-color:rgba(34,211,166,.55)}
+.tag{display:inline-block;font:600 11.5px 'Space Grotesk';letter-spacing:.12em;text-transform:uppercase;padding:5px 11px;border-radius:99px;margin-bottom:14px}
+.cbt .tag{background:rgba(91,140,255,.18);color:var(--brand)}.easy .tag{background:rgba(34,211,166,.18);color:var(--brand2)}
+.mode h3{font-size:28px;margin-bottom:10px}
+.mode ul{list-style:none;margin-top:18px}
+.mode li{padding:8px 0 8px 28px;position:relative;color:var(--muted);font-size:15px;border-top:1px solid var(--line)}
+.mode li::before{content:"✓";position:absolute;left:0;font-weight:700}
+.cbt li::before{color:var(--brand)}.easy li::before{color:var(--brand2)}
 
-        .user-menu {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
+/* steps */
+.steps{counter-reset:s}
+.step{position:relative;padding-top:6px}
+.step::before{counter-increment:s;content:counter(s);display:grid;place-items:center;width:44px;height:44px;border-radius:50%;background:var(--grad);color:#04101f;font:700 18px 'Space Grotesk';margin-bottom:14px}
 
-        .user-email {
-            font-size: 0.9rem;
-            color: #636e72;
-            font-weight: 500;
-        }
+/* offer / register */
+.offer{background:var(--bg2)}
+.offer-box{display:grid;grid-template-columns:1fr 1fr;gap:0;border-radius:28px;overflow:hidden;border:1px solid var(--line);box-shadow:var(--shadow)}
+@media(max-width:860px){.offer-box{grid-template-columns:1fr}}
+.offer-l{padding:44px 38px;background:var(--grad);color:#04101f}
+.offer-l h2{font-size:clamp(28px,4vw,42px);margin-bottom:14px}
+.offer-l p{font-size:16.5px;margin-bottom:18px;opacity:.88}
+.offer-l ul{list-style:none}
+.offer-l li{padding:6px 0 6px 28px;position:relative;font-weight:500}
+.offer-l li::before{content:"★";position:absolute;left:0}
+.offer-r{padding:40px 36px;background:var(--card)}
+.offer-r h3{font-size:24px;margin-bottom:6px}
+.offer-r .sub{color:var(--muted);font-size:14.5px;margin-bottom:20px}
+label{display:block;font-size:13px;font-weight:600;color:var(--muted);margin:0 0 6px}
+.field{margin-bottom:14px}
+input,select{width:100%;padding:13px 14px;border-radius:12px;border:1px solid var(--line);background:var(--bg2);color:var(--text);font:400 15px 'IBM Plex Sans';outline:none;transition:border-color .2s}
+input:focus,select:focus{border-color:var(--brand)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:480px){.row2{grid-template-columns:1fr}}
+.consent{display:flex;gap:10px;align-items:flex-start;font-size:13px;color:var(--muted);margin:4px 0 18px}
+.consent input{width:18px;height:18px;margin-top:2px;accent-color:#22d3a6}
+.msg{margin-top:14px;padding:12px 14px;border-radius:12px;font-size:14px;display:none}
+.msg.ok{display:block;background:rgba(34,211,166,.14);border:1px solid var(--brand2)}
+.msg.err{display:block;background:rgba(255,107,129,.14);border:1px solid var(--danger)}
+.hp{position:absolute;left:-9999px;opacity:0;height:0;width:0}
 
-        .btn-logout {
-            background: #ff7675;
-            color: white;
-            border: none;
-            padding: 8px 20px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
+/* auth */
+.gbtn{width:100%;display:flex;align-items:center;justify-content:center;gap:12px;padding:14px 18px;border-radius:14px;border:1px solid var(--line);background:#fff;color:#1f2430;font:600 16px 'Space Grotesk';cursor:pointer;transition:transform .15s,box-shadow .2s}
+.gbtn:hover{transform:translateY(-2px);box-shadow:0 10px 26px rgba(0,0,0,.25)}
+.gbtn:disabled{opacity:.6;cursor:wait;transform:none}
+.gbtn svg{width:22px;height:22px;flex:none}
+.tiny{font-size:12.5px;color:var(--muted);text-align:center;margin-top:10px}
+.or{display:flex;align-items:center;gap:12px;color:var(--muted);font-size:12.5px;letter-spacing:.12em;text-transform:uppercase;margin:18px 0}
+.or::before,.or::after{content:"";flex:1;height:1px;background:var(--line)}
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:var(--bg2);padding:5px;border-radius:14px;margin-bottom:16px}
+.tabs button{padding:10px;border:0;border-radius:10px;background:transparent;color:var(--muted);font:600 14.5px 'Space Grotesk';cursor:pointer}
+.tabs button.on{background:var(--card);color:var(--text);box-shadow:0 2px 10px rgba(0,0,0,.2)}
+.link-b{background:none;border:0;color:var(--brand);font:500 13.5px 'IBM Plex Sans';cursor:pointer;padding:0}
+.pw{position:relative}
+.pw button{position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:0;color:var(--muted);cursor:pointer;font-size:13px;padding:6px 8px}
+.pw input{padding-right:62px}
+.me{display:none;align-items:center;gap:9px;padding:4px 12px 4px 4px;border:1px solid var(--line);border-radius:99px;background:var(--card);font-size:13.5px;max-width:190px;cursor:pointer}
+.me.on{display:flex}
+.me img,.me .av{width:30px;height:30px;border-radius:50%;object-fit:cover;background:var(--grad);color:#04101f;display:grid;place-items:center;font:700 13px 'Space Grotesk';flex:none}
+.me span.n{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media(max-width:560px){.me span.n{display:none}.me{padding:4px}}
+.done{text-align:center}
+.done .big{font-size:46px;margin-bottom:8px}
+.done h3{margin-bottom:8px}
+.badge{display:inline-block;margin:12px 0 18px;padding:8px 16px;border-radius:99px;background:rgba(34,211,166,.15);border:1px solid var(--brand2);color:var(--brand2);font:600 13.5px 'Space Grotesk'}
+.hidden{display:none!important}
 
-        .btn-logout:hover {
-            background: #d63031;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(214, 48, 49, 0.4);
-        }
+/* faq */
+details{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 22px;margin-bottom:12px}
+summary{cursor:pointer;font:600 17px 'Space Grotesk';list-style:none;display:flex;justify-content:space-between;gap:14px}
+summary::after{content:"+";color:var(--brand2);font-size:22px;line-height:1}
+details[open] summary::after{content:"–"}
+details p{color:var(--muted);margin-top:12px;font-size:15px}
 
-        /* Main Content */
-        .container {
-            max-width: 1200px;
-            margin: 40px auto;
-            padding: 0 20px;
-        }
+/* final cta + footer */
+.final{text-align:center}
+.final-box{padding:60px 24px;border-radius:30px;background:var(--card);border:1px solid var(--line);position:relative;overflow:hidden}
+.final-box::before{content:"";position:absolute;inset:-40%;background:radial-gradient(circle at 30% 30%,rgba(91,140,255,.25),transparent 45%),radial-gradient(circle at 75% 70%,rgba(34,211,166,.2),transparent 45%)}
+.final-box>*{position:relative}
+footer{border-top:1px solid var(--line);padding:46px 0 30px;color:var(--muted);font-size:14px}
+.f-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:30px;margin-bottom:30px}
+@media(max-width:700px){.f-grid{grid-template-columns:1fr}}
+footer h4{color:var(--text);font-size:15px;margin-bottom:12px}
+footer a{display:block;padding:4px 0}footer a:hover{color:var(--text)}
+.copy{border-top:1px solid var(--line);padding-top:20px;display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between}
 
-        .hero-text {
-            text-align: center;
-            color: white;
-            margin-bottom: 40px;
-            animation: fadeInDown 1s ease-out;
-        }
-
-        .hero-text h1 { margin-bottom: 10px; font-size: 2.5rem; }
-        .hero-text p { font-size: 1.1rem; opacity: 0.9; }
-
-        /* Grid Layout */
-        .quiz-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 25px;
-            padding-bottom: 50px;
-        }
-
-        /* Quiz Card VFX */
-        .quiz-card {
-            background: var(--glass);
-            border-radius: 16px;
-            padding: 25px;
-            box-shadow: var(--shadow);
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-            position: relative;
-            overflow: hidden;
-            animation: fadeInUp 0.8s ease-out forwards;
-            opacity: 0; /* Hidden initially for animation */
-        }
-
-        .quiz-card:hover {
-            transform: translateY(-10px) scale(1.02);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
-        }
-
-        .quiz-card::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; width: 5px; height: 100%;
-            background: var(--primary);
-        }
-
-        .card-header h3 {
-            margin: 0;
-            font-size: 1.4rem;
-            color: var(--dark);
-        }
-
-        .card-meta {
-            margin: 15px 0;
-            color: #636e72;
-            font-size: 0.9rem;
-            display: flex;
-            gap: 15px;
-        }
-
-        .meta-item { display: flex; align-items: center; gap: 5px; }
-
-        .btn-start {
-            width: 100%;
-            padding: 12px;
-            border: none;
-            background: linear-gradient(to right, #6c5ce7, #a29bfe);
-            color: white;
-            font-size: 1rem;
-            font-weight: 600;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: opacity 0.2s;
-        }
-
-        .btn-start:hover { opacity: 0.9; }
-
-        /* Loading Spinner */
-        .loader-container {
-            text-align: center;
-            color: white;
-            margin-top: 50px;
-        }
-        .spinner {
-            width: 40px; height: 40px;
-            border: 4px solid rgba(255,255,255,0.3);
-            border-top: 4px solid white;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 10px;
-        }
-
-        /* Animations */
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* Delay for grid items */
-        .quiz-card:nth-child(1) { animation-delay: 0.1s; }
-        .quiz-card:nth-child(2) { animation-delay: 0.2s; }
-        .quiz-card:nth-child(3) { animation-delay: 0.3s; }
-        .quiz-card:nth-child(4) { animation-delay: 0.4s; }
-    </style>
+/* reveal */
+.rv{opacity:0;transform:translateY(24px);transition:opacity .7s,transform .7s}
+.rv.in{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){.rv{opacity:1;transform:none;transition:none}.dot{animation:none}html{scroll-behavior:auto}}
+</style>
 </head>
 <body>
 
-    <nav>
-        <div class="logo">
-            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
-            <span>QuizMaster</span>
-        </div>
-        <div class="user-menu" id="user-menu" style="display: none;">
-            <span class="user-email" id="user-email">Loading...</span>
-            <button class="btn-logout" onclick="logout()">Logout</button>
-        </div>
-    </nav>
+<div class="ribbon">🚀 Launching <b>2 November</b> — Register now &amp; get a <b>FREE subscription</b> on launch day</div>
 
-    <div class="container">
-        <div class="hero-text">
-            <h1>Welcome Back!</h1>
-            <p>Select a module below to test your skills and track your progress.</p>
-        </div>
+<nav>
+  <div class="wrap nav-in">
+    <a href="#top" class="brand">
+      <span class="logo"><img src="neelaxmi.png" alt="" onerror="this.remove();this.parentNode.textContent='N'"></span>
+      <span>NEET Quiz Station<small>by NEELAXMI · The Union</small></span>
+    </a>
+    <div class="links">
+      <a href="#features">Features</a>
+      <a href="#modes">Modes</a>
+      <a href="#how">How it works</a>
+      <a href="#faq">FAQ</a>
+    </div>
+    <div class="nav-r">
+      <button class="icon-btn" id="themeBtn" aria-label="Toggle theme">☀️</button>
+      <div class="me" id="me" title="Your account"><span class="av" id="meAv">N</span><span class="n" id="meName"></span></div>
+      <a href="#register" class="btn btn-p" id="navCta">Get Free Access</a>
+    </div>
+  </div>
+</nav>
 
-        <div id="loader" class="loader-container">
-            <div class="spinner"></div>
-            <p>Loading your profile and quizzes...</p>
-        </div>
+<header class="hero" id="top">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="pill"><span class="dot"></span><span id="pillTxt">Launching 2 Nov · Pre-registration open</span></div>
+      <h1>The only NEET practice station you'll <span class="grad">need.</span></h1>
+      <p class="lead">2 lakh+ NEET questions, each with a full solution. Practise in real <b>CBT mode</b> like the exam hall, or learn at your own pace in <b>Easy mode</b>. Register before launch and your subscription is on us.</p>
 
-        <div id="quiz-grid" class="quiz-grid" style="display: none;">
-            </div>
-        
-        <div style="text-align: center; margin-top: 20px;">
-            <a href="/quiz/admin.html" style="color: rgba(255,255,255,0.6); text-decoration: none; font-size: 0.8rem;">Admin Access</a>
-        </div>
+      <div class="count" id="count" aria-live="off">
+        <div><b id="cd">00</b><small>Days</small></div>
+        <div><b id="ch">00</b><small>Hours</small></div>
+        <div><b id="cm">00</b><small>Mins</small></div>
+        <div><b id="cs">00</b><small>Secs</small></div>
+      </div>
+
+      <div class="cta-row">
+        <a href="#register" class="btn btn-p btn-lg">Register for Free Subscription →</a>
+        <a href="#modes" class="btn btn-g btn-lg">See the two modes</a>
+      </div>
+      <div class="trust"><span>No card needed</span><span>Free for registered users</span><span>Solutions for every question</span></div>
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    <div class="mock rv" aria-hidden="true">
+      <div class="mock-top"><i></i><i></i><i></i><span>CBT MODE · 02:41:18</span></div>
+      <div class="mock-b">
+        <p class="mock-q"><b>Q.</b> Which organelle is known as the "powerhouse of the cell"?</p>
+        <div class="opt"><b>A</b> Ribosome</div>
+        <div class="opt ok"><b>B</b> Mitochondria</div>
+        <div class="opt"><b>C</b> Golgi apparatus</div>
+        <div class="opt"><b>D</b> Lysosome</div>
+        <div class="sol"><strong>Solution:</strong> Mitochondria produce most of the cell's ATP through oxidative phosphorylation…</div>
+        <div class="palette"><i class="a"></i><i class="a"></i><i class="m"></i><i class="a"></i><i class="c"></i><i></i><i></i><i></i><i></i><i></i></div>
+      </div>
+    </div>
+  </div>
+</header>
 
-    <script>
-        // --- 1. FIREBASE CONFIGURATION ---
-        // REPLACE WITH YOUR ACTUAL CONFIG FROM FIREBASE CONSOLE
+<section class="stats">
+  <div class="wrap">
+    <div class="stats-in rv">
+      <div><b class="grad">2L+</b><span>Questions</span></div>
+      <div><b class="grad">100%</b><span>With solutions</span></div>
+      <div><b class="grad">2</b><span>Practice modes</span></div>
+      <div><b class="grad">₹0</b><span>For early registrants</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="features">
+  <div class="wrap">
+    <div class="center rv">
+      <span class="eyebrow">Why NEET Quiz Station</span>
+      <h2 class="h2">Everything for NEET practice, in one place.</h2>
+      <p class="lead">Built by the NEELAXMI team for students who want volume, clarity and real exam feel — without juggling ten apps.</p>
+    </div>
+    <div class="grid g3">
+      <div class="card rv"><div class="ic">📚</div><h3>2 lakh+ questions</h3><p>A huge question bank across Physics, Chemistry and Biology so you never run out of fresh practice.</p></div>
+      <div class="card rv"><div class="ic">💡</div><h3>Solution for every question</h3><p>Understand the <i>why</i>, not just the answer. Every question comes with a worked solution.</p></div>
+      <div class="card rv"><div class="ic">🖥️</div><h3>Real CBT mode</h3><p>Timer, question palette, mark-for-review and a full test-hall feel to prepare you for exam day.</p></div>
+      <div class="card rv"><div class="ic">🌱</div><h3>Easy mode</h3><p>Check answers instantly, read solutions right away and learn comfortably at your own pace.</p></div>
+      <div class="card rv"><div class="ic">📈</div><h3>Track your progress</h3><p>See what you attempted, what you got right and where you need more practice.</p></div>
+      <div class="card rv"><div class="ic">📱</div><h3>Works on your phone</h3><p>Open it on any device — practise on the bus, at home or between classes.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="modes" id="modes">
+  <div class="wrap">
+    <div class="center rv">
+      <span class="eyebrow">Two ways to practise</span>
+      <h2 class="h2">Pick the mode that fits your day.</h2>
+      <p class="lead">Switch between exam-style pressure and relaxed learning whenever you like.</p>
+    </div>
+    <div class="grid g2">
+      <div class="mode cbt rv">
+        <span class="tag">CBT Mode</span>
+        <h3>Feel the real exam.</h3>
+        <p style="color:var(--muted)">Train like it's the actual test so exam day feels familiar.</p>
+        <ul>
+          <li>Timed test with live countdown</li>
+          <li>Question palette &amp; mark for review</li>
+          <li>Solutions unlock after you submit</li>
+          <li>Score &amp; accuracy report</li>
+        </ul>
+      </div>
+      <div class="mode easy rv">
+        <span class="tag">Easy Mode</span>
+        <h3>Learn without pressure.</h3>
+        <p style="color:var(--muted)">No clock, no stress — just practise and understand.</p>
+        <ul>
+          <li>No timer, take your time</li>
+          <li>Instant answer check on each question</li>
+          <li>Solution available right away</li>
+          <li>Great for new and weak topics</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="how">
+  <div class="wrap">
+    <div class="center rv">
+      <span class="eyebrow">Getting started</span>
+      <h2 class="h2">Three simple steps.</h2>
+    </div>
+    <div class="grid g3 steps">
+      <div class="step rv"><h3>Register now</h3><p style="color:var(--muted)">Sign in with Google or email in the box below. It takes under a minute.</p></div>
+      <div class="step rv"><h3>Wait for 2 Nov</h3><p style="color:var(--muted)">NEET Quiz Station goes live on launch day. We'll keep you posted.</p></div>
+      <div class="step rv"><h3>Start practising</h3><p style="color:var(--muted)">Log in and your free subscription is ready. Choose CBT or Easy mode and go.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="offer" id="register">
+  <div class="wrap">
+    <div class="offer-box rv">
+      <div class="offer-l">
+        <span class="eyebrow" style="color:#04101f;opacity:.7">Pre-launch offer</span>
+        <h2>Register before launch. Get a free subscription.</h2>
+        <p>We're not launching yet — the doors open on <b>2 November</b>. Everyone who registers now gets free subscription access when we go live.</p>
+        <ul>
+          <li>Open for all students — register as many as you like</li>
+          <li>Full access to 2 lakh+ questions</li>
+          <li>CBT mode + Easy mode included</li>
+          <li>Solutions for every question</li>
+        </ul>
+      </div>
+      <div class="offer-r">
+        <!-- LOGGED OUT -->
+        <div id="authView">
+          <h3>Reserve your free access</h3>
+          <p class="sub">Sign in once — your free subscription is attached to your account.</p>
+          <button class="gbtn" id="googleBtn" type="button"><svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.9 6.1C12.4 13.6 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.1 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.4c-.5 2.9-2.2 5.3-4.6 6.9l7.4 5.8c4.3-4 6.9-9.9 6.9-17.2z"/><path fill="#FBBC05" d="M10.5 28.7a14.5 14.5 0 010-9.4l-7.9-6.1a24 24 0 000 21.6l7.9-6.1z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.4-5.8c-2.1 1.4-4.9 2.3-8.5 2.3-6.3 0-11.6-4.1-13.5-9.8l-7.9 6.1C6.5 42.6 14.6 48 24 48z"/></svg><span>Continue with Google</span></button>
+          <p class="tiny">By continuing you agree to receive launch updates from NEELAXMI by email.</p>
+          <div class="or">or use email</div>
+          <div class="tabs" role="tablist">
+            <button type="button" id="tabUp" class="on" role="tab">Sign up</button>
+            <button type="button" id="tabIn" role="tab">Log in</button>
+          </div>
+          <form id="authForm" novalidate>
+            <input class="hp" type="text" name="company" tabindex="-1" autocomplete="off" aria-hidden="true">
+            <div class="field" id="nameField"><label for="name">Full name</label><input id="name" name="name" type="text" placeholder="Your name" autocomplete="name"></div>
+            <div class="field"><label for="email">Email</label><input id="email" name="email" type="email" placeholder="you@email.com" autocomplete="email" required></div>
+            <div class="field"><label for="pass">Password</label>
+              <div class="pw"><input id="pass" name="pass" type="password" placeholder="At least 6 characters" autocomplete="new-password" required><button type="button" id="pwTog">Show</button></div></div>
+            <div style="text-align:right;margin:-4px 0 12px"><button type="button" class="link-b hidden" id="forgot">Forgot password?</button></div>
+            <label class="consent" id="consentRow"><input type="checkbox" id="agree"><span>I agree to receive launch updates from NEELAXMI by email.</span></label>
+            <button class="btn btn-p btn-lg" style="width:100%" type="submit" id="authBtn">Create account &amp; claim free access →</button>
+          </form>
+          <div class="msg" id="authMsg" role="status"></div>
+        </div>
+
+        <!-- LOGGED IN -->
+        <div id="doneView" class="done hidden">
+          <div class="big">🎉</div>
+          <h3>You're in, <span id="dName">student</span>!</h3>
+          <p class="sub" style="margin-bottom:0">Signed in as <b id="dEmail"></b></p>
+          <div class="badge">✓ Free subscription reserved</div>
+          <p class="sub">It activates when we launch on <b>2 November</b>. Log in with this same account then.</p>
+          <div class="row2" style="text-align:left">
+            <div class="field"><label for="attempt">NEET attempt (optional)</label>
+              <select id="attempt"><option value="">Select</option><option>NEET 2027</option><option>NEET 2028</option><option>Dropper / Repeater</option><option>Other</option></select></div>
+            <div class="field"><label for="state">State (optional)</label><input id="state" type="text" placeholder="e.g. Uttar Pradesh" autocomplete="address-level1"></div>
+          </div>
+          <button class="btn btn-p" style="width:100%" id="saveProfile" type="button">Save details</button>
+          <div class="msg" id="doneMsg" role="status"></div>
+          <p style="margin-top:18px"><button class="link-b" id="logoutBtn" type="button">Log out</button></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="wrap" style="max-width:820px">
+    <div class="center rv" style="margin-bottom:34px">
+      <span class="eyebrow">FAQ</span>
+      <h2 class="h2">Questions students ask.</h2>
+    </div>
+    <details class="rv"><summary>When does NEET Quiz Station launch?</summary><p>The official launch is on 2 November. Until then this page is open for registration only.</p></details>
+    <details class="rv"><summary>What do I get if I register now?</summary><p>Everyone who registers before launch receives a free subscription on the platform once it goes live.</p></details>
+    <details class="rv"><summary>How many questions are there?</summary><p>The question bank has around 2 lakh questions, each with a solution.</p></details>
+    <details class="rv"><summary>What is the difference between CBT mode and Easy mode?</summary><p>CBT mode simulates the real computer-based test with a timer and palette. Easy mode has no timer and lets you check answers and read solutions instantly.</p></details>
+    <details class="rv"><summary>Do I need to pay or enter card details?</summary><p>No. Registration is free and no payment details are asked.</p></details>
+    <details class="rv"><summary>How will I know when it is live?</summary><p>We'll contact you on the email you register with, and you can also follow our Telegram channel.</p></details>
+  </div>
+</section>
+
+<section class="final">
+  <div class="wrap">
+    <div class="final-box rv">
+      <h2 class="h2">Your NEET practice station opens on <span class="grad">2 November.</span></h2>
+      <p class="lead" style="margin-bottom:26px">Register today and walk in with a free subscription.</p>
+      <div class="cta-row" style="justify-content:center;margin:0">
+        <a href="#register" class="btn btn-p btn-lg">Register Free →</a>
+        <a href="https://t.me/" id="tgBtn" target="_blank" rel="noopener" class="btn btn-g btn-lg">Join Telegram</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="f-grid">
+      <div>
+        <div class="brand" style="margin-bottom:12px"><span class="logo"><img src="neelaxmi.png" alt="" onerror="this.remove();this.parentNode.textContent='N'"></span><span>NEELAXMI · The Union</span></div>
+        <p>NEET Quiz Station is a NEELAXMI product — practice, solutions and exam-style testing for NEET aspirants.</p>
+      </div>
+      <div><h4>Explore</h4><a href="#features">Features</a><a href="#modes">CBT &amp; Easy mode</a><a href="#register">Register</a><a href="#faq">FAQ</a></div>
+      <div><h4>Connect</h4><a href="https://t.me/" id="tgFoot" target="_blank" rel="noopener">Telegram channel</a><a href="https://neelaxmi.netlify.app" id="webFoot" target="_blank" rel="noopener">NEELAXMI website</a></div>
+    </div>
+    <div class="copy"><span>© <span id="yr">2026</span> NEELAXMI — The Union. All rights reserved.</span><span>Launching 2 November</span></div>
+  </div>
+</footer>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+/* ===== CONFIG — edit these ===== */
+const CONFIG = {
+  launch: "2026-11-02T00:00:00+05:30",
+  telegram: "https://t.me/",                    // put your channel link
+  website: "https://neelaxmi.netlify.app",       // put your official site link
+  appUrl: ""                                     // quiz app URL — after launch the buttons switch to this
+};
+
+/* theme */
+const root = document.documentElement, tb = document.getElementById('themeBtn');
+let saved = null; try{saved = localStorage.getItem('nqs-theme')}catch(e){}
+const pref = saved || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+function setTheme(t){root.dataset.theme=t;tb.textContent=t==='dark'?'☀️':'🌙';try{localStorage.setItem('nqs-theme',t)}catch(e){}}
+setTheme(pref);
+tb.onclick=()=>setTheme(root.dataset.theme==='dark'?'light':'dark');
+
+/* links */
+['tgBtn','tgFoot'].forEach(id=>{const e=document.getElementById(id);if(e)e.href=CONFIG.telegram});
+document.getElementById('webFoot').href=CONFIG.website;
+document.getElementById('yr').textContent=new Date().getFullYear();
+
+/* countdown */
+const target=new Date(CONFIG.launch).getTime();
+const $=id=>document.getElementById(id), p=n=>String(n).padStart(2,'0');
+function tick(){
+  const d=target-Date.now();
+  if(d<=0){
+    $('count').style.display='none';
+    $('pillTxt').textContent='We are live!';
+    document.querySelectorAll('.ribbon').forEach(r=>r.innerHTML='🎉 <b>NEET Quiz Station is live</b> — log in with your registered details to use your free subscription');
+    if(CONFIG.appUrl){document.querySelectorAll('a[href="#register"]').forEach(a=>{a.href=CONFIG.appUrl;a.textContent='Open Quiz Station →'})}
+    clearInterval(iv);return;
+  }
+  $('cd').textContent=p(Math.floor(d/864e5));
+  $('ch').textContent=p(Math.floor(d%864e5/36e5));
+  $('cm').textContent=p(Math.floor(d%36e5/6e4));
+  $('cs').textContent=p(Math.floor(d%6e4/1e3));
+}
+const iv=setInterval(tick,1000);tick();
+
+/* reveal */
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.12});
+document.querySelectorAll('.rv').forEach(el=>io.observe(el));
+
+/* ===== AUTH ===== */
 const firebaseConfig = {
   apiKey: "AIzaSyAOJmK4igVb_P8cV6jLfZhFPGFmAZfVvRE",
   authDomain: "classupdates.netlify.app",
@@ -260,90 +510,149 @@ const firebaseConfig = {
   appId: "1:107821881642:web:7d708bda99196c85e42653",
   measurementId: "G-0B6095T5X7"
 };
-        
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.firestore();
+const REG_COLLECTION = 'neetQuizStationRegistrations';  // one document per user, id = uid
 
-        // --- 2. AUTHENTICATION & LOGIC ---
-        
-        // Listen for auth state changes
-        auth.onAuthStateChanged((user) => {
-            if (user) {
-                // User is logged in
-                document.getElementById('user-menu').style.display = 'flex';
-                document.getElementById('user-email').textContent = user.email;
-                fetchQuizzes(); // Load data
-            } else {
-                // No user logged in -> Redirect to Auth page
-                window.location.href = 'auth.html';
-            }
-        });
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth(), db = firebase.firestore();
+auth.useDeviceLanguage();
 
-        // Logout Function
-        function logout() {
-            auth.signOut().then(() => {
-                window.location.href = 'auth.html';
-            }).catch((error) => {
-                console.error("Logout error", error);
-            });
-        }
+const el = id => document.getElementById(id);
+function say(node, text, ok){node.className='msg '+(ok?'ok':'err');node.textContent=text}
+function clearMsg(node){node.className='msg';node.textContent=''}
+function friendly(e){
+  const m={
+    'auth/invalid-email':'That email address looks invalid.',
+    'auth/email-already-in-use':'This email is already registered. Try the Log in tab or Google.',
+    'auth/weak-password':'Password must be at least 6 characters.',
+    'auth/wrong-password':'Wrong password. Try again or use Forgot password.',
+    'auth/invalid-credential':'Email or password is incorrect.',
+    'auth/user-not-found':'No account found with this email. Please sign up.',
+    'auth/too-many-requests':'Too many attempts. Please wait a bit and try again.',
+    'auth/network-request-failed':'Network problem. Check your connection.',
+    'auth/popup-closed-by-user':'Google sign-in was closed before finishing.',
+    'auth/cancelled-popup-request':'Google sign-in was cancelled.',
+    'auth/unauthorized-domain':'This website is not authorised in Firebase yet (Authentication → Settings → Authorized domains).',
+    'permission-denied':'Could not save your registration (database rules blocked it).'
+  };
+  return m[e.code]||'Something went wrong. Please try again.';
+}
 
-        // --- 3. FETCH QUIZZES DYNAMICALLY ---
-        async function fetchQuizzes() {
-            const grid = document.getElementById('quiz-grid');
-            const loader = document.getElementById('loader');
-            
-            try {
-                // Fetch from the 'quizzes' collection we made in Admin
-                const snapshot = await db.collection('quizzes').get();
-                
-                if (snapshot.empty) {
-                    grid.innerHTML = '<p style="color:white; text-align:center; grid-column: 1/-1;">No quizzes available yet. Create one in Admin panel!</p>';
-                } else {
-                    grid.innerHTML = ''; // Clear current
-                    
-                    snapshot.forEach(doc => {
-                        const data = doc.data();
-                        const uid = doc.id;
-                        const questionCount = data.questions ? data.questions.length : 0;
-                        const duration = data.durationMinutes || 10;
-                        
-                        // Create Card HTML
-                        const card = `
-                            <div class="quiz-card">
-                                <div class="card-header">
-                                    <h3>${data.title}</h3>
-                                </div>
-                                <div class="card-meta">
-                                    <div class="meta-item">
-                                        <span>❓</span> ${questionCount} Questions
-                                    </div>
-                                    <div class="meta-item">
-                                        <span>⏱️</span> ${duration} Mins
-                                    </div>
-                                </div>
-                                <button class="btn-start" onclick="startQuiz('${uid}')">Attempt Quiz 🚀</button>
-                            </div>
-                        `;
-                        grid.innerHTML += card;
-                    });
-                }
-                
-                // Switch UI
-                loader.style.display = 'none';
-                grid.style.display = 'grid';
+/* sign up / log in tabs */
+let mode='up', pendingName='';
+function setMode(m){
+  mode=m;
+  el('tabUp').classList.toggle('on',m==='up');el('tabIn').classList.toggle('on',m==='in');
+  el('nameField').classList.toggle('hidden',m!=='up');
+  el('consentRow').classList.toggle('hidden',m!=='up');
+  el('forgot').classList.toggle('hidden',m!=='in');
+  el('authBtn').textContent=m==='up'?'Create account & claim free access →':'Log in →';
+  el('pass').autocomplete=m==='up'?'new-password':'current-password';
+  clearMsg(el('authMsg'));
+}
+el('tabUp').onclick=()=>setMode('up');el('tabIn').onclick=()=>setMode('in');
+el('pwTog').onclick=()=>{const i=el('pass');const h=i.type==='password';i.type=h?'text':'password';el('pwTog').textContent=h?'Hide':'Show'};
 
-            } catch (error) {
-                console.error("Error loading quizzes:", error);
-                loader.innerHTML = `<p style="color: #ff7675;">Error loading data. <br> ${error.message}</p>`;
-            }
-        }
+/* Google login */
+el('googleBtn').onclick=async()=>{
+  const b=el('googleBtn');b.disabled=true;clearMsg(el('authMsg'));
+  const prov=new firebase.auth.GoogleAuthProvider();prov.setCustomParameters({prompt:'select_account'});
+  try{await auth.signInWithPopup(prov)}
+  catch(e){
+    if(e.code==='auth/popup-blocked'){try{await auth.signInWithRedirect(prov);return}catch(x){e=x}}
+    say(el('authMsg'),friendly(e),false);
+  }finally{b.disabled=false}
+};
+auth.getRedirectResult().catch(e=>say(el('authMsg'),friendly(e),false));
 
-        // --- 4. NAVIGATION ---
-        function startQuiz(uid) {
-            window.location.href = `quizzes.html?uid=${uid}`;
-        }
-    </script>
+/* email + password */
+el('authForm').addEventListener('submit',async e=>{
+  e.preventDefault();
+  const f=e.target; if(f.company.value)return;
+  const email=f.email.value.trim(), pass=f.pass.value, name=f.name.value.trim();
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email))return say(el('authMsg'),'Please enter a valid email.',false);
+  if(pass.length<6)return say(el('authMsg'),'Password must be at least 6 characters.',false);
+  if(mode==='up'){
+    if(name.length<2)return say(el('authMsg'),'Please enter your name.',false);
+    if(!el('agree').checked)return say(el('authMsg'),'Please tick the consent box to continue.',false);
+  }
+  const b=el('authBtn'),old=b.textContent;b.disabled=true;b.textContent='Please wait…';
+  try{
+    if(mode==='up'){
+      pendingName=name;
+      const c=await auth.createUserWithEmailAndPassword(email,pass);
+      await c.user.updateProfile({displayName:name});
+      await register(auth.currentUser);
+      showUser(auth.currentUser);
+    }else{
+      await auth.signInWithEmailAndPassword(email,pass);
+    }
+  }catch(err){say(el('authMsg'),friendly(err),false)}
+  finally{b.disabled=false;b.textContent=old}
+});
+el('forgot').onclick=async()=>{
+  const email=el('email').value.trim();
+  if(!email)return say(el('authMsg'),'Enter your email above first, then tap Forgot password.',false);
+  try{await auth.sendPasswordResetEmail(email);say(el('authMsg'),'Password reset link sent to '+email+'.',true)}
+  catch(e){say(el('authMsg'),friendly(e),false)}
+};
+
+/* save registration (one doc per user, merged) */
+async function register(user){
+  const ref=db.collection(REG_COLLECTION).doc(user.uid);
+  const snap=await ref.get();
+  const data={
+    uid:user.uid,
+    name:user.displayName||pendingName||'',
+    email:(user.email||'').toLowerCase(),
+    photo:user.photoURL||'',
+    provider:(user.providerData[0]&&user.providerData[0].providerId)||'password',
+    lastLoginAt:new Date().toISOString()
+  };
+  if(!snap.exists){
+    data.plan='free-launch-subscription';
+    data.source='landing';
+    data.createdAt=new Date().toISOString();
+    data.emailUpdates=true;
+  }
+  await ref.set(data,{merge:true});
+  return snap.exists?snap.data():null;
+}
+
+/* UI state */
+function showUser(u){
+  const name=u.displayName||(u.email||'').split('@')[0]||'student';
+  el('authView').classList.add('hidden');el('doneView').classList.remove('hidden');
+  el('dName').textContent=name.split(' ')[0];el('dEmail').textContent=u.email||'';
+  el('me').classList.add('on');el('meName').textContent=name;
+  const av=el('meAv');
+  if(u.photoURL){av.innerHTML='';const im=document.createElement('img');im.src=u.photoURL;im.alt='';im.referrerPolicy='no-referrer';av.style.background='none';av.appendChild(im)}
+  else{av.textContent=name.charAt(0).toUpperCase()}
+  el('navCta').textContent='My free access';
+}
+function showGuest(){
+  el('authView').classList.remove('hidden');el('doneView').classList.add('hidden');
+  el('me').classList.remove('on');el('navCta').textContent='Get Free Access';
+}
+auth.onAuthStateChanged(async u=>{
+  if(!u){showGuest();return}
+  showUser(u);
+  try{
+    const old=await register(u);
+    if(old){el('attempt').value=old.attempt||'';el('state').value=old.state||''}
+  }catch(e){console.error(e);say(el('doneMsg'),friendly(e),false)}
+});
+
+el('saveProfile').onclick=async()=>{
+  const u=auth.currentUser;if(!u)return;
+  const b=el('saveProfile');b.disabled=true;
+  try{
+    await db.collection(REG_COLLECTION).doc(u.uid).set({attempt:el('attempt').value,state:el('state').value.trim()},{merge:true});
+    say(el('doneMsg'),'Saved ✓',true);
+  }catch(e){say(el('doneMsg'),friendly(e),false)}
+  finally{b.disabled=false}
+};
+el('logoutBtn').onclick=()=>auth.signOut();
+el('me').onclick=()=>el('register').scrollIntoView({behavior:'smooth'});
+</script>
 </body>
 </html>
