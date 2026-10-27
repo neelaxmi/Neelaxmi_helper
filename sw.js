@@ -3,7 +3,7 @@ const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
   '/offline.html',
-  '/pictures/neelaxmi.jpg',
+  '/pictures/neelaxmi.png',
   '/manifest.json'
 ];
 
