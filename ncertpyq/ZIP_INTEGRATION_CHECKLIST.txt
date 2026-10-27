@@ -1,82 +1,31 @@
-# pyq.zip integration checklist
+NCERT PYQ ZIP integration — status
 
-The following files were found in the supplied pyq.zip and still need to be copied into the repository. Preserve these relative paths.
+Integrated on branch chore/pyqncert-zip-layout.
 
-## Root
-- readme.md (do not add if keeping the repository rule that project.md is the only Markdown file)
-- package.json
-- package-lock.json
-- netlify.toml
+Structure
+- Front-end files are under ncertpyq/public/ to match public/ in pyq.zip.
+- Netlify functions are under ncertpyq/netlify/functions/.
+- Shared function libraries are under ncertpyq/netlify/functions/lib/.
+- Root package.json, package-lock.json, readme.md and netlify.toml stay in ncertpyq/.
+- ncertpyq/index.html is a compatibility redirect to ncertpyq/public/index.html for the main repository site.
+- The root Netlify config uses publish = public and functions = netlify/functions.
+- The separate pyq/ pages were renamed to pyqncert/ and site links/sitemap were updated.
 
-## public/
-- chapters.json
-- profile.html
-- firebase-config.js
-- subscription.js
-- paywall-styles-addition.css
-- styles.css
-- pyq.html
-- site-config.js
-- app.js
-- about.html
-- contact.html
-- style.css
-- referral.js
-- dashboard.html
-- index.html
-- profile.js
-- sitemap.xml
-- logo.png (binary image)
-- landing.css
-- ads.txt
-- reader.js
-- checkout.html
-- terms.html
-- auth.js
-- robots.txt
-- privacy-policy.html
-- site.js
-- drive-config.js
-- branding.js
-- readme.md (do not add if keeping the repository rule that project.md is the only Markdown file)
+Path repairs
+- site-config.js now points at ./logo.png (the archive does not contain assets/neelaxmi.png).
+- profile.html and pyq.html now point at logo.png instead of /neelaxmi.png.
+- Existing relative front-end references remain together under public/.
+- Backend function files now sit alongside their expected lib/ folder so ./lib/common resolves.
 
-## public/team/
-- README.txt
-- owner.jpeg (binary image)
-- teamer.jpg (binary image)
-- shreyas.jpg (binary image)
-- IMG_20261010_170900_985.jpg (binary image)
-- IMG_20261010_170902_768.jpg (binary image)
+Assets still missing from the repository
+- public/team/IMG_20261010_170900_985.jpg
+- public/team/IMG_20261010_170902_768.jpg
+The ZIP contains these two images, but they were not already tracked elsewhere in the repository. The three other team images were copied from matching existing files under /pictures/; their blob hashes match the ZIP copies.
 
-## netlify/functions/
-- request-withdrawal.js
-- create-session.js
-- drive-pdf.mjs
-- submit-order.js
-- get-reviews.js
-- telegram-webhook.js
-- netlify.toml
-- request-price-drop.js
-- referral-init.js
-- package.json
-- send-feedback.js
-- process-order-background.js
+Archive/documentation mismatch
+- readme.md refers to landing.html and landing.js, but neither file is present in pyq.zip. landing.css is present.
+- The ZIP has no public/assets/neelaxmi.png; public/logo.png is present and site-config.js now uses it.
 
-## netlify/functions/lib/
-- mail.js
-- common.js
-
-Note: these are paths and filenames from the ZIP, not a confirmation that the files have been integrated. Before copying, compare with existing repository files to avoid overwriting newer code. Update relative links, asset paths, Netlify function paths, and any configuration values after integration.
-
-## Repository structure audit (2026-10-27)
-- Reviewed local href/src/action/poster references in the main landing page, legal pages, guides, blogs, study-resource pages, PYQ pages, quiz pages, and teacher pages. No definite missing local target was found in the scanned pages; template-generated values such as \u0060\u0024{member.photo}\u0060 are runtime placeholders, not file paths.
-- All image files currently tracked in the repository are already inside \u0060pictures/\u0060. No additional image moves were needed, so their paths were not changed unnecessarily.
-- \u0060logo.mp4\u0060 is a video, not an image, so it was left in place rather than incorrectly treating it as a picture.
-- Fixed \u0060robots.txt\u0060 to advertise \u0060https://neelaxmi.site/sitemap.xml\u0060.
-- Wrapped \u0060privacy.html\u0060 in a complete HTML document and added site navigation.
-- Added consistent navigation links to \u0060dmca.html\u0060, \u0060terms.html\u0060, \u0060DISCLAIMER.html\u0060, and \u0060cookie-policy.html\u0060.
-- Updated old \u0060akmsir.netlify.app\u0060 references in the disclaimer and terms pages to the current \u0060neelaxmi.site\u0060 domain.
-- Root legal URLs (\u0060/contact.html\u0060, \u0060/dmca.html\u0060, \u0060/privacy.html\u0060, etc.) were kept at the root because existing site navigation and the sitemap use those URLs; moving them into a folder without redirects would break links/bookmarks.
-
-## Still pending
-The supplied \u0060pyq.zip\u0060 application code and its image assets have not been copied into the live repository tree. Use the file list above to integrate them carefully, comparing against existing files first.
+Validation still recommended after deployment
+- Deploy the ncertpyq folder as the Netlify base directory to apply its nested netlify.toml.
+- Confirm Firebase/Netlify environment variables are configured for the standalone PYQ app.

@@ -30,8 +30,8 @@ The homepage's study-library area provides entry points to these local sections:
 - **JEE PYQ Quiz** — `/quiz/quizzes.html`
 - **Important Resources** — `/resources/index.html`
 - **Flashcards** — `/flashcards/index.html`
-- **NEET previous-year papers** — `/pyq/neet.html`
-- **JEE previous-year papers** — `/pyq/jee.html`
+- **NEET previous-year papers** — `/pyqncert/neet.html`
+- **JEE previous-year papers** — `/pyqncert/jee.html`
 - **CBSE material** — `/cbse/index.html`
 - **NEET UG guide** — `/Guides/neet-ug-roadmap.html`
 - **Mind Map Studio** — `/mindmap/mindmap.html`
