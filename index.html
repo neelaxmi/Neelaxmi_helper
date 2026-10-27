@@ -1136,6 +1136,7 @@
                 <span class="section-eyebrow">We're Listening</span>
                 <h2 class="text-3xl md:text-5xl font-bold mb-4">Contact &amp; <span class="text-gradient">Join Us</span></h2>
                 <p class="text-gray-400">Feedback, joining the team, or flagging a bug — submissions are sent to Firebase Firestore and confirmed only after saving succeeds.</p>
+                <p id="contactFirebaseStatus" class="mx-auto mt-3 max-w-2xl text-xs leading-5 text-gray-500" role="status" aria-live="polite">Contact form service is initializing. Your message will only be marked as sent after Firebase confirms it was saved.</p>
             </div>
 
             <!-- Member Counter Widget -->
@@ -2149,38 +2150,50 @@ function initContactTabs() {
 let firebaseReady = false;
 let firestoreDB = null;
 
+function setContactServiceStatus(message, state = 'neutral') {
+  const statusEl = $('#contactFirebaseStatus');
+  if (!statusEl) return;
+  statusEl.textContent = message;
+  statusEl.dataset.state = state;
+  statusEl.classList.toggle('text-emerald-400', state === 'success');
+  statusEl.classList.toggle('text-red-400', state === 'error');
+}
+
 function initFirebase() {
   const isConfigured = FIREBASE_CONFIG.apiKey && FIREBASE_CONFIG.apiKey !== 'YOUR_API_KEY';
   if (!isConfigured) {
-    console.info(
-      '[Neelaxmi] Firebase config not set yet — form submissions will log to the console only. ' +
-      'Add your real config to FIREBASE_CONFIG at the top of script.js to start saving to Firestore.'
-    );
+    setContactServiceStatus('Contact forms are not configured yet. Your message has not been sent.', 'error');
+    console.warn('[Neelaxmi] Firebase config is missing.');
     return;
   }
   if (typeof firebase === 'undefined') {
-    console.warn('[Neelaxmi] Firebase SDK script tags not found — check index.html <head>.');
+    setContactServiceStatus('Firebase could not load. Your message has not been sent; please try again later.', 'error');
+    console.warn('[Neelaxmi] Firebase SDK scripts did not load.');
     return;
   }
   try {
-    firebase.initializeApp(FIREBASE_CONFIG);
+    if (!firebase.apps || !firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
     firestoreDB = firebase.firestore();
     firebaseReady = true;
+    setContactServiceStatus('Firebase form service is initialized. Each submission is confirmed only after Firestore saves it.');
   } catch (err) {
+    setContactServiceStatus('Firebase could not initialize. Your message has not been sent; please try again later.', 'error');
     console.error('[Neelaxmi] Firebase failed to initialize:', err);
   }
 }
 
 async function pushToFirestore(collectionName, payload) {
   const record = { ...payload, submittedAt: new Date().toISOString() };
-  if (!firebaseReady) {
-    console.log(`[Neelaxmi] (offline mode) would save to "${collectionName}":`, record);
+  if (!firebaseReady || !firestoreDB) {
+    setContactServiceStatus('The form service is unavailable. Your message was not sent; please try again later.', 'error');
     return { ok: false, offline: true };
   }
   try {
     await firestoreDB.collection(collectionName).add(record);
+    setContactServiceStatus('Your message was saved successfully.', 'success');
     return { ok: true, offline: false };
   } catch (err) {
+    setContactServiceStatus('Firebase could not save this message. It was not sent; please try again.', 'error');
     console.error(`[Neelaxmi] Firestore write to "${collectionName}" failed:`, err);
     return { ok: false, error: err };
   }
