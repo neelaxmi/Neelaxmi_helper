@@ -1,0 +1,9 @@
+{
+  "name": "course-pay-free",
+  "private": true,
+  "engines": { "node": ">=18" },
+  "dependencies": {
+    "firebase-admin": "^12.2.0",
+    "qrcode": "^1.5.3"
+  }
+}

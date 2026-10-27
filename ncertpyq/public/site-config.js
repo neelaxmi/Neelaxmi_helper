@@ -1,7 +1,7 @@
 export const SITE_CONFIG = {
   brandName: "Neelaxmi",
   appTitle: "NCERT PYQ Reader",
-  logoPath: "./assets/neelaxmi.png",
+  logoPath: "./logo.png",
   websiteUrl: "https://neelaxmi.site",
   telegramUrl: "https://telegram.me/neelaxmi_official",
   supportEmail: "neelaxmi.support@gmail.com",
