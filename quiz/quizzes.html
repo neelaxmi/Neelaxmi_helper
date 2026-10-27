@@ -740,7 +740,7 @@ input[type=range]::-moz-range-thumb {
                 Verify Token
             </button>
 
-            <a id="token-unlock-getlink-btn" href="/token.html" target="_blank" rel="noopener"
+            <a id="token-unlock-getlink-btn" href="/token.html"
                class="relative z-10 w-full flex items-center justify-center gap-2 px-4 py-3 border border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300 font-bold rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition">
                 <i class="fa-solid fa-key"></i> Get Access Token
             </a>
@@ -1021,7 +1021,7 @@ input[type=range]::-moz-range-thumb {
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
 
-    <script defer src="/vendor/face-api.min.js"></script>
+    
 
 
 
@@ -1029,7 +1029,7 @@ input[type=range]::-moz-range-thumb {
 
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw-proctor-cache.js').catch(() => {});
+                navigator.serviceWorker.register('/sw.js').catch(() => {});
             });
         }
     </script>
