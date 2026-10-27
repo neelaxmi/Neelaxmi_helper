@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#101827">
+  <meta name="description" content="Neelaxmi class updates hub with links to the quiz center, student sign-in and teacher resources.">
+  <title>Class Updates | Neelaxmi</title><link rel="icon" href="/pictures/neelaxmi.png" type="image/png">
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box}body{margin:0;background:#f6f8fc;color:#172033;font:16px/1.65 Inter,system-ui,sans-serif}a{color:inherit}a:focus-visible{outline:3px solid #fb923c;outline-offset:3px}
+    .top{background:#fff;border-bottom:1px solid #e6eaf1}.nav,.wrap{width:min(1050px,calc(100% - 36px));margin:auto}.nav{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:14px 0}.brand{display:flex;align-items:center;gap:10px;text-decoration:none;font-weight:800}.brand img{width:40px;height:40px;border-radius:50%}.links{display:flex;gap:16px;flex-wrap:wrap;font-weight:650;font-size:.92rem}.links a{text-decoration:none;color:#475569}.links a:hover{color:#dc2626}
+    .hero{padding:64px 0;background:radial-gradient(circle at 90% 10%,#ffedd5,transparent 30%),linear-gradient(135deg,#fff,#fff7f2);border-bottom:1px solid #e6eaf1}.tag{color:#b91c1c;background:#ffede4;padding:6px 12px;border-radius:99px;font-size:.75rem;font-weight:800;text-transform:uppercase;letter-spacing:.12em}h1,h2,h3{font-family:"Plus Jakarta Sans",Inter,sans-serif;line-height:1.2}h1{font-size:clamp(2.2rem,5vw,3.7rem);letter-spacing:-.05em;margin:20px 0 12px}.lead{max-width:700px;color:#59667d;font-size:1.1rem}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;padding:42px 0}.card{background:#fff;border:1px solid #e5e9f1;border-radius:20px;padding:24px;box-shadow:0 10px 28px #17203308}.icon{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;background:#fff0e8;color:#c2410c;font-size:1.2rem;font-weight:900}.card h2{font-size:1.2rem;margin:17px 0 8px}.card p{color:#667085}.btn{display:inline-flex;justify-content:center;text-decoration:none;margin-top:8px;padding:11px 15px;border-radius:11px;background:#dc2626;color:#fff;font-weight:750}.btn.alt{background:#fff;color:#b91c1c;border:1px solid #fecaca}.notice{margin:0 0 48px;padding:22px 24px;border:1px solid #fed7aa;background:#fff7ed;border-radius:18px;color:#7c2d12}.footer{border-top:1px solid #e5e9f1;padding:22px 0;color:#667085;font-size:.9rem}
+    @media(max-width:760px){.nav{align-items:flex-start;flex-direction:column}.grid{grid-template-columns:1fr;padding:28px 0}.hero{padding:46px 0}}
+  </style>
+</head>
+<body>
+  <div class="top"><nav class="nav" aria-label="Main navigation"><a class="brand" href="/index.html"><img src="/pictures/neelaxmi.png" alt=""> NEELAXMI <span style="color:#f97316">.</span></a><div class="links"><a href="/index.html">Home</a><a href="/quiz/quizzes.html">Quizzes</a><a href="/teachers/about-us.html">About us</a></div></nav></div>
+  <header class="hero"><div class="wrap"><span class="tag">Student noticeboard</span><h1>Class updates, <span style="color:#dc2626">all in one place.</span></h1><p class="lead">Use this local hub to reach the existing quiz center, student sign-in and teacher resources without needing to remember a separate subdomain.</p></div></header>
+  <main class="wrap">
+    <div class="grid">
+      <article class="card"><div class="icon" aria-hidden="true">↗</div><h2>Student sign-in</h2><p>Open the existing sign-in and registration page for the quiz ecosystem.</p><a class="btn" href="/quiz/auth.html">Login / Register →</a></article>
+      <article class="card"><div class="icon" aria-hidden="true">✓</div><h2>Quiz center</h2><p>Go straight to the current quizzes page for practice and available tests.</p><a class="btn" href="/quiz/quizzes.html">Browse quizzes →</a></article>
+      <article class="card"><div class="icon" aria-hidden="true">▤</div><h2>Teacher resources</h2><p>Browse teacher profiles and subject resources already present in Neelaxmi.</p><a class="btn alt" href="/teachers/test-series.html">Open test series →</a></article>
+    </div>
+    <section class="notice"><strong>Noticeboard status</strong><p style="margin-bottom:0">This page is a local navigation hub. Live announcements have not been connected to a verified updates feed yet, so no fake or outdated notices are displayed here.</p></section>
+  </main>
+  <footer class="footer"><div class="wrap">© <span id="year"></span> Neelaxmi The Helper · <a href="/privacy.html">Privacy</a></div></footer>
+  <script>document.getElementById('year').textContent=new Date().getFullYear();</script>
+</body></html>

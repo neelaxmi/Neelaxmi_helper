@@ -1,9 +1,9 @@
-const CACHE_NAME = 'neelaxmi-cache-v3'; // Changed to v3 to force update
+const CACHE_NAME = 'neelaxmi-cache-v4'; // Changed to v3 to force update
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
   '/offline.html',
-  '/pictures/neelaxmi.jpg',
+  '/pictures/neelaxmi.png',
   '/manifest.json'
 ];
 
