@@ -1,0 +1,69 @@
+# pyq.zip integration checklist
+
+The following files were found in the supplied pyq.zip and still need to be copied into the repository. Preserve these relative paths.
+
+## Root
+- readme.md (do not add if keeping the repository rule that project.md is the only Markdown file)
+- package.json
+- package-lock.json
+- netlify.toml
+
+## public/
+- chapters.json
+- profile.html
+- firebase-config.js
+- subscription.js
+- paywall-styles-addition.css
+- styles.css
+- pyq.html
+- site-config.js
+- app.js
+- about.html
+- contact.html
+- style.css
+- referral.js
+- dashboard.html
+- index.html
+- profile.js
+- sitemap.xml
+- logo.png (binary image)
+- landing.css
+- ads.txt
+- reader.js
+- checkout.html
+- terms.html
+- auth.js
+- robots.txt
+- privacy-policy.html
+- site.js
+- drive-config.js
+- branding.js
+- readme.md (do not add if keeping the repository rule that project.md is the only Markdown file)
+
+## public/team/
+- README.txt
+- owner.jpeg (binary image)
+- teamer.jpg (binary image)
+- shreyas.jpg (binary image)
+- IMG_20261010_170900_985.jpg (binary image)
+- IMG_20261010_170902_768.jpg (binary image)
+
+## netlify/functions/
+- request-withdrawal.js
+- create-session.js
+- drive-pdf.mjs
+- submit-order.js
+- get-reviews.js
+- telegram-webhook.js
+- netlify.toml
+- request-price-drop.js
+- referral-init.js
+- package.json
+- send-feedback.js
+- process-order-background.js
+
+## netlify/functions/lib/
+- mail.js
+- common.js
+
+Note: these are paths and filenames from the ZIP, not a confirmation that the files have been integrated. Before copying, compare with existing repository files to avoid overwriting newer code. Update relative links, asset paths, Netlify function paths, and any configuration values after integration.
