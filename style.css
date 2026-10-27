@@ -1107,3 +1107,8 @@ img[loading="lazy"] {
 .animate-marquee-fast { animation: marquee-fast 20s linear infinite; }
 .animate-marquee-reverse { animation: marquee-reverse 20s linear infinite; }
 .animate-marquee-fast:hover, .animate-marquee-reverse:hover { animation-play-state: paused; }
+
+/* Firebase contact form status */
+#contactFirebaseStatus[data-state="success"] { color: #34d399; }
+#contactFirebaseStatus[data-state="error"] { color: #f87171; }
+#contactFirebaseStatus[data-state="neutral"] { color: var(--color-text-muted); }
