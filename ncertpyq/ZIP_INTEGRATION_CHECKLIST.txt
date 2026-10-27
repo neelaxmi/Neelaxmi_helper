@@ -67,3 +67,16 @@ The following files were found in the supplied pyq.zip and still need to be copi
 - common.js
 
 Note: these are paths and filenames from the ZIP, not a confirmation that the files have been integrated. Before copying, compare with existing repository files to avoid overwriting newer code. Update relative links, asset paths, Netlify function paths, and any configuration values after integration.
+
+## Repository structure audit (2026-10-27)
+- Reviewed local href/src/action/poster references in the main landing page, legal pages, guides, blogs, study-resource pages, PYQ pages, quiz pages, and teacher pages. No definite missing local target was found in the scanned pages; template-generated values such as \u0060\u0024{member.photo}\u0060 are runtime placeholders, not file paths.
+- All image files currently tracked in the repository are already inside \u0060pictures/\u0060. No additional image moves were needed, so their paths were not changed unnecessarily.
+- \u0060logo.mp4\u0060 is a video, not an image, so it was left in place rather than incorrectly treating it as a picture.
+- Fixed \u0060robots.txt\u0060 to advertise \u0060https://neelaxmi.site/sitemap.xml\u0060.
+- Wrapped \u0060privacy.html\u0060 in a complete HTML document and added site navigation.
+- Added consistent navigation links to \u0060dmca.html\u0060, \u0060terms.html\u0060, \u0060DISCLAIMER.html\u0060, and \u0060cookie-policy.html\u0060.
+- Updated old \u0060akmsir.netlify.app\u0060 references in the disclaimer and terms pages to the current \u0060neelaxmi.site\u0060 domain.
+- Root legal URLs (\u0060/contact.html\u0060, \u0060/dmca.html\u0060, \u0060/privacy.html\u0060, etc.) were kept at the root because existing site navigation and the sitemap use those URLs; moving them into a folder without redirects would break links/bookmarks.
+
+## Still pending
+The supplied \u0060pyq.zip\u0060 application code and its image assets have not been copied into the live repository tree. Use the file list above to integrate them carefully, comparing against existing files first.
