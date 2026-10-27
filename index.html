@@ -1681,7 +1681,7 @@ const ICONS = {
    2. DOM HELPERS
    ---------------------------------------------------------------------- */
 const $ = (sel, ctx = document) => ctx.querySelector(sel);
-const $ = (sel, ctx = document) => Array.from(ctx.querySelectorAll(sel));
+const $$ = (sel, ctx = document) => Array.from(ctx.querySelectorAll(sel));
 const escapeHTML = (value) => String(value ?? '').replace(/[&<>\"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '\"': '&quot;', "'": '&#39;' }[char]));
 const prefersReducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
