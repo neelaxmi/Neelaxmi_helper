@@ -7,7 +7,7 @@ Structure
 - Netlify functions are under ncertpyq/netlify/functions/.
 - Shared function libraries are under ncertpyq/netlify/functions/lib/.
 - Root package.json, package-lock.json, readme.md and netlify.toml stay in ncertpyq/.
-- ncertpyq/index.html is a compatibility redirect to ncertpyq/public/index.html for the main repository site.
+- ncertpyq/index.html redirects to https://pyqncert.netlify.app/ so main-site visitors reach the standalone app deployment.
 - The root Netlify config uses publish = public and functions = netlify/functions.
 - The separate pyq/ pages were renamed to pyqncert/ and site links/sitemap were updated.
 
