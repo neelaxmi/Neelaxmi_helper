@@ -1,0 +1,25 @@
+export const SITE_CONFIG = {
+  brandName: "Neelaxmi",
+  appTitle: "NCERT PYQ Reader",
+  logoPath: "./assets/neelaxmi.png",
+  websiteUrl: "https://neelaxmi.site",
+  telegramUrl: "https://telegram.me/neelaxmi_official",
+  supportEmail: "neelaxmi.support@gmail.com",
+  watermarkText: "NEELAXMI",
+  watermarkAngleDeg: 60,   
+  watermarkOpacity: 0.4,  
+  watermarkColor: "#0a1128", 
+  maxRenderCssWidth: 980, 
+  maxDevicePixelRatio: 2.5,
+  rememberLastPage: true,
+  otherWebsites: [
+    { icon: "🌐", name: "Neelaxmi Official", desc: "Notes, updates and everything Neelaxmi.", url: "https://neelaxmi.site" },
+    { icon: "🧠", name: "Neelaxmi Mindmaps", desc: "Visual mind maps for quick revision.", url: "" },
+    { icon: "✈️", name: "Telegram Channel", desc: "Updates, new PYQ sets and doubt solving.", url: "https://telegram.me/neelaxmi_official" },
+  ],
+  teamMembers: [
+    { name: "MRIDUL", role: "Founder & Editor" },
+    { name: "ARTI", role: "Academic Content" },
+    { name: "TANMAY ", role: "Tech & Product" },
+  ],
+};

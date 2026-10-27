@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0a1128" />
+  <meta name="robots" content="noindex" />
+
+  <title>Checkout — Neelaxmi PYQ Reader</title>
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap"
+    rel="stylesheet"
+  />
+
+  <link rel="stylesheet" href="styles.css" />
+
+  <style>
+    .co-wrap {
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 18px 16px 56px;
+    }
+
+    .co-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .co-steps {
+      display: flex;
+      gap: 6px;
+      margin: 0 0 16px;
+      padding: 0;
+      list-style: none;
+    }
+
+    .co-steps li {
+      flex: 1;
+      text-align: center;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      padding-top: 10px;
+      border-top: 4px solid rgba(127, 140, 190, 0.25);
+      transition: 0.2s;
+    }
+
+    .co-steps li.done {
+      color: var(--teal-400);
+      border-color: var(--teal-500);
+    }
+
+    .co-steps li.now {
+      color: var(--amber-400);
+      border-color: var(--amber-500);
+    }
+
+    .co-card {
+      background: var(--navy-800);
+      border: 1px solid rgba(127, 140, 190, 0.22);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      margin-bottom: 14px;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .co-card h2 {
+      font-family: var(--font-head);
+      font-size: 1.08rem;
+      margin: 0 0 4px;
+    }
+
+    .co-sub {
+      font-size: 0.86rem;
+      color: var(--text-muted);
+      margin: 0 0 14px;
+    }
+
+    .co-plan {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .co-price {
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .co-price b {
+      font: 700 1.8rem var(--font-head);
+      color: var(--teal-400);
+    }
+
+    .co-price small {
+      display: block;
+      font-size: 0.76rem;
+      color: var(--text-muted);
+    }
+
+    .co-perks {
+      list-style: none;
+      margin: 14px 0 0;
+      padding: 14px 0 0;
+      border-top: 1px dashed rgba(127, 140, 190, 0.3);
+      display: grid;
+      gap: 8px;
+      font-size: 0.9rem;
+    }
+
+    .co-perks li::before {
+      content: "✓";
+      color: var(--success);
+      font-weight: 700;
+      margin-right: 8px;
+    }
+
+    .co-ref {
+      display: flex;
+      gap: 8px;
+    }
+
+    .co-ref input {
+      flex: 1;
+      min-width: 0;
+      padding: 11px 12px;
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(127, 140, 190, 0.3);
+      background: transparent;
+      color: inherit;
+      font: 600 1rem var(--font-head);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .co-ref input:read-only {
+      opacity: 0.85;
+      border-color: var(--success);
+    }
+
+    .co-msg {
+      font-size: 0.85rem;
+      margin: 8px 0 0;
+    }
+
+    .co-msg.err {
+      color: var(--danger);
+    }
+
+    .co-msg.good {
+      color: var(--success);
+    }
+
+    .co-amount {
+      font: 700 2.3rem var(--font-head);
+      color: var(--teal-400);
+      text-align: center;
+      margin: 2px 0;
+    }
+
+    .co-qr {
+      display: block;
+      margin: 12px auto;
+      width: min(260px, 78vw);
+      aspect-ratio: 1;
+      background: #fff;
+      padding: 10px;
+      border-radius: 14px;
+    }
+
+    .co-timer {
+      text-align: center;
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .co-timer.expired {
+      color: var(--danger);
+    }
+
+    .co-note {
+      font-size: 0.84rem;
+      color: var(--text-muted);
+      text-align: center;
+      margin: 6px 0;
+      line-height: 1.5;
+    }
+
+    .co-note b {
+      color: var(--amber-400);
+    }
+
+    .co-form .field-label {
+      margin-bottom: 12px;
+    }
+
+    .co-form input {
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .co-file {
+      display: block;
+      margin-top: 4px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .co-status {
+      padding: 14px;
+      border-radius: var(--radius-md);
+      text-align: center;
+      margin-top: 12px;
+      background: rgba(127, 140, 190, 0.12);
+      font-weight: 500;
+      line-height: 1.5;
+    }
+
+    .co-secure {
+      text-align: center;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: 6px;
+    }
+
+    /* Verification notice */
+    .co-verify-notice {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      padding: 14px;
+      margin-top: 14px;
+      border-radius: var(--radius-md);
+      background: rgba(245, 158, 11, 0.09);
+      border: 1px solid rgba(245, 158, 11, 0.25);
+    }
+
+    .co-verify-icon {
+      font-size: 1.35rem;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+
+    .co-verify-notice strong {
+      display: block;
+      color: var(--amber-400);
+      margin-bottom: 4px;
+    }
+
+    .co-verify-notice p {
+      margin: 0;
+      font-size: 0.84rem;
+      line-height: 1.5;
+      color: var(--text-muted);
+    }
+
+    /* Support card */
+    .co-support {
+      text-align: center;
+    }
+
+    .co-support-icon {
+      font-size: 2rem;
+      margin-bottom: 6px;
+    }
+
+    .co-support h2 {
+      margin-bottom: 7px;
+    }
+
+    .co-support p {
+      margin: 0 0 14px;
+      color: var(--text-muted);
+      font-size: 0.84rem;
+      line-height: 1.55;
+    }
+
+    .co-support-actions {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .co-support-actions a {
+      text-decoration: none;
+    }
+
+    .co-email {
+      display: inline-block;
+      margin-top: 12px;
+      font-size: 0.8rem;
+      color: var(--teal-400);
+      word-break: break-all;
+      text-decoration: none;
+    }
+
+    .co-email:hover {
+      text-decoration: underline;
+    }
+
+    .co-support-hours {
+      margin-top: 12px !important;
+      margin-bottom: 0 !important;
+      font-size: 0.76rem !important;
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+
+    @media (max-width: 420px) {
+      .co-plan {
+        align-items: flex-start;
+      }
+
+      .co-price b {
+        font-size: 1.55rem;
+      }
+
+      .co-support-actions {
+        flex-direction: column;
+      }
+
+      .co-support-actions a {
+        width: 100%;
+        box-sizing: border-box;
+        text-align: center;
+      }
+    }
+
+    .co-skel .skel-line{height:14px;border-radius:7px;margin:10px 0;background:linear-gradient(90deg,rgba(127,140,190,.12),rgba(127,140,190,.28),rgba(127,140,190,.12));background-size:200% 100%;animation:coShimmer 1.2s infinite linear}
+    .skel-line.w60{width:60%}.skel-line.w90{width:90%}.skel-line.w40{width:40%}
+    @keyframes coShimmer{from{background-position:200% 0}to{background-position:-200% 0}}
+    .co-sub-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+    .co-sub-plan{font-size:.82rem;color:var(--text-muted)}
+    .co-chip{display:inline-block;font-size:.76rem;font-weight:700;padding:4px 11px;border-radius:999px;letter-spacing:.2px}
+    .co-chip.ok{background:rgba(45,212,191,.16);color:var(--teal-400)}
+    .co-chip.wait{background:rgba(245,165,36,.16);color:var(--amber-400)}
+    .co-chip.bad{background:rgba(248,113,113,.16);color:#f87171}
+    .co-sub-body{display:flex;align-items:center;gap:18px}
+    .co-ring{position:relative;width:132px;height:132px;flex:none}
+    .co-ring svg{transform:rotate(-90deg)}
+    .ring-bg{fill:none;stroke:rgba(127,140,190,.22);stroke-width:10}
+    .ring-fg{fill:none;stroke:var(--teal-500);stroke-width:10;stroke-linecap:round;transition:stroke-dashoffset .9s ease,stroke .3s}
+    .ring-fg.low{stroke:var(--amber-500)}
+    .co-ring-txt{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+    .co-ring-txt b{font:700 2rem var(--font-head);line-height:1}
+    .co-ring-txt small{font-size:.74rem;color:var(--text-muted);margin-top:3px}
+    .co-sub-facts{margin:0;display:grid;gap:10px;min-width:0}
+    .co-sub-facts div{min-width:0}
+    .co-sub-facts dt{font-size:.72rem;text-transform:uppercase;letter-spacing:.6px;color:var(--text-muted)}
+    .co-sub-facts dd{margin:2px 0 0;font-weight:600;font-size:.92rem}
+    .co-warn{margin:14px 0 0;padding:10px 12px;border-radius:10px;background:rgba(245,165,36,.12);color:var(--amber-400);font-size:.84rem}
+    .co-sub-actions{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+    .co-sub-actions .btn{flex:1;justify-content:center;text-align:center;min-width:150px}
+    .co-pending-card{border-color:rgba(245,165,36,.4)}
+    .co-sub-card{border-color:rgba(20,184,166,.4)}
+    .co-reject-card{border-color:rgba(248,113,113,.4)}
+    .co-timeline{list-style:none;margin:14px 0 0;padding:0 0 0 4px}
+    .co-timeline li{position:relative;padding:0 0 16px 28px;display:flex;flex-direction:column}
+    .co-timeline li:last-child{padding-bottom:0}
+    .co-timeline li::before{content:"";position:absolute;left:0;top:3px;width:14px;height:14px;border-radius:50%;border:2px solid rgba(127,140,190,.5);background:var(--navy-800)}
+    .co-timeline li::after{content:"";position:absolute;left:6px;top:20px;bottom:-2px;width:2px;background:rgba(127,140,190,.3)}
+    .co-timeline li:last-child::after{display:none}
+    .co-timeline li.done::before{background:var(--teal-500);border-color:var(--teal-500)}
+    .co-timeline li.now::before{border-color:var(--amber-500);background:var(--amber-500);animation:coPulse 1.6s infinite}
+    .co-timeline small{color:var(--text-muted);font-size:.8rem}
+    @keyframes coPulse{0%{box-shadow:0 0 0 0 rgba(245,165,36,.5)}100%{box-shadow:0 0 0 9px rgba(245,165,36,0)}}
+    .co-hist{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:8px}
+    .co-hist li{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;background:rgba(127,140,190,.08);font-size:.86rem}
+    .co-hist small{display:block;color:var(--text-muted);font-size:.75rem}
+    @media (max-width:420px){.co-sub-body{flex-direction:column;align-items:flex-start}.co-ring{align-self:center}}
+    @media (prefers-reduced-motion:reduce){.ring-fg,.co-timeline li.now::before,.co-skel .skel-line{animation:none;transition:none}}
+
+    .co-price-toggle{width:100%;display:flex;justify-content:space-between;align-items:center;gap:10px;background:none;border:0;color:inherit;font:600 .98rem var(--font-head);cursor:pointer;padding:0;text-align:left}
+    .co-price-toggle i{font-style:normal;transition:transform .25s}
+    .co-price-toggle[aria-expanded="true"] i{transform:rotate(180deg)}
+    #priceCard textarea{font:inherit;font-size:.92rem;padding:10px 12px;border-radius:var(--radius-md);border:1px solid var(--navy-600);background:var(--navy-700);color:var(--text-light);resize:vertical}
+    #priceCard input[type=number]{font-size:.92rem;padding:10px 12px;border-radius:var(--radius-md);border:1px solid var(--navy-600);background:var(--navy-700);color:var(--text-light)}
+  </style>
+</head>
+
+<body>
+
+  <div class="co-wrap">
+
+    <div class="co-top">
+      <a href="pyq.html" class="btn ghost">
+        ← Back
+      </a>
+
+      <a href="profile.html" class="auth-link">
+        My profile
+      </a>
+    </div>
+    <ol class="co-steps" id="steps" hidden>
+      <li class="now" data-s="1">
+        1 · Plan
+      </li>
+
+      <li data-s="2">
+        2 · Pay
+      </li>
+
+      <li data-s="3">
+        3 · Verify
+      </li>
+    </ol>
+    <section class="co-card co-skel" id="loadingCard" aria-live="polite">
+      <div class="skel-line w60"></div>
+      <div class="skel-line w90"></div>
+      <div class="skel-line w40"></div>
+    </section>
+
+    <section class="co-card co-sub-card" id="subCard" hidden>
+      <div class="co-sub-head">
+        <span class="co-chip ok">● Active</span>
+        <span class="co-sub-plan">Full access · 365 days</span>
+      </div>
+      <div class="co-sub-body">
+        <div class="co-ring" id="ring" role="img" aria-label="Days remaining">
+          <svg viewBox="0 0 120 120" width="132" height="132">
+            <circle class="ring-bg" cx="60" cy="60" r="52"/>
+            <circle class="ring-fg" id="ringFg" cx="60" cy="60" r="52" stroke-dasharray="326.7" stroke-dashoffset="326.7"/>
+          </svg>
+          <div class="co-ring-txt"><b id="daysNum">0</b><small id="daysLbl">days left</small></div>
+        </div>
+        <dl class="co-sub-facts">
+          <div><dt>Expires on</dt><dd id="expDate">—</dd></div>
+          <div><dt>Time left</dt><dd id="expExact">—</dd></div>
+          <div><dt>Unlocked</dt><dd>All chapters + PYQ highlights</dd></div>
+        </dl>
+      </div>
+      <p class="co-warn" id="soonWarn" hidden>⚠️ Your access ends soon. Renew now and the 365 days are added on top of what you have left — nothing is lost.</p>
+      <div class="co-sub-actions">
+        <a href="pyq.html" class="btn primary">📖 Continue reading</a>
+        <button type="button" id="extendBtn" class="btn ghost">➕ Extend by 365 days</button>
+      </div>
+    </section>
+
+    <section class="co-card co-pending-card" id="pendingCard" hidden>
+      <div class="co-sub-head">
+        <span class="co-chip wait">● Pending review</span>
+        <span class="co-sub-plan" id="pendRef">Order —</span>
+      </div>
+      <h2>Your payment is being reviewed ⏳</h2>
+      <p class="co-sub">We've received your screenshot. You don't need to pay or upload again — the QR is hidden while this order is open.</p>
+      <ol class="co-timeline">
+        <li class="done"><b>Screenshot received</b><small id="pendAt">—</small></li>
+        <li class="now"><b>Verification in progress</b><small>Usually 3–4 hours</small></li>
+        <li><b>Access activated</b><small>You'll also get an email</small></li>
+      </ol>
+      <p class="co-note" style="margin-top:12px">This page updates automatically — you can safely close it.</p>
+    </section>
+
+    <section class="co-card co-reject-card" id="rejectCard" hidden>
+      <span class="co-chip bad">● Not verified</span>
+      <p class="co-sub" style="margin:8px 0 0">Your last payment couldn't be verified. If you did pay, contact support with your UTR (below). Otherwise you can start a fresh payment.</p>
+    </section>
+
+    <div id="flowWrap" hidden>
+    <section class="co-card" id="stepStart">
+      <div class="co-plan">
+        <div>
+          <h2>
+            Full access — 365 days
+          </h2>
+          <p class="co-sub" style="margin:0">
+            One payment, no auto-renewal
+          </p>
+        </div>
+        <div class="co-price">
+          <b>₹149</b>
+          <small>+ a few paise*</small>
+        </div>
+
+      </div>
+
+
+      <ul class="co-perks">
+
+        <li>
+          Every chapter unlocked
+        </li>
+
+        <li>
+          PYQ highlights linked to each page
+        </li>
+
+        <li>
+          Access on phone, tablet and laptop
+        </li>
+
+      </ul>
+
+    </section>
+
+    <section class="co-card" id="refCard">
+      <h2>
+        🎁 Have a referral code?
+      </h2>
+      <p class="co-sub" id="refSub">
+        Enter a friend's code. It can't be changed after you apply it.
+      </p>
+      <div class="co-ref">
+      <input
+          id="refInput"
+          type="text"
+          maxlength="12"
+          autocomplete="off"
+          autocapitalize="characters"
+          spellcheck="false"
+          placeholder="ENTER CODE"
+        />
+        <button
+          type="button"
+          id="refApplyBtn"
+          class="btn teal"
+        >
+          Apply
+        </button>
+        </div>
+      <p
+        id="refMsg"
+        class="co-msg"
+        hidden
+      ></p>
+    </section>
+    <section class="co-card" id="startCard">
+      <button
+        type="button"
+        id="startBtn"
+        class="btn primary"
+        style="width:100%"
+      >
+        Show payment QR
+      </button>
+
+      <p
+        id="startError"
+        class="auth-error"
+        hidden
+      ></p>
+
+      <p class="co-secure">
+        🔒 Pay from any UPI app · QR valid for 10 minutes
+      </p>
+
+    </section>
+
+
+    <!-- =========================
+         PAYMENT QR
+    ========================== -->
+    <section
+      class="co-card"
+      id="stepPay"
+      hidden
+    >
+
+      <h2 style="text-align:center">
+        Scan &amp; pay
+      </h2>
+
+      <div class="co-amount">
+        ₹<span id="amountText">--</span>
+      </div>
+
+      <p class="co-note">
+        <b>Pay exactly this amount</b>,
+        including paise — it identifies your payment.
+      </p>
+
+      <img
+        id="qrImg"
+        class="co-qr"
+        alt="UPI payment QR"
+      />
+
+      <div
+        id="timer"
+        class="co-timer"
+      ></div>
+
+    </section>
+
+
+    <!-- =========================
+         PAYMENT PROOF
+    ========================== -->
+    <section
+      class="co-card"
+      id="stepUpload"
+      hidden
+    >
+
+      <h2>
+        Upload payment screenshot
+      </h2>
+
+      <p class="co-sub">
+        It must show the amount, “Successful”, date/time and UTR.
+      </p>
+
+
+      <form
+        id="orderForm"
+        class="co-form"
+        novalidate
+      >
+
+        <!-- Name -->
+        <label class="field-label">
+
+          Name
+
+          <input
+            id="nameInput"
+            type="text"
+            required
+            maxlength="80"
+            autocomplete="name"
+          />
+
+        </label>
+
+
+        <!-- Email -->
+        <label class="field-label">
+
+          Email
+
+          <input
+            id="emailInput"
+            type="email"
+            readonly
+          />
+
+        </label>
+
+
+        <!-- Phone -->
+        <label class="field-label">
+
+          Phone (10 digits)
+
+          <input
+            id="phoneInput"
+            type="tel"
+            required
+            inputmode="numeric"
+            maxlength="10"
+            autocomplete="tel"
+          />
+
+        </label>
+
+
+        <!-- Screenshot -->
+        <label class="field-label">
+
+          Payment screenshot (JPG or PNG)
+
+          <input
+            id="fileInput"
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            required
+          />
+
+          <span
+            class="co-file"
+            id="fileName"
+          ></span>
+
+        </label>
+
+
+        <!-- Referral summary -->
+        <div
+          id="refSummary"
+          class="co-note"
+          hidden
+        ></div>
+
+
+        <!-- Submit -->
+        <button
+          type="submit"
+          id="submitBtn"
+          class="btn primary"
+          style="width:100%"
+        >
+          Submit for verification
+        </button>
+
+      </form>
+
+
+      <!-- Form error -->
+      <p
+        id="formError"
+        class="auth-error"
+        hidden
+      ></p>
+
+
+      <!-- Order status -->
+      <div
+        id="orderStatus"
+        class="co-status"
+        hidden
+      ></div>
+
+
+      <!-- =========================
+           3–4 HOUR NOTICE
+      ========================== -->
+      <div class="co-verify-notice">
+
+        <div class="co-verify-icon">
+          ⏳
+        </div>
+
+        <div>
+
+          <strong>
+            Verification usually takes 3–4 hours
+          </strong>
+
+          <p>
+            After submitting your payment screenshot,
+            please wait for our team to verify your payment.
+            Your full access will be activated after approval.
+          </p>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    </div>
+
+    <!-- Payment history -->
+    <section class="co-card" id="historyCard" hidden>
+      <h2>Your payments</h2>
+      <ul class="co-hist" id="histList"></ul>
+    </section>
+
+    <!-- =========================
+         PRICE-DROP REQUEST
+    ========================== -->
+    <section class="co-card co-price-card" id="priceCard">
+      <button type="button" class="co-price-toggle" id="priceToggle" aria-expanded="false" aria-controls="priceBody">
+        <span>💸 Can't pay ₹149? Request a lower price</span><i aria-hidden="true">▾</i>
+      </button>
+      <div id="priceBody" hidden>
+        <p class="co-sub" style="margin-top:12px">Tell us what you can honestly afford and why. Our team reads every request and replies on your email.</p>
+        <form id="priceForm" class="co-form" novalidate>
+          <label class="field-label">Your name
+            <input id="pdName" type="text" maxlength="80" autocomplete="name" required />
+          </label>
+          <label class="field-label">Amount you can pay (₹)
+            <input id="pdOffer" type="number" inputmode="numeric" min="1" max="148" step="1" placeholder="e.g. 99" required />
+          </label>
+          <label class="field-label">Why can't you pay ₹149?
+            <textarea id="pdReason" maxlength="1000" rows="4" placeholder="Tell us a bit about your situation…" required></textarea>
+            <span class="co-file" id="pdCount">0 / 1000</span>
+          </label>
+          <label class="field-label">Phone <span style="opacity:.6;font-weight:400">(optional, 10 digits)</span>
+            <input id="pdPhone" type="tel" inputmode="numeric" maxlength="10" autocomplete="tel" />
+          </label>
+          <button type="submit" id="pdBtn" class="btn teal" style="width:100%">Send request</button>
+        </form>
+        <p id="pdMsg" class="co-msg" hidden></p>
+        <p class="co-note">We'll reply to <b id="pdEmail">your account email</b>. A request doesn't guarantee a discount, and it can be sent once every 3 days.</p>
+      </div>
+    </section>
+
+
+    <!-- =========================
+         SUPPORT
+    ========================== -->
+    <section
+      class="co-card co-support"
+      id="supportCard"
+    >
+
+      <div class="co-support-icon">
+        💬
+      </div>
+
+      <h2>
+        Need help with your payment?
+      </h2>
+
+      <p>
+        If you face any problem while making the payment,
+        uploading your screenshot, or getting access after payment,
+        our support team is here to help.
+      </p>
+      <div class="co-support-actions">
+       <a
+          href="https://t.me/neelaxmi_contactbot"
+          class="btn teal"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          💬 Contact Support on Telegram
+        </a>
+        <a
+          href="mailto:neelaxmi.support@gmail.com?subject=Neelaxmi%20PYQ%20Payment%20Support"
+          class="btn ghost"
+        >
+          📧 Email Support
+        </a>
+      </div>
+      <a
+        class="co-email"
+        href="mailto:neelaxmi.support@gmail.com"
+      >
+        neelaxmi.support@gmail.com
+      </a>
+      <p class="co-support-hours">
+        🕐 Payment verification may take 3–4 hours.
+        Please don't submit the same payment multiple times.
+      </p>
+
+    </section>
+
+
+    <p class="co-note" id="paiseNote">
+      *The exact paise are added so we can match your payment automatically.
+    </p>
+
+  </div>
+
+
+  <script type="module" src="app.js"></script>
+
+</body>
+</html>

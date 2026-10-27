@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#0a1128" />
+<title>My Profile — Neelaxmi</title>
+<link rel="icon" href="/neelaxmi.png" />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+<style>
+  .pf{max-width:760px;margin:0 auto;padding:18px 16px 60px}
+  .pf-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:18px}
+  .pf-top h1{font-family:var(--font-head);font-size:1.4rem;margin:0}
+  .pf-card{background:var(--navy-800);border:1px solid rgba(127,140,190,.22);border-radius:var(--radius-lg);padding:20px;margin-bottom:16px;box-shadow:var(--shadow-soft)}
+  .pf-card h2{font-family:var(--font-head);font-size:1.05rem;margin:0 0 14px;display:flex;align-items:center;gap:8px}
+  .pf-row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}
+  .pf-row .field-label{flex:1 1 220px;margin:0}
+  .pf-muted{color:var(--text-muted);font-size:.86rem}
+  .pf-hello{display:flex;align-items:center;gap:14px;margin-bottom:16px}
+  .pf-avatar{width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,var(--amber-500),var(--teal-500));display:grid;place-items:center;font:700 1.4rem var(--font-head);color:#0a1128;flex:none}
+  .pf-badge{display:inline-block;padding:3px 10px;border-radius:99px;font-size:.78rem;font-weight:600}
+  .pf-badge.ok{background:rgba(34,197,94,.15);color:var(--success)}
+  .pf-badge.off{background:rgba(239,68,68,.14);color:var(--danger)}
+  .pf-bar{height:8px;border-radius:99px;background:rgba(127,140,190,.2);overflow:hidden;margin:12px 0 6px}
+  .pf-bar>i{display:block;height:100%;background:linear-gradient(90deg,var(--teal-500),var(--amber-500));border-radius:99px}
+  .pf-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:14px 0}
+  .pf-stat{background:rgba(127,140,190,.1);border-radius:var(--radius-md);padding:12px;text-align:center}
+  .pf-stat b{display:block;font:700 1.5rem var(--font-head)}
+  .pf-stat b.coin{color:var(--amber-500)}
+  .pf-copy{display:flex;gap:8px;margin-bottom:10px}
+  .pf-copy input{flex:1;min-width:0;padding:10px 12px;border-radius:var(--radius-md);border:1px solid rgba(127,140,190,.3);background:transparent;color:inherit;font:inherit}
+  .pf-code{font:700 1.1rem var(--font-head);letter-spacing:.12em;text-align:center}
+  .pf-how{margin:12px 0 0;padding-left:18px;font-size:.88rem;color:var(--text-muted);line-height:1.6}
+  .pf-list{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+  .pf-item{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:10px 12px;border-radius:var(--radius-md);background:rgba(127,140,190,.09);font-size:.9rem}
+  .pf-item .amt{font-weight:700;white-space:nowrap}
+  .pf-item .plus{color:var(--success)} .pf-item .minus{color:var(--danger)}
+  .pf-sites{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px}
+  .pf-site{display:block;padding:14px;border-radius:var(--radius-md);background:rgba(127,140,190,.1);text-decoration:none;color:inherit;transition:transform var(--transition-fast)}
+  .pf-site:hover{transform:translateY(-2px)}
+  .pf-site b{display:block;margin-bottom:2px} .pf-site span{font-size:.84rem;color:var(--text-muted)}
+  .pf-msg{margin-top:10px;font-size:.88rem} .pf-msg.err{color:var(--danger)} .pf-msg.good{color:var(--success)}
+  .pf-terms{font-size:.8rem;color:var(--text-muted);line-height:1.55;margin-top:14px}
+  h3.pf-h3{font:600 .95rem var(--font-head);margin:18px 0 4px}
+  [hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div id="authCheckSplash" class="auth-check-splash"><div class="spinner"></div></div>
+
+<main class="pf" id="pf" hidden>
+  <div class="pf-top">
+    <a href="pyq.html" class="btn ghost">← Back to reader</a>
+    <div style="display:flex;gap:8px">
+      <button id="themeToggleBtn" class="btn teal" type="button" aria-label="Toggle theme">🌗</button>
+      <button id="logoutBtn" class="btn ghost" type="button">Log out</button>
+    </div>
+  </div>
+
+  <!-- Account -->
+  <section class="pf-card">
+    <div class="pf-hello">
+      <div class="pf-avatar" id="avatar">?</div>
+      <div><h1 id="helloName" style="margin:0;font:700 1.35rem var(--font-head)">My Profile</h1><div class="pf-muted" id="emailText"></div></div>
+    </div>
+    <form id="nameForm" class="pf-row" novalidate>
+      <label class="field-label">Your name<input id="nameInput" type="text" maxlength="40" autocomplete="name" placeholder="Your name" /></label>
+      <button type="submit" id="nameSaveBtn" class="btn primary">Save name</button>
+    </form>
+    <div id="nameMsg" class="pf-msg" hidden></div>
+  </section>
+
+  <!-- Subscription -->
+  <section class="pf-card">
+    <h2>🎟️ Subscription</h2>
+    <div id="subBadge"></div>
+    <div id="subDetail" class="pf-muted" style="margin-top:8px"></div>
+    <div class="pf-bar" id="subBarWrap" hidden><i id="subBar"></i></div>
+    <div style="margin-top:12px"><a id="subBtn" class="btn primary" href="checkout.html">Unlock all chapters</a></div>
+  </section>
+
+  <!-- Referral -->
+  <section class="pf-card">
+    <h2>🎁 Refer &amp; Earn</h2>
+    <p class="pf-muted" style="margin-top:-6px">Share your link. When a friend buys a subscription and it's approved, you earn <b id="rewardCoins">30</b> coins (1 coin = ₹1).</p>
+
+    <div class="pf-copy"><input id="codeBox" class="pf-code" readonly value="Loading…" aria-label="Your referral code" /><button type="button" class="btn teal" data-copy="codeBox">Copy code</button></div>
+    <div class="pf-copy"><input id="linkBox" readonly aria-label="Your referral link" /><button type="button" class="btn teal" data-copy="linkBox">Copy link</button></div>
+    <div class="pf-copy"><a id="waShare" class="btn primary" target="_blank" rel="noopener" style="flex:1;text-align:center">Share on WhatsApp</a></div>
+
+    <div class="pf-stats">
+      <div class="pf-stat"><b class="coin" id="coinBal">0</b><span class="pf-muted">Coins (₹)</span></div>
+      <div class="pf-stat"><b id="statBought">0</b><span class="pf-muted">Purchased</span></div>
+      <div class="pf-stat"><b id="statSignups">0</b><span class="pf-muted">Signed up</span></div>
+      <div class="pf-stat"><b id="statWithdrawn">0</b><span class="pf-muted">Withdrawn</span></div>
+    </div>
+
+    <h3 class="pf-h3">Withdraw</h3>
+    <form id="wdForm" class="pf-row" novalidate>
+      <label class="field-label">Coins<input id="wdCoins" type="number" inputmode="numeric" min="200" step="1" placeholder="200" /></label>
+      <label class="field-label">Your UPI ID<input id="wdUpi" type="text" autocomplete="off" spellcheck="false" placeholder="name@okaxis" /></label>
+      <button type="submit" id="wdBtn" class="btn primary">Request withdrawal</button>
+    </form>
+    <div id="wdHint" class="pf-muted" style="margin-top:6px"></div>
+    <div id="wdMsg" class="pf-msg" hidden></div>
+
+    <h3 class="pf-h3">Referral earnings</h3>
+    <div class="pf-list" id="rewardList"><div class="pf-muted">No referrals yet.</div></div>
+    <h3 class="pf-h3">Withdrawal requests</h3>
+    <div class="pf-list" id="wdList"><div class="pf-muted">No withdrawal requests yet.</div></div>
+
+    <ol class="pf-how">
+      <li>Your friend opens your link (or enters your code at sign-up or checkout).</li>
+      <li>Coins are credited only after their subscription payment is <b>approved</b> — not on sign-up or review.</li>
+      <li>Withdrawals open at 200 coins and are paid to your UPI ID.</li>
+    </ol>
+    <p class="pf-terms">Referral rewards are given once per referred student, on their first approved purchase. Self-referrals and duplicate accounts are not eligible. Rewards can be reversed if a payment is revoked. The company's decision on all referral rewards and withdrawals is final.</p>
+  </section>
+
+  <!-- More websites -->
+  <section class="pf-card">
+    <h2>🌐 More from Neelaxmi</h2>
+    <div class="pf-sites" id="sites"></div>
+  </section>
+</main>
+
+<script type="module" src="branding.js"></script>
+<script type="module" src="profile.js"></script>
+</body>
+</html>

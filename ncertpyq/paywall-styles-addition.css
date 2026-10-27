@@ -1,0 +1,142 @@
+
+.unlock-cta-btn[hidden], .sub-days-tag[hidden], .chapter-lock-card[hidden] { display: none !important; }
+
+.unlock-cta-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.unlock-cta-price {
+  font-weight: 700;
+}
+
+.sub-days-tag {
+  font-family: "IBM Plex Sans", sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--accent-soft, rgba(45, 212, 191, 0.15));
+  color: var(--accent, #2dd4bf);
+  white-space: nowrap;
+}
+
+
+.price-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 10px;
+  margin: 16px 0;
+}
+
+.price-original {
+  font-family: "IBM Plex Sans", sans-serif;
+  font-size: 1.05rem;
+  color: var(--text-muted, #6b7290);
+  text-decoration: line-through;
+  text-decoration-thickness: 1.5px;
+}
+
+.price-discounted {
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--accent, #2dd4bf);
+  line-height: 1;
+}
+
+.price-badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: var(--danger-soft, rgba(248, 113, 113, 0.15));
+  color: var(--danger, #f87171);
+  align-self: center;
+}
+
+.price-row--modal {
+  justify-content: center;
+}
+
+
+.chapter-lock-card {
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 440px;
+  margin: 40px auto;
+  padding: 32px 28px;
+  background: var(--surface, #101833);
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+}
+
+.chapter-lock-logo {
+  width: 48px;
+  height: 48px;
+  margin: 0 auto 12px;
+  display: block;
+}
+
+.chapter-lock-card h2 {
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 1.15rem;
+  margin: 0 0 8px;
+}
+
+.chapter-lock-card p {
+  color: var(--text-muted, #9aa3c0);
+  font-size: 0.92rem;
+  line-height: 1.5;
+  margin: 0 0 4px;
+}
+
+
+.unlock-modal .modal-header h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.unlock-modal-logo {
+  width: 24px;
+  height: 24px;
+}
+
+.unlock-modal-subtitle {
+  text-align: center;
+  color: var(--text-muted, #9aa3c0);
+  font-size: 0.9rem;
+  margin: 0 0 20px;
+}
+
+.unlock-pay-btn {
+  width: 100%;
+  justify-content: center;
+}
+
+.locked-divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 20px 0;
+  color: var(--text-muted, #6b7290);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.locked-divider::before,
+.locked-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--border, rgba(255, 255, 255, 0.08));
+}

@@ -1,0 +1,255 @@
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+<meta name="theme-color" content="#0a1128" />
+<title>Neelaxmi — NCERT PYQ Reader</title>
+    <meta name="google-site-verification" content="iatylsdA3ilcUEyKshZLLZmpDIh6TMUdj7qjgoLTWxw">
+<meta name="description" content="Read NCERT chapters with Previous-Year-Question highlights built right into the page." />
+<link rel="icon" href="/neelaxmi.png" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <div id="authCheckSplash" class="auth-check-splash">
+    <div class="spinner"></div>
+  </div>
+
+  <div id="authScreen" class="auth-screen" hidden>
+    <div class="auth-orb auth-orb--a" aria-hidden="true"></div>
+    <div class="auth-orb auth-orb--b" aria-hidden="true"></div>
+    <div class="auth-orb auth-orb--c" aria-hidden="true"></div>
+
+    <div class="auth-card">
+      <aside class="auth-aside">
+        <div class="auth-brand">
+          <img class="js-logo auth-logo" alt="" />
+          <h1 class="js-brand-name">Neelaxmi</h1>
+          <p class="auth-tagline">NCERT chapters, mapped to the questions that actually get asked.</p>
+        </div>
+        <ul class="auth-perks">
+          <li><span>🎯</span> PYQs highlighted on the exact NCERT line</li>
+          <li><span>⚡</span> Tap a highlight, practise the MCQ instantly</li>
+          <li><span>🎁</span> Chapter 1 free — no card needed</li>
+          <li><span>📱</span> Works on phone, tablet &amp; laptop</li>
+        </ul>
+      </aside>
+
+      <section class="auth-main">
+        <h2 class="auth-title" id="authTitle">Create your free account</h2>
+        <p class="auth-sub" id="authSub">Start reading in under 30 seconds.</p>
+
+        <div class="auth-tabs" role="tablist" data-active="signup">
+          <span class="auth-tab-pill" aria-hidden="true"></span>
+          <button type="button" class="auth-tab active" data-tab="signup" role="tab" aria-selected="true">Sign up</button>
+          <button type="button" class="auth-tab" data-tab="login" role="tab" aria-selected="false">Log in</button>
+        </div>
+
+        <p id="authError" class="auth-error" hidden></p>
+
+        <details class="auth-ref" id="authRefBox">
+          <summary>🎁 Have a referral code?</summary>
+          <input type="text" id="signupRef" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="12" placeholder="e.g. 7F3K9QZC" />
+        </details>
+
+        <button type="button" id="googleBtn" class="google-btn">
+          <svg viewBox="0 0 48 48" width="20" height="20" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.9 6.1C12.4 13.6 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.2 5.5-4.7 7.2l7.6 5.9c4.4-4.1 6.9-10.1 6.9-17.6z"/><path fill="#FBBC05" d="M10.5 28.7a14.5 14.5 0 0 1 0-9.4l-7.9-6.1a24 24 0 0 0 0 21.6l7.9-6.1z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.6-5.9c-2.1 1.4-4.9 2.3-8.3 2.3-6.3 0-11.6-4.1-13.5-9.8l-7.9 6.1C6.5 42.6 14.6 48 24 48z"/></svg>
+          <span id="googleLabel">Sign up with Google</span>
+        </button>
+
+        <div class="auth-or"><span>or use email</span></div>
+
+        <form id="signupForm" class="auth-form" novalidate>
+          <label class="field-label">
+            Name
+            <input type="text" id="signupName" required autocomplete="name" placeholder="Your name" />
+          </label>
+          <label class="field-label">
+            Email
+            <input type="email" id="signupEmail" required autocomplete="email" placeholder="you@example.com" />
+          </label>
+          <label class="field-label">
+            Password
+            <span class="pw-field">
+              <input type="password" id="signupPassword" required autocomplete="new-password" minlength="6" placeholder="At least 6 characters" />
+              <button type="button" class="pw-toggle" data-target="signupPassword" aria-label="Show password" aria-pressed="false">👁</button>
+            </span>
+          </label>
+          <button type="submit" class="btn primary auth-submit" id="signupSubmitBtn">Create account</button>
+        </form>
+
+        <form id="loginForm" class="auth-form" novalidate hidden>
+          <label class="field-label">
+            Email
+            <input type="email" id="loginEmail" required autocomplete="email" placeholder="you@example.com" />
+          </label>
+          <label class="field-label">
+            Password
+            <span class="pw-field">
+              <input type="password" id="loginPassword" required autocomplete="current-password" minlength="6" placeholder="••••••••" />
+              <button type="button" class="pw-toggle" data-target="loginPassword" aria-label="Show password" aria-pressed="false">👁</button>
+            </span>
+          </label>
+          <button type="submit" class="btn primary auth-submit" id="loginSubmitBtn">Log in</button>
+          <button type="button" id="forgotPasswordBtn" class="auth-link">Forgot password?</button>
+        </form>
+
+        <p class="auth-legal">By continuing you agree to our <a href="terms.html" target="_blank" rel="noopener">Terms</a> and <a href="privacy-policy.html" target="_blank" rel="noopener">Privacy Policy</a>.</p>
+      </section>
+    </div>
+  </div>
+
+  <div id="appShell" class="app-shell" hidden>
+
+    <header class="topbar">
+      <div class="brand">
+        <img class="js-logo brand-logo" alt="" />
+        <h1>NCERT PYQ Reader</h1>
+      </div>
+
+      <div class="controls">
+        <select id="chapterSelect" class="field-select" aria-label="Choose chapter"></select>
+
+        <button id="prevPageBtn" class="btn icon-btn" aria-label="Previous page">‹</button>
+        <span id="pageIndicator" class="page-indicator">Page 1 / 1</span>
+        <button id="nextPageBtn" class="btn icon-btn" aria-label="Next page">›</button>
+
+        <button type="button" class="btn telegram js-open-telegram-modal">✈️ <span class="btn-label">Telegram</span></button>
+        <button id="themeToggleBtn" class="btn teal" type="button" aria-label="Toggle light/dark theme">🌗</button>
+
+        <button type="button" id="unlockCtaBtn" class="btn primary unlock-cta-btn" hidden>
+          🔓 Unlock all — <span class="unlock-cta-price">₹149</span>
+        </button>
+        <span id="subDaysTag" class="sub-days-tag" hidden></span>
+
+        <a href="profile.html" id="profileBtn" class="btn teal" aria-label="My profile">👤 <span class="btn-label">Profile</span></a>
+        <span id="userNameTag" class="user-name-tag"></span>
+        <button id="logoutBtn" class="btn ghost" type="button">Log out</button>
+      </div>
+    </header>
+
+    <main class="viewer-wrap" id="viewerWrap">
+      <button type="button" id="edgePrevBtn" class="edge-nav edge-nav--prev" aria-label="Previous page">‹</button>
+      <button type="button" id="edgeNextBtn" class="edge-nav edge-nav--next" aria-label="Next page">›</button>
+      <div id="loadingMsg" class="loading-msg">
+        <div class="spinner"></div>
+        <div id="loadingText">Loading PDF &amp; highlights…</div>
+        <div class="progress-track"><div id="progressBar" class="progress-bar"></div></div>
+      </div>
+
+      <div id="pdfStage" class="pdf-stage" style="display:none;">
+        <canvas id="pdfCanvas"></canvas>
+        <canvas id="watermarkCanvas" class="watermark-canvas"></canvas>
+        <div id="highlightOverlay" class="highlight-overlay"></div>
+        <div class="swipe-hint swipe-hint--left" aria-hidden="true">‹</div>
+        <div class="swipe-hint swipe-hint--right" aria-hidden="true">›</div>
+      </div>
+
+      <div id="chapterLockCard" class="chapter-lock-card" style="display:none;">
+        <img class="js-logo chapter-lock-logo" alt="" />
+        <h2>This chapter is part of the full unlock</h2>
+        <p>
+          You've got Chapter 1 free to try the PYQ mapping. Unlock every
+          chapter — highlights, linked PYQs, all of it — for 365 days.
+        </p>
+        <div class="price-row">
+          <span class="price-original">₹149</span>
+          <span class="price-discounted">₹149</span>
+          <span class="price-badge">50% off</span>
+        </div>
+        <button type="button" id="chapterLockUnlockBtn" class="btn primary">
+          🔓 Unlock now
+        </button>
+      </div>
+
+      <div id="outroPage" class="outro-page" style="display:none;">
+        <img class="js-logo outro-logo" alt="" />
+        <h2>You've reached the end of this chapter 🎉</h2>
+        <p>Swipe back anytime to review a page, or pick another chapter from the dropdown above.</p>
+        <div class="outro-actions">
+          <button type="button" class="btn primary js-open-telegram-modal">✈️ Join our Telegram</button>
+          <a class="btn teal" data-site-link="website" target="_blank" rel="noopener">🌐 Visit our website</a>
+        </div>
+        <p class="outro-footnote">Made with care by <span class="js-brand-name">Neelaxmi</span>.</p>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <span class="footer-copy">© <span id="footerYear"></span> <span class="js-brand-name">Neelaxmi</span>. All rights reserved.</span>
+      <a class="footer-link" data-site-link="website" target="_blank" rel="noopener">Visit our official website ↗</a>
+    </footer>
+  </div>
+
+  <div id="pyqModalBackdrop" class="modal-backdrop">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h2>🎯 Previous Year Questions</h2>
+        <button id="modalCloseBtn" class="modal-close" aria-label="Close">✕</button>
+      </div>
+      <div id="pyqCountTag" class="pyq-count-tag"></div>
+      <div id="pyqListContainer"></div>
+    </div>
+  </div>
+
+  <div id="telegramModalBackdrop" class="modal-backdrop">
+    <div class="modal-box telegram-modal">
+      <div class="modal-header">
+        <h2>✈️ Join our Telegram</h2>
+        <button id="telegramModalCloseBtn" class="modal-close" aria-label="Close">✕</button>
+      </div>
+      <p>Get chapter updates, new PYQ sets, and doubt-solving support on our Telegram channel.</p>
+      <a class="btn primary telegram-join-btn" data-site-link="telegram" target="_blank" rel="noopener">Open Telegram channel</a>
+    </div>
+  </div>
+
+  <div id="unlockModalBackdrop" class="modal-backdrop">
+    <div class="modal-box unlock-modal">
+      <div class="modal-header">
+        <h2><img class="js-logo unlock-modal-logo" alt="" /> Unlock full access</h2>
+        <button id="unlockModalCloseBtn" class="modal-close" aria-label="Close">✕</button>
+      </div>
+
+      <div class="price-row price-row--modal">
+        <span class="price-original">₹149</span>
+        <span class="price-discounted">₹149</span>
+        <span class="price-badge">50% off</span>
+      </div>
+      <p class="unlock-modal-subtitle">365 days of full access — every chapter, every linked PYQ.</p>
+
+      <button type="button" id="payViaTelegramBtn" class="btn primary unlock-pay-btn">
+        ✈️ Pay via Telegram Bot
+      </button>
+
+      <div class="locked-divider"><span>then</span></div>
+
+      <form id="redeemForm" class="auth-form" novalidate>
+        <label class="field-label">
+          Redemption code
+          <input
+            type="text"
+            id="redeemCodeInput"
+            required
+            autocomplete="off"
+            autocapitalize="characters"
+            spellcheck="false"
+            placeholder="e.g. 7F3K9QZC"
+          />
+        </label>
+        <button type="submit" class="btn teal auth-submit" id="redeemSubmitBtn">Redeem code</button>
+      </form>
+
+      <p id="redeemMessage" class="auth-error" hidden></p>
+    </div>
+  </div>
+
+  <script type="module" src="branding.js"></script>
+  <script type="module" src="subscription.js"></script>
+  <script type="module" src="auth.js"></script>
+  <script type="module" src="reader.js"></script>
+</body>
+</html>

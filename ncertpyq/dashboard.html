@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Course — Neelaxmi</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>.dash{max-width:520px;margin:60px auto;padding:0 16px;text-align:center}[hidden]{display:none!important}</style>
+</head>
+<body>
+<div class="dash">
+  <div id="checking">Checking access…</div>
+
+  <div id="content" hidden>
+    <h1>🎉 Welcome!</h1>
+    <p id="expiryText"></p>
+    <a class="btn primary" href="pyq.html">Open NCERT PYQ Reader</a>
+    <p><a class="auth-link" href="profile.html">My profile &amp; referrals</a></p>
+  </div>
+
+  <div id="denied" hidden>
+    <h2>No active access</h2>
+    <p id="deniedText">Complete your payment to unlock the course.</p>
+    <a class="btn primary" href="checkout.html">Unlock — ₹149</a>
+  </div>
+</div>
+<script type="module">
+  import { auth, onAuthStateChanged, db, doc, getDoc } from "./firebase-config.js";
+  const show = (id) => { document.getElementById("checking").hidden = true; document.getElementById(id).hidden = false; };
+
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) return location.replace("pyq.html");          
+    try {
+      const snap = await getDoc(doc(db, "users", user.uid));  
+      const d = snap.exists() ? snap.data() : {};
+      const exp = d.subscriptionExpiresAt ? d.subscriptionExpiresAt.toDate() : null;
+      if (d.courseAccess === true && exp && exp > new Date()) {
+        document.getElementById("expiryText").textContent = "Access valid until " + exp.toLocaleDateString();
+        show("content");
+      } else {
+        if (d.courseAccess === true) document.getElementById("deniedText").textContent = "Your access has expired.";
+        show("denied");
+      }
+    } catch (e) { console.error(e); show("denied"); }
+  });
+</script>
+</body>
+</html>
