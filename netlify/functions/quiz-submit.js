@@ -130,7 +130,7 @@ exports.handler = async function handler(event) {
             if (userAnswer !== null && !['A', 'B', 'C', 'D'].includes(userAnswer)) {
                 return json(400, { success: false, error: 'An answer contains an invalid option.' });
             }
-            const correctAnswer = sourceQuestion.answer;
+            const correctAnswer = String(sourceQuestion.answer).toUpperCase();
             const isCorrect = userAnswer !== null && userAnswer === correctAnswer;
             if (isCorrect) score++;
             else if (userAnswer === null) skipped++;
