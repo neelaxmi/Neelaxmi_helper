@@ -47,6 +47,19 @@
         });
     }
 
+    function canUseLocalStorage() {
+        const probeKey = `neelaxmi:quiz-test:probe:${Date.now()}`;
+        try {
+            localStorage.setItem(probeKey, '1');
+            localStorage.removeItem(probeKey);
+            success('local-storage-available');
+            return true;
+        } catch (error) {
+            failure('local-storage-unavailable', error);
+            return false;
+        }
+    }
+
     function saveLocalAttempt(uid, quizId, attempt) {
         const context = { mode: attempt && attempt.mode, quizId, attemptId: attempt && attempt.attemptId };
         try {
@@ -155,6 +168,7 @@
         api,
         saveLocalAttempt,
         loadLocalAttempt,
+        canUseLocalStorage,
         clearLocalAttempt,
         sanitizeQuestions
     };
