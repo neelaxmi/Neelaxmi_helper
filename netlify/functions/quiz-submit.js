@@ -40,7 +40,7 @@ function formatTime(seconds) {
 function getAdminApp() {
     if (admin.apps.length) return admin.app();
     const raw = process.env.FIREBASE_SERVICE_ACCOUNT_JSON;
-    if (!raw) throw new Error('FIREBASE_SERVICE_ACCOUNT_JSON is not configured in Netlify environment variables.');
+    if (!raw) throw new Error('FIREBASE_SERVICE_ACCOUNT_JSON is not configured in the deployment environment variables.');
     let serviceAccount;
     try {
         serviceAccount = JSON.parse(raw);
