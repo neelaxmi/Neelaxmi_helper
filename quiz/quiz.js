@@ -21,6 +21,7 @@ let offlineAttemptId = null;
 let offlineAttemptStorageKey = null;
 let offlineDeadlineAt = null;
 let offlinePauseStartedAt = null;
+let offlineSaveFailureAlerted = false;
 let currentRequestedQuizId = null;
 
 const isOfflineNormalTest = () => currentMode === 'test' && !proctoringEnabled;
@@ -90,11 +91,13 @@ function saveOfflineAttemptSnapshot(reason = 'state-change', patch = {}) {
             ...patch
         };
         localStorage.setItem(offlineAttemptStorageKey, JSON.stringify(snapshot));
+        offlineSaveFailureAlerted = false;
         console.info('[Quiz][offline-save][SUCCESS]', { reason, quizId: currentQuizId, attemptId: offlineAttemptId, status: snapshot.status });
         return true;
     } catch (error) {
         console.error('[Quiz][offline-save][ERROR]', { reason, quizId: currentQuizId, message: error && error.message });
-        if (reason !== 'before-unload' && typeof quizActive === 'function' && quizActive()) {
+        if (reason !== 'before-unload' && !offlineSaveFailureAlerted && typeof quizActive === 'function' && quizActive()) {
+            offlineSaveFailureAlerted = true;
             try {
                 if (!isPaused && typeof togglePause === 'function') togglePause(true);
                 alert('Local saving failed, so the test has been paused to protect your answers. Do not refresh or close this page. Check browser storage and retry.');
