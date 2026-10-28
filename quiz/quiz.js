@@ -898,6 +898,38 @@ const loadQuiz = async (uid) => {
         document.getElementById('btn-resume-attempt').onclick = async () => {
             const s = prog.data();
             try {
+                if (s.proctoringEnabled) {
+                    const cbtDoc = await db.collection('quizzes').doc(uid).get();
+                    if (!cbtDoc.exists) throw new Error('CBT quiz document was not found.');
+                    const cbtData = cbtDoc.data();
+                    allQuestions = cbtData.questions.map((q, i) => ({ ...q, id: `Q${i + 1}` }));
+                    questions = Array.isArray(s.questionIds) && s.questionIds.length
+                        ? allQuestions.filter((q) => s.questionIds.includes(q.id))
+                        : allQuestions;
+                    currentMode = s.mode === 'quiz' ? 'quiz' : 'test';
+                    currentAttemptId = null;
+                    currentAttemptDeadlineAtMs = null;
+                    currentAttemptStartedAtMs = null;
+                    currentAttemptDurationSeconds = 0;
+                    currentIndex = Math.min(Math.max(0, Number(s.currentIndex) || 0), Math.max(0, questions.length - 1));
+                    timeLeft = Number(s.timeLeft) || 0;
+                    quizStartDurationSeconds = typeof s.quizStartDurationSeconds === 'number'
+                        ? s.quizStartDurationSeconds : timeLeft;
+                    userAnswers = s.userAnswers || {};
+                    visitedQuestions = s.visitedQuestions || {};
+                    markedForReview = s.markedForReview || {};
+                    checkedQuestions = {};
+                    proctoringEnabled = true;
+                    pendingResume = true;
+                    quizEls.resumeModal.classList.add('hidden');
+                    if (proctorEls.consentError) proctorEls.consentError.classList.add('hidden');
+                    if (proctorEls.consentModal) proctorEls.consentModal.classList.remove('hidden');
+                    console.info('✅ SUCCESS [Quiz] Existing CBT saved attempt restored using its original flow.', {
+                        quizId: uid, mode: currentMode, questionCount: questions.length
+                    });
+                    return;
+                }
+
                 currentMode = s.mode === 'test' ? 'test' : 'quiz';
                 const questionIds = Array.isArray(s.questionIds) && s.questionIds.length
                     ? s.questionIds
