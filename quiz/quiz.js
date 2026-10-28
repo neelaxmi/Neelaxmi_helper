@@ -1199,6 +1199,7 @@ if(document.getElementById('modal-save')) {
     document.getElementById('modal-save').onclick = async () => {
         stopProctoring();
         if (isOfflineNormalTest()) {
+            window.__quizIntentionalExit = true;
             saveOfflineAttemptSnapshot('save-and-exit');
             console.info('[Quiz][save-exit][SUCCESS] Offline attempt kept locally for later recovery.', { quizId: currentQuizId, attemptId: offlineAttemptId });
             window.onpopstate = null;
@@ -1207,6 +1208,7 @@ if(document.getElementById('modal-save')) {
         }
         try {
             await saveProgress();
+            window.__quizIntentionalExit = true;
             console.info('[Quiz][save-exit][SUCCESS] Progress saved to Firebase.', { quizId: currentQuizId });
             window.onpopstate = null;
             window.location.replace('/index.html');
@@ -1488,6 +1490,10 @@ document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
 document.addEventListener('MSFullscreenChange', handleFullscreenChange);
 window.addEventListener('beforeunload', (event) => {
     stopProctoring();
+    if (window.__quizIntentionalExit) {
+        console.info('[Quiz][refresh-policy][SUCCESS] Intentional exit detected; preserving the selected save/exit behavior.');
+        return;
+    }
     if (isOfflineNormalTest() && quizActive()) {
         saveOfflineAttemptSnapshot('before-unload');
         event.preventDefault();
