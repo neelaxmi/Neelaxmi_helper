@@ -173,7 +173,7 @@ export const handler = async (event) => {
             quizId, title: data.title || "Quiz",
             durationMinutes: Number(data.durationMinutes) || null,
             test_quiz: data.test_quiz === true, isPaid: true,
-            requiresUnlock: true, questions: [],
+            requiresUnlock: true, questionCount: data.questions.length,
           });
         }
       }
@@ -185,7 +185,7 @@ export const handler = async (event) => {
         test_quiz: data.test_quiz === true,
         isPaid: data.isPaid === true,
         requiresUnlock: false,
-        questions: data.questions.map(safeQuestion),
+        questionCount: data.questions.length,
       });
     }
 
@@ -218,7 +218,9 @@ export const handler = async (event) => {
       logSuccess("start-attempt", { uid, quizId, attemptId, mode, questionCount: chosen.length, durationMinutes });
       return response(200, {
         attemptId, quizId, quizTitle: attempt.quizTitle, mode,
-        questionIds: attempt.questionIds, durationSeconds: attempt.durationSeconds,
+        questionIds: attempt.questionIds,
+        questions: chosen.map(({ question, index }) => safeQuestion(question, index)),
+        durationSeconds: attempt.durationSeconds,
         startedAtMs: now.toMillis(), deadlineAtMs: deadlineAt.toMillis(),
       });
     }
