@@ -593,9 +593,21 @@ const submitQuiz = async (isTimeout = false) => {
     };
 
     try {
+        // Normal Test Mode retries reuse a stable attempt ID so they cannot create duplicate result documents.
+        const isRecoverableNormalTest = typeof isNormalModeTestAttempt === 'function' && isNormalModeTestAttempt();
+        const stableAttemptId = isRecoverableNormalTest && typeof normalTestAttemptId !== 'undefined'
+            ? normalTestAttemptId
+            : null;
+        const attemptsRef = db.collection('user_results').doc(CURRENT_USER_ID).collection('attempts');
+
         // 1. Save Result
-        await db.collection('user_results').doc(CURRENT_USER_ID).collection('attempts').add(resultData);
-        console.log("✅ Success (Result.js): Quiz result saved successfully.");
+        if (stableAttemptId) {
+            await attemptsRef.doc(stableAttemptId).set(resultData);
+            console.log("✅ SUCCESS [NEELAXMI QUIZ] IDEMPOTENT_RESULT_SAVE", { quizId: currentQuizId, attemptId: stableAttemptId });
+        } else {
+            await attemptsRef.add(resultData);
+            console.log("✅ SUCCESS [NEELAXMI QUIZ] RESULT_SAVE", { quizId: currentQuizId });
+        }
         
         // 2. Clear Progress
         const progRef = db.collection('user_progress').doc(CURRENT_USER_ID).collection('saved_quizzes').doc(currentQuizId);
@@ -604,13 +616,24 @@ const submitQuiz = async (isTimeout = false) => {
 
         // 2b. Clear locally-persisted proctoring violation state for this attempt
         try { sessionStorage.removeItem('quiz_violations_' + (currentQuizId || 'session')); } catch(e) {}
-        
+
+        // Keep local recovery data until the Firebase result save above succeeds.
+        if (typeof isNormalModeTestAttempt === 'function' && isNormalModeTestAttempt()
+            && typeof removeNormalTestAttempt === 'function') {
+            removeNormalTestAttempt(currentQuizId);
+            console.log("✅ SUCCESS [NEELAXMI QUIZ] LOCAL_ATTEMPT_CLEARED_AFTER_RESULT_SAVE", { quizId: currentQuizId });
+        }
+
         // 3. Render
         renderFinalResult(resultData);
         window.onpopstate = null; 
 
     } catch(e) {
-        console.error("❌ Error (Result.js): Error submitting quiz result to Firebase.", e);
+        console.error("❌ ERROR [NEELAXMI QUIZ] RESULT_SUBMISSION_FAILED", {
+            quizId: currentQuizId,
+            online: navigator.onLine,
+            error: e && e.message ? e.message : String(e)
+        });
         alert("Error submitting. Please check connection and Firebase permissions.");
         resultEls.submit.disabled = false;
         resultEls.submit.innerHTML = 'Submit Quiz';
