@@ -13,6 +13,11 @@ function json(statusCode, payload) {
     };
 }
 
+function fail(statusCode, message, context = {}) {
+    console.error('[quiz-submit][ERROR]', { statusCode, message, ...context });
+    return json(statusCode, { success: false, error: message });
+}
+
 function safeTimestamp(value) {
     if (value && typeof value.toDate === 'function') return value.toDate().toISOString();
     if (value && typeof value._seconds === 'number') return new Date(value._seconds * 1000).toISOString();
@@ -71,7 +76,7 @@ exports.handler = async function handler(event) {
         const tokenMatch = /^Bearer\s+(.+)$/i.exec(authHeader);
         if (!tokenMatch) {
             console.warn('[quiz-submit][auth][ERROR] Missing bearer token.');
-            return json(401, { success: false, error: 'Please sign in before syncing this attempt.' });
+            return fail(401, 'Please sign in before syncing this attempt.');
         }
 
         const app = getAdminApp();
@@ -83,27 +88,27 @@ exports.handler = async function handler(event) {
         try {
             body = JSON.parse(event.body || '{}');
         } catch (error) {
-            return json(400, { success: false, error: 'Invalid JSON request body.' });
+            return fail(400, 'Invalid JSON request body.');
         }
 
         const quizId = String(body.quizId || '');
         const attemptId = String(body.attemptId || '');
         const answers = body.answers;
         if (!/^[A-Za-z0-9_-]{1,180}$/.test(quizId)) {
-            return json(400, { success: false, error: 'Invalid quiz identifier.' });
+            return fail(400, 'Invalid quiz identifier.');
         }
         if (!/^[A-Za-z0-9_-]{8,180}$/.test(attemptId)) {
-            return json(400, { success: false, error: 'Invalid attempt identifier.' });
+            return fail(400, 'Invalid attempt identifier.');
         }
         if (!Array.isArray(answers) || answers.length < 1 || answers.length > 5000) {
-            return json(400, { success: false, error: 'Invalid answer list.' });
+            return fail(400, 'Invalid answer list.');
         }
 
         const quizRef = db.collection('quizzes').doc(quizId);
         const quizDoc = await quizRef.get();
-        if (!quizDoc.exists) return json(404, { success: false, error: 'Quiz not found.' });
+        if (!quizDoc.exists) return fail(404, 'Quiz not found.', { quizId });
         const quiz = quizDoc.data() || {};
-        if (!Array.isArray(quiz.questions)) return json(422, { success: false, error: 'This quiz has no supported question bank.' });
+        if (!Array.isArray(quiz.questions)) return fail(422, 'This quiz has no supported question bank.', { quizId });
 
         const seen = new Set();
         const durationSeconds = Math.max(0, Math.min(24 * 60 * 60, Math.floor(Number(body.durationSeconds) || 0)));
@@ -118,17 +123,17 @@ exports.handler = async function handler(event) {
         for (const item of answers) {
             const qId = String(item && item.qId || '');
             const match = /^Q([1-9]\d*)$/.exec(qId);
-            if (!match || seen.has(qId)) return json(400, { success: false, error: 'Answer list contains an invalid or duplicate question ID.' });
+            if (!match || seen.has(qId)) return fail(400, 'Answer list contains an invalid or duplicate question ID.', { quizId });
             seen.add(qId);
             const sourceQuestion = quiz.questions[Number(match[1]) - 1];
             if (!sourceQuestion || typeof sourceQuestion.answer !== 'string') {
-                return json(422, { success: false, error: 'A server-side answer key is missing for one of the submitted questions.' });
+                return fail(422, 'A server-side answer key is missing for one of the submitted questions.', { quizId, questionId: qId });
             }
             const userAnswer = item.userAnswer === null || item.userAnswer === undefined || item.userAnswer === ''
                 ? null
                 : String(item.userAnswer).toUpperCase();
             if (userAnswer !== null && !['A', 'B', 'C', 'D'].includes(userAnswer)) {
-                return json(400, { success: false, error: 'An answer contains an invalid option.' });
+                return fail(400, 'An answer contains an invalid option.', { quizId, questionId: qId });
             }
             const correctAnswer = String(sourceQuestion.answer).toUpperCase();
             const isCorrect = userAnswer !== null && userAnswer === correctAnswer;
