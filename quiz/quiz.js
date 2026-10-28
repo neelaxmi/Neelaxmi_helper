@@ -13,8 +13,155 @@ let isPaused = false;
 let currentMode = 'test';
 let checkedQuestions = {};
 let currentQuizIsTest = false;
-let lockedTestDurationMinutes = null; 
-const DEFAULT_TEST_MODE_MINUTES_FALLBACK = 20; 
+let lockedTestDurationMinutes = null;
+const DEFAULT_TEST_MODE_MINUTES_FALLBACK = 20;
+
+// Normal Mode + Test Mode only. CBT/proctored attempts are intentionally excluded.
+const NORMAL_TEST_STORAGE_PREFIX = 'neelaxmi_normal_test_attempt_v1:';
+let normalTestAttemptId = null;
+let normalTestStartedAt = null;
+let normalTestDeadlineAt = null;
+let normalTestPauseStartedAt = null;
+
+function quizReliabilityLog(level, action, details) {
+    const prefix = '[NEELAXMI QUIZ]';
+    const message = `${prefix} ${action}`;
+    if (level === 'error') console.error('❌ ERROR', message, details || '');
+    else if (level === 'warn') console.warn('⚠️ WARNING', message, details || '');
+    else if (level === 'info') console.info('ℹ️ INFO', message, details || '');
+    else console.log('✅ SUCCESS', message, details || '');
+}
+
+function isNormalModeTestAttempt() {
+    return currentMode === 'test' && !proctoringEnabled && !currentQuizIsTest;
+}
+
+function normalTestStorageKey(quizId = currentQuizId) {
+    if (!CURRENT_USER_ID || !quizId) return null;
+    return NORMAL_TEST_STORAGE_PREFIX + encodeURIComponent(CURRENT_USER_ID) + ':' + encodeURIComponent(quizId);
+}
+
+function readNormalTestAttempt(quizId = currentQuizId) {
+    const key = normalTestStorageKey(quizId);
+    if (!key) return null;
+    try {
+        const raw = localStorage.getItem(key);
+        if (!raw) return null;
+        const snapshot = JSON.parse(raw);
+        if (!snapshot || snapshot.quizId !== quizId || snapshot.mode !== 'test') return null;
+        quizReliabilityLog('success', 'LOCAL_ATTEMPT_READ', { quizId, status: snapshot.status });
+        return snapshot;
+    } catch (error) {
+        quizReliabilityLog('error', 'LOCAL_ATTEMPT_READ_FAILED', { quizId, error: error.message });
+        return null;
+    }
+}
+
+function removeNormalTestAttempt(quizId = currentQuizId) {
+    const key = normalTestStorageKey(quizId);
+    if (!key) return false;
+    try {
+        localStorage.removeItem(key);
+        quizReliabilityLog('success', 'LOCAL_ATTEMPT_REMOVED', { quizId });
+        return true;
+    } catch (error) {
+        quizReliabilityLog('error', 'LOCAL_ATTEMPT_REMOVE_FAILED', { quizId, error: error.message });
+        return false;
+    }
+}
+
+function persistNormalTestAttempt(reason = 'state-change', status = 'in_progress') {
+    if (!isNormalModeTestAttempt() || !currentQuizId || !questions.length) return false;
+    const key = normalTestStorageKey();
+    if (!key) {
+        quizReliabilityLog('error', 'LOCAL_SAVE_UNAVAILABLE', { quizId: currentQuizId, reason: 'missing-user-or-quiz-id' });
+        return false;
+    }
+    try {
+        // Never persist q.answer, correctAnswer, explanations, or answer keys.
+        const safeQuestions = questions.map(q => ({
+            id: q.id,
+            question: q.question,
+            options: q.options,
+            imageUrl: q.imageUrl || null
+        }));
+        const snapshot = {
+            schemaVersion: 1,
+            attemptId: normalTestAttemptId || (window.crypto && crypto.randomUUID
+                ? crypto.randomUUID()
+                : `attempt-${Date.now()}-${Math.random().toString(36).slice(2)}`),
+            userId: CURRENT_USER_ID,
+            quizId: currentQuizId,
+            quizTitle: quizEls.title ? quizEls.title.textContent : '',
+            mode: 'test',
+            status,
+            questionIds: safeQuestions.map(q => q.id),
+            questions: safeQuestions,
+            currentIndex,
+            userAnswers: { ...userAnswers },
+            visitedQuestions: { ...visitedQuestions },
+            markedForReview: { ...markedForReview },
+            startedAt: normalTestStartedAt || Date.now(),
+            deadlineAt: normalTestDeadlineAt || (Date.now() + Math.max(0, timeLeft) * 1000),
+            durationSeconds: quizStartDurationSeconds,
+            updatedAt: Date.now(),
+            lastSaveReason: reason
+        };
+        localStorage.setItem(key, JSON.stringify(snapshot));
+        normalTestAttemptId = snapshot.attemptId;
+        quizReliabilityLog('success', 'LOCAL_ATTEMPT_SAVED', { quizId: currentQuizId, reason, status, answerCount: Object.keys(userAnswers).length });
+        return true;
+    } catch (error) {
+        quizReliabilityLog('error', 'LOCAL_ATTEMPT_SAVE_FAILED', { quizId: currentQuizId, reason, error: error.message });
+        return false;
+    }
+}
+
+function restoreNormalTestAttempt(snapshot, onlineQuestions = null, offlineRecovery = false) {
+    try {
+        if (!snapshot || snapshot.status !== 'in_progress' || !Array.isArray(snapshot.questions)) {
+            throw new Error('No resumable local attempt was found.');
+        }
+        currentQuizId = snapshot.quizId || currentQuizId;
+        currentQuizIsTest = false;
+        proctoringEnabled = false;
+        currentMode = 'test';
+        normalTestAttemptId = snapshot.attemptId || null;
+        normalTestStartedAt = snapshot.startedAt || Date.now();
+        normalTestDeadlineAt = snapshot.deadlineAt || (Date.now() + Math.max(0, snapshot.durationSeconds || 0) * 1000);
+        normalTestPauseStartedAt = null;
+
+        const source = Array.isArray(onlineQuestions) ? onlineQuestions : snapshot.questions;
+        const sourceById = new Map(source.map(q => [q.id, q]));
+        const storedIds = Array.isArray(snapshot.questionIds) ? snapshot.questionIds : snapshot.questions.map(q => q.id);
+        questions = storedIds.map(id => sourceById.get(id)).filter(Boolean);
+        if (!questions.length) questions = snapshot.questions;
+        allQuestions = Array.isArray(onlineQuestions) && onlineQuestions.length ? onlineQuestions : snapshot.questions;
+
+        currentIndex = Math.max(0, Math.min(Number(snapshot.currentIndex) || 0, questions.length - 1));
+        userAnswers = snapshot.userAnswers && typeof snapshot.userAnswers === 'object' ? snapshot.userAnswers : {};
+        visitedQuestions = snapshot.visitedQuestions && typeof snapshot.visitedQuestions === 'object' ? snapshot.visitedQuestions : {};
+        markedForReview = snapshot.markedForReview && typeof snapshot.markedForReview === 'object' ? snapshot.markedForReview : {};
+        checkedQuestions = {};
+        quizStartDurationSeconds = Number(snapshot.durationSeconds) || Math.max(0, Math.ceil((normalTestDeadlineAt - normalTestStartedAt) / 1000));
+        timeLeft = Math.max(0, Math.ceil((normalTestDeadlineAt - Date.now()) / 1000));
+
+        if (quizEls.title) quizEls.title.textContent = snapshot.quizTitle || quizEls.title.textContent;
+        if (quizEls.setupTitle) quizEls.setupTitle.textContent = snapshot.quizTitle || quizEls.setupTitle.textContent;
+        if (quizEls.loader) quizEls.loader.classList.add('hidden');
+        if (quizEls.resumeModal) quizEls.resumeModal.classList.add('hidden');
+        if (quizEls.setupModal) quizEls.setupModal.classList.add('hidden');
+
+        startQuizSession();
+        quizReliabilityLog('success', offlineRecovery ? 'OFFLINE_REFRESH_RECOVERY' : 'LOCAL_ATTEMPT_RESUMED', {
+            quizId: currentQuizId, currentIndex, remainingSeconds: timeLeft, questionCount: questions.length
+        });
+        return true;
+    } catch (error) {
+        quizReliabilityLog('error', 'LOCAL_ATTEMPT_RESTORE_FAILED', { quizId: snapshot && snapshot.quizId, error: error.message });
+        return false;
+    }
+} 
 const quizEls = {
     loader: document.getElementById('loading-screen'),
     container: document.getElementById('quiz-container'),
@@ -371,6 +518,7 @@ const renderQuestion = () => {
     if (currentLanguage !== 'en') {
         applyQuestionLanguage(currentLanguage);
     }
+    persistNormalTestAttempt('question-render');
 };
 
 
@@ -420,16 +568,33 @@ if(quizEls.confirmSubmitModalBtn) {
 const startTimer = () => {
     clearInterval(timerInterval);
     timerInterval = setInterval(() => {
-        if(!isPaused && timeLeft > 0) {
+        if (isPaused) return;
+        if (isNormalModeTestAttempt() && normalTestDeadlineAt) {
+            timeLeft = Math.max(0, Math.ceil((normalTestDeadlineAt - Date.now()) / 1000));
+            if (quizEls.time) quizEls.time.textContent = formatTime(timeLeft);
+            if (timeLeft <= 0) {
+                quizReliabilityLog('info', 'TEST_DEADLINE_REACHED', { quizId: currentQuizId });
+                submitQuiz(true);
+            }
+            return;
+        }
+        if (timeLeft > 0) {
             timeLeft--;
-            quizEls.time.textContent = formatTime(timeLeft);
-        } else if(timeLeft <= 0) {
+            if (quizEls.time) quizEls.time.textContent = formatTime(timeLeft);
+        } else {
             submitQuiz(true);
         }
     }, 1000);
 };
 
 const togglePause = (state) => {
+    if (state && !isPaused && isNormalModeTestAttempt()) {
+        normalTestPauseStartedAt = Date.now();
+    } else if (!state && isPaused && normalTestPauseStartedAt && normalTestDeadlineAt && isNormalModeTestAttempt()) {
+        normalTestDeadlineAt += Math.max(0, Date.now() - normalTestPauseStartedAt);
+        normalTestPauseStartedAt = null;
+        persistNormalTestAttempt('resume-after-pause');
+    }
     isPaused = state;
     if(isPaused) {
         clearInterval(timerInterval);
@@ -576,7 +741,23 @@ if (tokenUnlockEls.input) {
 const loadQuiz = async (uid) => {
     quizEls.loader.classList.remove('hidden');
 
-    let doc = await db.collection('quizzes').doc(uid).get();
+    let doc;
+    try {
+        doc = await db.collection('quizzes').doc(uid).get();
+    } catch (loadError) {
+        const localAttempt = readNormalTestAttempt(uid);
+        if (localAttempt && localAttempt.status === 'in_progress' && restoreNormalTestAttempt(localAttempt, null, true)) {
+            quizReliabilityLog('warn', 'QUIZ_LOAD_OFFLINE_RECOVERED', { quizId: uid, error: loadError.message });
+            return;
+        }
+        quizEls.loader.classList.add('hidden');
+        const errorText = document.getElementById('error-text');
+        const errorArea = document.getElementById('error-message-area');
+        if (errorText) errorText.textContent = 'Quiz load failed. Internet reconnect karein; koi saved local attempt nahi mila.';
+        if (errorArea) errorArea.classList.remove('hidden');
+        quizReliabilityLog('error', 'QUIZ_LOAD_FAILED', { quizId: uid, error: loadError.message });
+        return;
+    }
 
     if (!doc.exists) {
         try {
@@ -707,7 +888,32 @@ const loadQuiz = async (uid) => {
         if (quizRadio) quizRadio.disabled = false;
     }
 
-    const prog = await db.collection('user_progress').doc(CURRENT_USER_ID).collection('saved_quizzes').doc(uid).get();
+    const localAttempt = readNormalTestAttempt(uid);
+    if (!currentQuizIsTest && localAttempt && localAttempt.status === 'in_progress') {
+        quizEls.loader.classList.add('hidden');
+        quizEls.resumeModal.classList.remove('hidden');
+        document.getElementById('btn-resume-attempt').onclick = () => {
+            const onlineQuestions = allQuestions.filter(q => (localAttempt.questionIds || []).includes(q.id));
+            restoreNormalTestAttempt(localAttempt, onlineQuestions.length ? onlineQuestions : allQuestions, false);
+        };
+        document.getElementById('btn-restart-attempt').onclick = () => {
+            removeNormalTestAttempt(uid);
+            quizEls.resumeModal.classList.add('hidden');
+            showPreQuizInitModal();
+        };
+        quizReliabilityLog('info', 'LOCAL_ATTEMPT_RESUME_OFFERED', { quizId: uid });
+        return;
+    }
+
+    let prog;
+    try {
+        prog = await db.collection('user_progress').doc(CURRENT_USER_ID).collection('saved_quizzes').doc(uid).get();
+    } catch (progressError) {
+        quizReliabilityLog('error', 'LEGACY_PROGRESS_LOAD_FAILED', { quizId: uid, error: progressError.message });
+        showPreQuizInitModal();
+        quizEls.loader.classList.add('hidden');
+        return;
+    }
     
     quizEls.loader.classList.add('hidden');
     
@@ -766,13 +972,34 @@ const loadQuiz = async (uid) => {
 
 const beginSelectedQuiz = () => {
     const cfg = pendingStartConfig;
-    if (!cfg) return;
+    if (!cfg) {
+        quizReliabilityLog('error', 'QUIZ_START_FAILED', { reason: 'missing-start-config' });
+        return;
+    }
     currentMode = cfg.mode;
     timeLeft = cfg.selectedTime * 60;
     quizStartDurationSeconds = timeLeft; // remember the real starting duration for result.js's Total Time calc
     const [start, end] = cfg.rangeVal.split('-').map(Number);
 
     questions = allQuestions.slice(start, end);
+    if (isNormalModeTestAttempt()) {
+        normalTestStartedAt = Date.now();
+        normalTestDeadlineAt = normalTestStartedAt + timeLeft * 1000;
+        normalTestPauseStartedAt = null;
+        normalTestAttemptId = (window.crypto && crypto.randomUUID)
+            ? crypto.randomUUID()
+            : `attempt-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+        if (!persistNormalTestAttempt('attempt-start')) {
+            alert('Local save available nahi hai. Browser storage allow karein; test start nahi kiya gaya.');
+            quizReliabilityLog('error', 'QUIZ_START_BLOCKED', { reason: 'local-storage-save-failed' });
+            return;
+        }
+    } else {
+        normalTestAttemptId = null;
+        normalTestStartedAt = null;
+        normalTestDeadlineAt = null;
+        normalTestPauseStartedAt = null;
+    }
     currentIndex = 0;
     userAnswers = {};
     visitedQuestions = {};
@@ -1237,6 +1464,16 @@ document.addEventListener('fullscreenchange', handleFullscreenChange);
 document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
 document.addEventListener('MSFullscreenChange', handleFullscreenChange);
 window.addEventListener('beforeunload', () => { stopProctoring(); });
+window.addEventListener('beforeunload', (event) => {
+    // Browser controls the exact warning text. This is only a warning, not the recovery mechanism.
+    if (proctoringEnabled || (!quizActive() && !document.getElementById('quiz-container')?.classList.contains('hidden'))) return;
+    if (quizActive() && (currentMode === 'test' || currentMode === 'quiz')) {
+        persistNormalTestAttempt('beforeunload');
+        event.preventDefault();
+        event.returnValue = '';
+        quizReliabilityLog('warn', 'REFRESH_OR_LEAVE_WARNING', { mode: currentMode });
+    }
+});
 document.addEventListener('keydown', (e) => {
     if (!quizActive()) return;
     const key = e.key ? e.key.toLowerCase() : '';
