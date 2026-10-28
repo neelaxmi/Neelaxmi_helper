@@ -42,7 +42,9 @@
 
     function sanitizeQuestions(questions) {
         return (Array.isArray(questions) ? questions : []).map((question, index) => {
-            const { answer, correctAnswer, answerKey, solutionAnswer, ...safeQuestion } = question || {};
+            const safeQuestion = { ...(question || {}) };
+            ['answer', 'correctAnswer', 'correct_answer', 'correctOption', 'correct_option',
+             'answerKey', 'answer_key', 'solutionAnswer', 'solution_answer'].forEach((key) => delete safeQuestion[key]);
             return { ...safeQuestion, id: safeQuestion.id || `Q${index + 1}` };
         });
     }
@@ -105,6 +107,9 @@
             const attempt = JSON.parse(raw);
             if (!attempt || attempt.version !== STORAGE_VERSION || attempt.uid !== uid || attempt.quizId !== quizId) {
                 throw new Error('Saved local attempt has an unsupported version or mismatched identity.');
+            }
+            if (!Array.isArray(attempt.questions) || attempt.questions.length === 0 || !attempt.attemptId) {
+                throw new Error('Saved local attempt is missing its question payload or attempt ID.');
             }
             attempt.questions = sanitizeQuestions(attempt.questions);
             success('local-attempt-restored-from-storage', {
