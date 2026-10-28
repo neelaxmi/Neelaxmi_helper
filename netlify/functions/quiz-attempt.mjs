@@ -134,7 +134,7 @@ export const handler = async (event) => {
         return response(200, { unlocked: true, alreadyUnlocked: true });
       }
       const code = String(body.code || "").trim();
-      if (!/^\\d{6}$/.test(code)) throw Object.assign(new Error("Enter the 6-digit token exactly as shown."), { statusCode: 400 });
+      if (!/^\d{6}$/.test(code)) throw Object.assign(new Error("Enter the 6-digit token exactly as shown."), { statusCode: 400 });
       const poolRef = db.collection("quiz_tokens").doc(quizId);
       const tokensCol = poolRef.collection("tokens");
       const candidateSnap = await tokensCol.where("code", "==", code).limit(1).get();
