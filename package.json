@@ -1,0 +1,11 @@
+{
+  "name": "neelaxmi-helper-netlify-functions",
+  "private": true,
+  "description": "Dependencies for Neelaxmi Netlify serverless functions",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "firebase-admin": "^13.0.0"
+  }
+}

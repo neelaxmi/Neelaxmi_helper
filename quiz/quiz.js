@@ -15,6 +15,174 @@ let checkedQuestions = {};
 let currentQuizIsTest = false;
 let lockedTestDurationMinutes = null; 
 const DEFAULT_TEST_MODE_MINUTES_FALLBACK = 20; 
+
+const OFFLINE_ATTEMPT_PREFIX = 'neelaxmi_offline_test_v1:';
+let offlineAttemptId = null;
+let offlineAttemptStorageKey = null;
+let offlineDeadlineAt = null;
+let offlinePauseStartedAt = null;
+let offlineSaveFailureAlerted = false;
+let currentRequestedQuizId = null;
+
+const isOfflineNormalTest = () => currentMode === 'test' && !proctoringEnabled;
+function offlineAttemptKey(quizId) { return OFFLINE_ATTEMPT_PREFIX + String(quizId || ''); }
+function makeOfflineSafeQuestions(source) {
+    return (Array.isArray(source) ? source : []).map(q => {
+        const safe = {};
+        Object.entries(q || {}).forEach(([key, value]) => {
+            if (!['answer', 'correctAnswer', 'correct_answer', 'answerKey', 'answer_key', 'correctOption', 'correct_option'].includes(key)) {
+                safe[key] = value;
+            }
+        });
+        return safe;
+    });
+}
+function readOfflineAttemptSnapshot(quizId) {
+    try {
+        const direct = quizId ? localStorage.getItem(offlineAttemptKey(quizId)) : null;
+        if (direct) {
+            const parsed = JSON.parse(direct);
+            if (parsed && parsed.schemaVersion === 1 && parsed.mode === 'test') {
+                console.info('[Quiz][offline-recovery][SUCCESS]', { quizId: parsed.quizId, attemptId: parsed.attemptId, status: parsed.status || 'in_progress' });
+                return parsed;
+            }
+        }
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (!key || !key.startsWith(OFFLINE_ATTEMPT_PREFIX)) continue;
+            const raw = localStorage.getItem(key);
+            if (!raw) continue;
+            const parsed = JSON.parse(raw);
+            if (parsed && parsed.schemaVersion === 1 && parsed.mode === 'test' &&
+                (parsed.quizId === quizId || parsed.requestedQuizId === quizId)) {
+                console.info('[Quiz][offline-recovery][SUCCESS]', { quizId: parsed.quizId, attemptId: parsed.attemptId, status: parsed.status || 'in_progress' });
+                return parsed;
+            }
+        }
+        return null;
+    } catch (error) {
+        console.error('[Quiz][offline-recovery][ERROR]', { quizId, message: error && error.message });
+        return null;
+    }
+}
+function saveOfflineAttemptSnapshot(reason = 'state-change', patch = {}) {
+    if (!offlineAttemptStorageKey || !isOfflineNormalTest()) return true;
+    try {
+        const snapshot = {
+            schemaVersion: 1,
+            attemptId: offlineAttemptId,
+            quizId: currentQuizId,
+            requestedQuizId: currentRequestedQuizId || currentQuizId,
+            quizTitle: quizEls.title ? quizEls.title.textContent : 'Quiz',
+            mode: 'test',
+            currentQuizIsTest: !!currentQuizIsTest,
+            questions: makeOfflineSafeQuestions(questions),
+            currentIndex,
+            userAnswers: { ...userAnswers },
+            visitedQuestions: { ...visitedQuestions },
+            markedForReview: { ...markedForReview },
+            startedAt: patch.startedAt || offlineAttemptStartedAt || Date.now(),
+            deadlineAt: patch.deadlineAt || offlineDeadlineAt,
+            durationSeconds: quizStartDurationSeconds,
+            status: patch.status || 'in_progress',
+            submittedAt: patch.submittedAt || null,
+            submission: patch.submission || null,
+            savedAt: Date.now(),
+            ...patch
+        };
+        localStorage.setItem(offlineAttemptStorageKey, JSON.stringify(snapshot));
+        offlineSaveFailureAlerted = false;
+        console.info('[Quiz][offline-save][SUCCESS]', { reason, quizId: currentQuizId, attemptId: offlineAttemptId, status: snapshot.status });
+        return true;
+    } catch (error) {
+        console.error('[Quiz][offline-save][ERROR]', { reason, quizId: currentQuizId, message: error && error.message });
+        if (reason !== 'before-unload' && !offlineSaveFailureAlerted && typeof quizActive === 'function' && quizActive()) {
+            offlineSaveFailureAlerted = true;
+            try {
+                if (!isPaused && typeof togglePause === 'function') togglePause(true);
+                alert('Local saving failed, so the test has been paused to protect your answers. Do not refresh or close this page. Check browser storage and retry.');
+                console.error('[Quiz][offline-save][ERROR] Active test paused after a local persistence failure.');
+            } catch (pauseError) {
+                console.error('[Quiz][offline-save][ERROR] Could not pause the test after a local persistence failure.', { message: pauseError && pauseError.message });
+            }
+        }
+        return false;
+    }
+}
+let offlineAttemptStartedAt = null;
+function restoreOfflineAttemptSnapshot(snapshot) {
+    try {
+        currentQuizId = snapshot.quizId;
+        currentRequestedQuizId = snapshot.requestedQuizId || snapshot.quizId;
+        offlineAttemptStorageKey = offlineAttemptKey(snapshot.quizId);
+        offlineAttemptId = snapshot.attemptId;
+        offlineAttemptStartedAt = snapshot.startedAt || Date.now();
+        offlineDeadlineAt = Number(snapshot.deadlineAt) || Date.now();
+        offlinePauseStartedAt = null;
+        currentMode = 'test';
+        currentQuizIsTest = !!snapshot.currentQuizIsTest;
+        proctoringEnabled = false;
+        allQuestions = makeOfflineSafeQuestions(snapshot.questions);
+        questions = allQuestions.slice();
+        currentIndex = Math.max(0, Math.min(Number(snapshot.currentIndex) || 0, Math.max(0, questions.length - 1)));
+        userAnswers = snapshot.userAnswers && typeof snapshot.userAnswers === 'object' ? snapshot.userAnswers : {};
+        visitedQuestions = snapshot.visitedQuestions && typeof snapshot.visitedQuestions === 'object' ? snapshot.visitedQuestions : {};
+        markedForReview = snapshot.markedForReview && typeof snapshot.markedForReview === 'object' ? snapshot.markedForReview : {};
+        checkedQuestions = {};
+        quizStartDurationSeconds = Number(snapshot.durationSeconds) || 0;
+        timeLeft = Math.max(0, Math.ceil((offlineDeadlineAt - Date.now()) / 1000));
+        if (quizEls.title) quizEls.title.textContent = snapshot.quizTitle || 'Quiz';
+        if (quizEls.setupTitle) quizEls.setupTitle.textContent = snapshot.quizTitle || 'Quiz';
+        if (quizEls.loader) quizEls.loader.classList.add('hidden');
+        if (quizEls.setupModal) quizEls.setupModal.classList.add('hidden');
+        if (quizEls.resumeModal) quizEls.resumeModal.classList.add('hidden');
+        console.info('[Quiz][offline-restore][SUCCESS]', { quizId: currentQuizId, attemptId: offlineAttemptId, questions: questions.length, remainingSeconds: timeLeft });
+        if (snapshot.status === 'submitted_pending_sync') {
+            window.setTimeout(() => {
+                if (typeof window.showOfflineSyncScreen === 'function') window.showOfflineSyncScreen(snapshot);
+                else console.warn('[Quiz][offline-restore][INFO] Waiting for result sync UI to initialize.');
+            }, 0);
+            return true;
+        }
+        startQuizSession();
+        return true;
+    } catch (error) {
+        console.error('[Quiz][offline-restore][ERROR]', { quizId: snapshot && snapshot.quizId, message: error && error.message });
+        return false;
+    }
+}
+window.isOfflineNormalTestAttempt = isOfflineNormalTest;
+window.getOfflineAttemptSnapshot = () => readOfflineAttemptSnapshot(currentQuizId);
+window.updateOfflineAttemptSnapshot = (patch = {}, reason = 'state-update') => {
+    if (!offlineAttemptStorageKey) return false;
+    const current = readOfflineAttemptSnapshot(currentQuizId);
+    if (!current) return false;
+    const merged = { ...current, ...patch, savedAt: Date.now() };
+    try {
+        localStorage.setItem(offlineAttemptStorageKey, JSON.stringify(merged));
+        console.info('[Quiz][offline-save][SUCCESS]', { reason, quizId: currentQuizId, attemptId: merged.attemptId, status: merged.status });
+        return true;
+    } catch (error) {
+        console.error('[Quiz][offline-save][ERROR]', { reason, quizId: currentQuizId, message: error && error.message });
+        return false;
+    }
+};
+window.clearOfflineAttemptSnapshot = () => {
+    try {
+        if (offlineAttemptStorageKey) localStorage.removeItem(offlineAttemptStorageKey);
+        console.info('[Quiz][offline-clear][SUCCESS]', { quizId: currentQuizId, attemptId: offlineAttemptId });
+        offlineAttemptStorageKey = null;
+        offlineAttemptId = null;
+        offlineDeadlineAt = null;
+        offlineAttemptStartedAt = null;
+        return true;
+    } catch (error) {
+        console.error('[Quiz][offline-clear][ERROR]', { message: error && error.message });
+        return false;
+    }
+};
+
+
 const quizEls = {
     loader: document.getElementById('loading-screen'),
     container: document.getElementById('quiz-container'),
@@ -330,6 +498,8 @@ const renderQuestion = () => {
         btn.onclick = () => { 
             if(!isPaused && !(currentMode === 'quiz' && isChecked)) { 
                 userAnswers[q.id] = key;
+                if (isOfflineNormalTest()) saveOfflineAttemptSnapshot('answer-selected');
+                else console.info('[Quiz][answer][SUCCESS]', { quizId: currentQuizId, questionId: q.id, mode: currentMode });
                 renderQuestion(); 
             }
         };
@@ -371,6 +541,7 @@ const renderQuestion = () => {
     if (currentLanguage !== 'en') {
         applyQuestionLanguage(currentLanguage);
     }
+    if (isOfflineNormalTest()) saveOfflineAttemptSnapshot('question-rendered');
 };
 
 
@@ -419,6 +590,20 @@ if(quizEls.confirmSubmitModalBtn) {
 
 const startTimer = () => {
     clearInterval(timerInterval);
+    if (isOfflineNormalTest() && offlineDeadlineAt) {
+        timerInterval = setInterval(() => {
+            if (isPaused) return;
+            timeLeft = Math.max(0, Math.ceil((offlineDeadlineAt - Date.now()) / 1000));
+            if (quizEls.time) quizEls.time.textContent = formatTime(timeLeft);
+            if (timeLeft % 5 === 0) saveOfflineAttemptSnapshot('timer-checkpoint');
+            if (timeLeft <= 0) {
+                console.info('[Quiz][timer][SUCCESS] Offline Test Mode deadline reached; auto-submitting.');
+                submitQuiz(true);
+            }
+        }, 1000);
+        console.info('[Quiz][timer][SUCCESS] Deadline-based offline timer started.', { deadlineAt: offlineDeadlineAt });
+        return;
+    }
     timerInterval = setInterval(() => {
         if(!isPaused && timeLeft > 0) {
             timeLeft--;
@@ -427,11 +612,21 @@ const startTimer = () => {
             submitQuiz(true);
         }
     }, 1000);
+    console.info('[Quiz][timer][SUCCESS] Standard timer started.');
 };
 
 const togglePause = (state) => {
+    if (isOfflineNormalTest() && offlineDeadlineAt) {
+        if (state && !isPaused) offlinePauseStartedAt = Date.now();
+        if (!state && isPaused && offlinePauseStartedAt) {
+            offlineDeadlineAt += Math.max(0, Date.now() - offlinePauseStartedAt);
+            offlinePauseStartedAt = null;
+            saveOfflineAttemptSnapshot('timer-resumed');
+        }
+    }
     isPaused = state;
     if(isPaused) {
+        if (isOfflineNormalTest()) saveOfflineAttemptSnapshot('timer-paused');
         clearInterval(timerInterval);
         if(quizEls.pause) quizEls.pause.classList.add('hidden'); 
         if(quizEls.resume) quizEls.resume.classList.remove('hidden');
@@ -575,6 +770,12 @@ if (tokenUnlockEls.input) {
 
 const loadQuiz = async (uid) => {
     quizEls.loader.classList.remove('hidden');
+    currentRequestedQuizId = uid;
+    const offlineSnapshot = readOfflineAttemptSnapshot(uid);
+    if (offlineSnapshot && ['in_progress', 'submitted_pending_sync'].includes(offlineSnapshot.status || 'in_progress')) {
+        const restored = restoreOfflineAttemptSnapshot(offlineSnapshot);
+        if (restored) return;
+    }
 
     let doc = await db.collection('quizzes').doc(uid).get();
 
@@ -711,7 +912,14 @@ const loadQuiz = async (uid) => {
     
     quizEls.loader.classList.add('hidden');
     
-    if(prog.exists) {
+    let discardQuizModeRefresh = false;
+    try {
+        discardQuizModeRefresh = sessionStorage.getItem('quiz_refresh_discard_' + (uid || 'session')) === '1';
+        if (discardQuizModeRefresh) sessionStorage.removeItem('quiz_refresh_discard_' + (uid || 'session'));
+    } catch (error) {
+        console.error('[Quiz][refresh-policy][ERROR] Could not read Quiz Mode refresh marker.', { message: error && error.message });
+    }
+    if(prog.exists && !discardQuizModeRefresh) {
         quizEls.resumeModal.classList.remove('hidden');
         document.getElementById('btn-resume-attempt').onclick = () => {
             const s = prog.data();
@@ -741,6 +949,7 @@ const loadQuiz = async (uid) => {
             showPreQuizInitModal();
         };
     } else {
+        if (discardQuizModeRefresh) console.info('[Quiz][refresh-policy][SUCCESS] Quiz Mode refresh state will not be restored; existing Firebase records were left untouched.');
         showPreQuizInitModal();
     }
 
@@ -766,8 +975,21 @@ const loadQuiz = async (uid) => {
 
 const beginSelectedQuiz = () => {
     const cfg = pendingStartConfig;
-    if (!cfg) return;
+    if (!cfg) {
+        console.error('[Quiz][start][ERROR] Missing selected quiz configuration.');
+        return;
+    }
     currentMode = cfg.mode;
+    if (currentMode === 'test' && !proctoringEnabled && navigator.onLine) {
+        console.warn('[Quiz][start][INFO] Test Mode requires disconnecting the internet before starting.');
+        alert('Test Mode is designed for offline use. Questions are already loaded. Please disconnect your internet, then press Start Test again.');
+        return;
+    }
+    if (currentMode === 'quiz' && !navigator.onLine) {
+        console.warn('[Quiz][start][INFO] Quiz Mode requires an internet connection.');
+        alert('Quiz Mode needs internet because it shows the correct answer immediately. Please reconnect and try again.');
+        return;
+    }
     timeLeft = cfg.selectedTime * 60;
     quizStartDurationSeconds = timeLeft; // remember the real starting duration for result.js's Total Time calc
     const [start, end] = cfg.rangeVal.split('-').map(Number);
@@ -778,6 +1000,33 @@ const beginSelectedQuiz = () => {
     visitedQuestions = {};
     markedForReview = {};
     checkedQuestions = {};
+
+    if (currentMode === 'test' && !proctoringEnabled) {
+        try {
+            const probeKey = '__neelaxmi_offline_storage_probe__';
+            localStorage.setItem(probeKey, 'ok');
+            localStorage.removeItem(probeKey);
+        } catch (error) {
+            console.error('[Quiz][start][ERROR] Local storage unavailable; refusing to start an unsavable offline attempt.', { message: error && error.message });
+            alert('This browser cannot save your test locally. Please enable site storage or use another browser before starting.');
+            return;
+        }
+        offlineAttemptId = (window.crypto && typeof window.crypto.randomUUID === 'function')
+            ? window.crypto.randomUUID()
+            : 'attempt-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 12);
+        offlineAttemptStorageKey = offlineAttemptKey(currentQuizId);
+        offlineAttemptStartedAt = Date.now();
+        offlineDeadlineAt = Date.now() + timeLeft * 1000;
+        offlinePauseStartedAt = null;
+        const saved = saveOfflineAttemptSnapshot('attempt-start');
+        if (!saved) {
+            alert('The browser could not save your test locally, so the attempt was not started. Please free browser storage and try again.');
+            return;
+        }
+        console.info('[Quiz][start][SUCCESS] Offline Test Mode attempt initialized.', { quizId: currentQuizId, attemptId: offlineAttemptId, questionCount: questions.length });
+    } else {
+        console.info('[Quiz][start][SUCCESS] Online quiz attempt initialized.', { quizId: currentQuizId, mode: currentMode });
+    }
 
     // Fresh violation state for this attempt
     violationCount = 0;
@@ -961,9 +1210,24 @@ if(document.getElementById('modal-cancel')) {
 if(document.getElementById('modal-save')) {
     document.getElementById('modal-save').onclick = async () => {
         stopProctoring();
-        await saveProgress();
-        window.onpopstate = null; 
-        window.location.replace('/index.html');
+        if (isOfflineNormalTest()) {
+            window.__quizIntentionalExit = true;
+            saveOfflineAttemptSnapshot('save-and-exit');
+            console.info('[Quiz][save-exit][SUCCESS] Offline attempt kept locally for later recovery.', { quizId: currentQuizId, attemptId: offlineAttemptId });
+            window.onpopstate = null;
+            window.location.replace('/index.html');
+            return;
+        }
+        try {
+            await saveProgress();
+            window.__quizIntentionalExit = true;
+            console.info('[Quiz][save-exit][SUCCESS] Progress saved to Firebase.', { quizId: currentQuizId });
+            window.onpopstate = null;
+            window.location.replace('/index.html');
+        } catch (error) {
+            console.error('[Quiz][save-exit][ERROR] Could not save progress.', { quizId: currentQuizId, message: error && error.message });
+            alert('Progress could not be saved. Please check your connection and try again.');
+        }
     };
 }
 
@@ -1236,7 +1500,34 @@ function handleFullscreenChange() {
 document.addEventListener('fullscreenchange', handleFullscreenChange);
 document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
 document.addEventListener('MSFullscreenChange', handleFullscreenChange);
-window.addEventListener('beforeunload', () => { stopProctoring(); });
+window.addEventListener('beforeunload', (event) => {
+    stopProctoring();
+    if (window.__quizIntentionalExit) {
+        console.info('[Quiz][refresh-policy][SUCCESS] Intentional exit detected; preserving the selected save/exit behavior.');
+        return;
+    }
+    if (isOfflineNormalTest() && quizActive()) {
+        saveOfflineAttemptSnapshot('before-unload');
+        event.preventDefault();
+        event.returnValue = '';
+        return '';
+    }
+    if (currentMode === 'quiz' && !proctoringEnabled && quizActive()) {
+        console.warn('[Quiz][refresh-policy][INFO] Quiz Mode refresh warning requested; if navigation proceeds, this active session will not be restored.');
+        event.preventDefault();
+        event.returnValue = '';
+        return '';
+    }
+});
+window.addEventListener('pagehide', () => {
+    if (window.__quizIntentionalExit || currentMode !== 'quiz' || proctoringEnabled || !quizActive()) return;
+    try {
+        sessionStorage.setItem('quiz_refresh_discard_' + (currentQuizId || 'session'), '1');
+        console.info('[Quiz][refresh-policy][SUCCESS] Quiz Mode navigation confirmed; active session will not be restored. Existing Firebase records were not deleted.');
+    } catch (error) {
+        console.error('[Quiz][refresh-policy][ERROR] Could not store Quiz Mode refresh marker.', { message: error && error.message });
+    }
+});
 document.addEventListener('keydown', (e) => {
     if (!quizActive()) return;
     const key = e.key ? e.key.toLowerCase() : '';
