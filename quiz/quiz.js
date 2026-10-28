@@ -14,7 +14,134 @@ let currentMode = 'test';
 let checkedQuestions = {};
 let currentQuizIsTest = false;
 let lockedTestDurationMinutes = null; 
-const DEFAULT_TEST_MODE_MINUTES_FALLBACK = 20; 
+const DEFAULT_TEST_MODE_MINUTES_FALLBACK = 20;
+
+// Normal Mode + Test Mode uses local-only attempt persistence. CBT and Quiz Mode
+// keep their existing persistence paths.
+let normalTestAttemptId = null;
+let normalTestDeadlineAt = null;
+let normalTestPauseStartedAt = null;
+let normalTestPersistQueue = Promise.resolve();
+
+function isNormalOfflineTest() {
+    return currentMode === 'test' && !proctoringEnabled && !currentQuizIsTest;
+}
+
+function normalTestStorageKey(quizId = currentQuizId) {
+    return `neelaxmi-normal-test::${CURRENT_USER_ID || 'guest'}::${quizId || 'unknown'}`;
+}
+
+function makeNormalTestAttempt(status = 'in_progress') {
+    const safeQuestions = questions.map((q) => ({
+        id: q.id,
+        question: q.question,
+        options: {
+            A: q.options && q.options.A != null ? q.options.A : '',
+            B: q.options && q.options.B != null ? q.options.B : '',
+            C: q.options && q.options.C != null ? q.options.C : '',
+            D: q.options && q.options.D != null ? q.options.D : ''
+        },
+        imageUrl: q.imageUrl || null
+    }));
+
+    return {
+        storageKey: normalTestStorageKey(),
+        schemaVersion: 1,
+        attemptId: normalTestAttemptId,
+        mode: 'normal-test',
+        status,
+        quizId: currentQuizId,
+        quizTitle: quizEls.title ? quizEls.title.textContent : '',
+        questions: safeQuestions,
+        questionIds: safeQuestions.map(q => q.id),
+        answers: { ...userAnswers },
+        visitedQuestions: { ...visitedQuestions },
+        markedForReview: { ...markedForReview },
+        currentIndex,
+        timeLeft,
+        durationSeconds: quizStartDurationSeconds,
+        deadlineAt: normalTestDeadlineAt,
+        startedAt: normalTestAttemptStartedAt || Date.now(),
+        savedAt: Date.now()
+    };
+}
+
+let normalTestAttemptStartedAt = null;
+
+async function persistNormalTestAttempt(reason = 'state-change', status = 'in_progress') {
+    if (!isNormalOfflineTest()) return true;
+    try {
+        if (!window.NormalTestOffline) throw new Error('Local attempt storage module is not loaded.');
+        const attempt = makeNormalTestAttempt(status);
+        const saveTask = normalTestPersistQueue.then(() => window.NormalTestOffline.save(attempt));
+        normalTestPersistQueue = saveTask.catch(() => {});
+        await saveTask;
+        console.log('[NormalTest][SUCCESS] Attempt saved locally.', {
+            reason,
+            attemptId: attempt.attemptId,
+            questionIndex: attempt.currentIndex
+        });
+        return true;
+    } catch (error) {
+        console.error('[NormalTest][ERROR] Local attempt save failed.', {
+            reason,
+            message: error && error.message ? error.message : String(error)
+        });
+        return false;
+    }
+}
+
+async function restoreNormalTestAttempt(attempt, source = 'local') {
+    try {
+        if (!attempt || attempt.mode !== 'normal-test' || !Array.isArray(attempt.questions)) {
+            throw new Error('Saved normal test attempt is missing or invalid.');
+        }
+
+        normalTestAttemptId = attempt.attemptId || (crypto.randomUUID ? crypto.randomUUID() : `attempt-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+        normalTestAttemptStartedAt = attempt.startedAt || Date.now();
+        normalTestDeadlineAt = Number(attempt.deadlineAt) || (Date.now() + Math.max(0, Number(attempt.timeLeft) || 0) * 1000);
+        normalTestPauseStartedAt = null;
+        currentMode = 'test';
+        currentQuizIsTest = false;
+        proctoringEnabled = false;
+
+        const savedQuestions = attempt.questions;
+        questions = savedQuestions.map((savedQuestion) => {
+            const fullQuestion = Array.isArray(allQuestions)
+                ? allQuestions.find((q) => q.id === savedQuestion.id)
+                : null;
+            return fullQuestion || savedQuestion;
+        });
+        if (!questions.length) throw new Error('Saved attempt contains no questions.');
+
+        userAnswers = { ...(attempt.answers || {}) };
+        visitedQuestions = { ...(attempt.visitedQuestions || {}) };
+        markedForReview = { ...(attempt.markedForReview || {}) };
+        checkedQuestions = {};
+        currentIndex = Math.min(Math.max(0, Number(attempt.currentIndex) || 0), questions.length - 1);
+        quizStartDurationSeconds = Number(attempt.durationSeconds) || Math.max(0, Number(attempt.timeLeft) || 0);
+        timeLeft = Math.max(0, Math.ceil((normalTestDeadlineAt - Date.now()) / 1000));
+        if (quizEls.title) quizEls.title.textContent = attempt.quizTitle || quizEls.title.textContent || 'Quiz';
+        if (quizEls.setupTitle) quizEls.setupTitle.textContent = attempt.quizTitle || 'Quiz';
+        if (quizEls.loader) quizEls.loader.classList.add('hidden');
+        if (quizEls.resumeModal) quizEls.resumeModal.classList.add('hidden');
+        console.log('[NormalTest][SUCCESS] Attempt restored.', {
+            source,
+            attemptId: normalTestAttemptId,
+            questionIndex: currentIndex,
+            remainingSeconds: timeLeft
+        });
+        startQuizSession();
+        return true;
+    } catch (error) {
+        console.error('[NormalTest][ERROR] Attempt restore failed.', {
+            source,
+            message: error && error.message ? error.message : String(error)
+        });
+        alert('Your saved test could not be restored safely. Please reconnect to the internet and try again.');
+        return false;
+    }
+}
 const quizEls = {
     loader: document.getElementById('loading-screen'),
     container: document.getElementById('quiz-container'),
@@ -371,6 +498,7 @@ const renderQuestion = () => {
     if (currentLanguage !== 'en') {
         applyQuestionLanguage(currentLanguage);
     }
+    if (isNormalOfflineTest()) void persistNormalTestAttempt('question-render');
 };
 
 
@@ -420,27 +548,52 @@ if(quizEls.confirmSubmitModalBtn) {
 const startTimer = () => {
     clearInterval(timerInterval);
     timerInterval = setInterval(() => {
-        if(!isPaused && timeLeft > 0) {
+        if (isPaused) return;
+
+        if (isNormalOfflineTest() && normalTestDeadlineAt) {
+            timeLeft = Math.max(0, Math.ceil((normalTestDeadlineAt - Date.now()) / 1000));
+        } else if (timeLeft > 0) {
             timeLeft--;
-            quizEls.time.textContent = formatTime(timeLeft);
-        } else if(timeLeft <= 0) {
+        }
+
+        if (quizEls.time) quizEls.time.textContent = formatTime(timeLeft);
+        if (timeLeft <= 0) {
+            console.log('[Quiz][SUCCESS] Timer reached zero; submitting attempt.');
             submitQuiz(true);
         }
     }, 1000);
+    console.log('[Quiz][SUCCESS] Timer started.', {
+        mode: currentMode,
+        deadlineBased: !!(isNormalOfflineTest() && normalTestDeadlineAt)
+    });
 };
 
 const togglePause = (state) => {
-    isPaused = state;
-    if(isPaused) {
-        clearInterval(timerInterval);
-        if(quizEls.pause) quizEls.pause.classList.add('hidden'); 
-        if(quizEls.resume) quizEls.resume.classList.remove('hidden');
-        if(quizEls.pausedOverlay) quizEls.pausedOverlay.classList.remove('hidden');
-    } else {
-        startTimer();
-        if(quizEls.pause) quizEls.pause.classList.remove('hidden'); 
-        if(quizEls.resume) quizEls.resume.classList.add('hidden');
-        if(quizEls.pausedOverlay) quizEls.pausedOverlay.classList.add('hidden');
+    try {
+        const nextPausedState = !!state;
+        if (nextPausedState && !isPaused && isNormalOfflineTest()) {
+            normalTestPauseStartedAt = Date.now();
+        } else if (!nextPausedState && isPaused && isNormalOfflineTest() && normalTestPauseStartedAt && normalTestDeadlineAt) {
+            const pausedForMs = Math.max(0, Date.now() - normalTestPauseStartedAt);
+            normalTestDeadlineAt += pausedForMs;
+            normalTestPauseStartedAt = null;
+            void persistNormalTestAttempt('timer-resume');
+        }
+        isPaused = nextPausedState;
+        if (isPaused) {
+            clearInterval(timerInterval);
+            if(quizEls.pause) quizEls.pause.classList.add('hidden');
+            if(quizEls.resume) quizEls.resume.classList.remove('hidden');
+            if(quizEls.pausedOverlay) quizEls.pausedOverlay.classList.remove('hidden');
+        } else {
+            startTimer();
+            if(quizEls.pause) quizEls.pause.classList.remove('hidden');
+            if(quizEls.resume) quizEls.resume.classList.add('hidden');
+            if(quizEls.pausedOverlay) quizEls.pausedOverlay.classList.add('hidden');
+        }
+        console.log('[Quiz][SUCCESS] Pause state updated.', { paused: isPaused });
+    } catch (error) {
+        console.error('[Quiz][ERROR] Could not update pause state.', error);
     }
 };
 
@@ -576,7 +729,34 @@ if (tokenUnlockEls.input) {
 const loadQuiz = async (uid) => {
     quizEls.loader.classList.remove('hidden');
 
-    let doc = await db.collection('quizzes').doc(uid).get();
+    let doc;
+    try {
+        doc = await db.collection('quizzes').doc(uid).get();
+    } catch (loadError) {
+        console.error('[Quiz][ERROR] Quiz document could not be fetched; attempting offline recovery.', loadError);
+        try {
+            const localAttempt = window.NormalTestOffline
+                ? await window.NormalTestOffline.load(normalTestStorageKey(uid))
+                : null;
+            if (localAttempt && localAttempt.mode === 'normal-test' && localAttempt.status === 'in_progress') {
+                currentQuizId = uid;
+                currentQuizIsTest = false;
+                allQuestions = Array.isArray(localAttempt.questions) ? localAttempt.questions : [];
+                if (quizEls.title) quizEls.title.textContent = localAttempt.quizTitle || 'Offline Test';
+                if (quizEls.setupTitle) quizEls.setupTitle.textContent = localAttempt.quizTitle || 'Offline Test';
+                await restoreNormalTestAttempt(localAttempt, 'offline-refresh');
+                return;
+            }
+        } catch (recoveryError) {
+            console.error('[NormalTest][ERROR] Offline refresh recovery failed.', recoveryError);
+        }
+        if (quizEls.loader) quizEls.loader.classList.add('hidden');
+        const errorText = document.getElementById('error-text');
+        const errorArea = document.getElementById('error-message-area');
+        if (errorText) errorText.textContent = 'Internet is unavailable and no saved Normal Test attempt could be restored.';
+        if (errorArea) errorArea.classList.remove('hidden');
+        return;
+    }
 
     if (!doc.exists) {
         try {
@@ -707,20 +887,56 @@ const loadQuiz = async (uid) => {
         if (quizRadio) quizRadio.disabled = false;
     }
 
-    const prog = await db.collection('user_progress').doc(CURRENT_USER_ID).collection('saved_quizzes').doc(uid).get();
-    
+    let localNormalAttempt = null;
+    try {
+        if (window.NormalTestOffline) {
+            localNormalAttempt = await window.NormalTestOffline.load(normalTestStorageKey(uid));
+        }
+    } catch (storageError) {
+        console.error('[NormalTest][ERROR] Could not inspect local attempt during quiz initialization.', storageError);
+    }
+
+    let prog = null;
+    try {
+        prog = await db.collection('user_progress').doc(CURRENT_USER_ID).collection('saved_quizzes').doc(uid).get();
+    } catch (progressError) {
+        console.warn('[Quiz][WARN] Firestore progress unavailable; checking local recovery only.', progressError);
+    }
+
     quizEls.loader.classList.add('hidden');
-    
-    if(prog.exists) {
+
+    if (localNormalAttempt && localNormalAttempt.mode === 'normal-test' && localNormalAttempt.status === 'in_progress') {
+        quizEls.resumeModal.classList.remove('hidden');
+        console.log('[NormalTest][SUCCESS] Local recovery attempt found.', {
+            attemptId: localNormalAttempt.attemptId,
+            questionCount: Array.isArray(localNormalAttempt.questions) ? localNormalAttempt.questions.length : 0
+        });
+        document.getElementById('btn-resume-attempt').onclick = async () => {
+            await restoreNormalTestAttempt(localNormalAttempt, 'IndexedDB');
+        };
+        document.getElementById('btn-restart-attempt').onclick = async () => {
+            try {
+                await window.NormalTestOffline.remove(normalTestStorageKey(uid));
+                if (prog && prog.exists) await prog.ref.delete();
+                console.log('[NormalTest][SUCCESS] Saved local attempt discarded by user.');
+            } catch (error) {
+                console.error('[NormalTest][ERROR] Could not discard saved attempt.', error);
+                alert('Could not clear the saved attempt. Please try again.');
+                return;
+            }
+            quizEls.resumeModal.classList.add('hidden');
+            showPreQuizInitModal();
+        };
+    } else if (prog && prog.exists) {
         quizEls.resumeModal.classList.remove('hidden');
         document.getElementById('btn-resume-attempt').onclick = () => {
             const s = prog.data();
             questions = allQuestions;
-            currentIndex = s.currentIndex; 
-            timeLeft = s.timeLeft; 
+            currentIndex = s.currentIndex;
+            timeLeft = s.timeLeft;
             quizStartDurationSeconds = typeof s.quizStartDurationSeconds === 'number' ? s.quizStartDurationSeconds : s.timeLeft;
             userAnswers = s.userAnswers;
-            
+
             if(s.visitedQuestions) visitedQuestions = s.visitedQuestions;
             if(s.markedForReview) markedForReview = s.markedForReview;
             proctoringEnabled = !!s.proctoringEnabled;
@@ -734,11 +950,18 @@ const loadQuiz = async (uid) => {
             } else {
                 startQuizSession();
             }
+            console.log('[Quiz][SUCCESS] Firestore-saved attempt restored.');
         };
         document.getElementById('btn-restart-attempt').onclick = async () => {
-            await prog.ref.delete(); 
-            quizEls.resumeModal.classList.add('hidden');
-            showPreQuizInitModal();
+            try {
+                await prog.ref.delete();
+                quizEls.resumeModal.classList.add('hidden');
+                showPreQuizInitModal();
+                console.log('[Quiz][SUCCESS] Firestore-saved attempt discarded by user.');
+            } catch (error) {
+                console.error('[Quiz][ERROR] Could not discard Firestore-saved attempt.', error);
+                alert('Could not clear the saved attempt. Please try again.');
+            }
         };
     } else {
         showPreQuizInitModal();
@@ -764,9 +987,12 @@ const loadQuiz = async (uid) => {
     };
 };
 
-const beginSelectedQuiz = () => {
+const beginSelectedQuiz = async () => {
     const cfg = pendingStartConfig;
-    if (!cfg) return;
+    if (!cfg) {
+        console.error('[Quiz][ERROR] Cannot begin attempt: setup configuration is missing.');
+        return;
+    }
     currentMode = cfg.mode;
     timeLeft = cfg.selectedTime * 60;
     quizStartDurationSeconds = timeLeft; // remember the real starting duration for result.js's Total Time calc
@@ -786,6 +1012,29 @@ const beginSelectedQuiz = () => {
 
     // Fresh proctoring-detection state for this attempt
     noFaceSince = null;
+
+    if (isNormalOfflineTest()) {
+        normalTestAttemptId = (window.crypto && typeof window.crypto.randomUUID === 'function')
+            ? window.crypto.randomUUID()
+            : `attempt-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+        normalTestAttemptStartedAt = Date.now();
+        normalTestDeadlineAt = Date.now() + timeLeft * 1000;
+        normalTestPauseStartedAt = null;
+        const saved = await persistNormalTestAttempt('attempt-start');
+        if (!saved) {
+            alert('This browser could not save your test locally, so the test has not started. Please free browser storage or use a supported browser and try again.');
+            console.error('[NormalTest][ERROR] Attempt start blocked because local persistence failed.');
+            return;
+        }
+        console.log('[NormalTest][SUCCESS] Test prepared for local-only saving.', {
+            attemptId: normalTestAttemptId,
+            questionCount: questions.length
+        });
+    } else {
+        normalTestAttemptId = null;
+        normalTestDeadlineAt = null;
+        normalTestAttemptStartedAt = null;
+    }
 
     startQuizSession();
 };
@@ -921,16 +1170,28 @@ const startQuizSession = () => {
 };
 
 const saveProgress = async () => {
-    await db.collection('user_progress').doc(CURRENT_USER_ID).collection('saved_quizzes').doc(currentQuizId).set({
-        currentIndex, 
-        timeLeft, 
-        quizStartDurationSeconds, // so a resumed attempt still knows its real total duration
-        userAnswers, 
-        visitedQuestions,
-        markedForReview,
-        proctoringEnabled,
-        lastSaved: firebase.firestore.FieldValue.serverTimestamp()
-    });
+    if (isNormalOfflineTest()) {
+        const saved = await persistNormalTestAttempt('save-progress-action');
+        if (!saved) throw new Error('Could not save this test locally.');
+        return true;
+    }
+    try {
+        await db.collection('user_progress').doc(CURRENT_USER_ID).collection('saved_quizzes').doc(currentQuizId).set({
+            currentIndex,
+            timeLeft,
+            quizStartDurationSeconds, // so a resumed attempt still knows its real total duration
+            userAnswers,
+            visitedQuestions,
+            markedForReview,
+            proctoringEnabled,
+            lastSaved: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        console.log('[Quiz][SUCCESS] Progress saved to Firestore.');
+        return true;
+    } catch (error) {
+        console.error('[Quiz][ERROR] Firestore progress save failed.', error);
+        throw error;
+    }
 };
 
 if(quizEls.prev) quizEls.prev.onclick = () => { if(currentIndex>0) { currentIndex--; renderQuestion(); }};
@@ -1237,6 +1498,16 @@ document.addEventListener('fullscreenchange', handleFullscreenChange);
 document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
 document.addEventListener('MSFullscreenChange', handleFullscreenChange);
 window.addEventListener('beforeunload', () => { stopProctoring(); });
+window.addEventListener('beforeunload', (event) => {
+    if (isNormalOfflineTest() && quizActive()) {
+        // The browser controls the wording/display of this warning. Recovery
+        // is based on the previously persisted IndexedDB snapshot, not on it.
+        event.preventDefault();
+        event.returnValue = '';
+        void persistNormalTestAttempt('beforeunload');
+        console.log('[NormalTest][SUCCESS] Refresh/leave warning requested; recovery snapshot was already auto-saved.');
+    }
+});
 document.addEventListener('keydown', (e) => {
     if (!quizActive()) return;
     const key = e.key ? e.key.toLowerCase() : '';
