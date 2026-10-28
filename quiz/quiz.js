@@ -615,6 +615,16 @@ const loadQuiz = async (uid) => {
         data = await window.QuizReliability.api('getQuiz', { quizId: uid });
         uid = data.quizId;
         currentQuizId = uid;
+        try {
+            const canonicalUrl = new URL(window.location.href);
+            if (canonicalUrl.searchParams.has('uid') && canonicalUrl.searchParams.get('uid') !== uid) {
+                canonicalUrl.searchParams.set('uid', uid);
+                window.history.replaceState({}, '', canonicalUrl.toString());
+                console.info('✅ SUCCESS [Quiz] Quiz alias URL normalized for offline recovery.', { quizId: uid });
+            }
+        } catch (urlError) {
+            console.warn('⚠️ WARNING [Quiz] Could not normalize quiz URL.', { quizId: uid, message: urlError.message });
+        }
         console.info('✅ SUCCESS [Quiz] Secure question payload loaded.', {
             quizId: uid,
             questionCount: Array.isArray(data.questions) ? data.questions.length : 0
