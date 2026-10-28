@@ -33,7 +33,7 @@ Never commit service-account JSON, private keys, Telegram tokens, or internal se
 
 - `FIREBASE_SERVICE_ACCOUNT_JSON` — complete service-account JSON for the same Firebase project used by the quiz. Grant only the Firestore/Auth permissions the scorer needs.
 
-### NCERT PYQ / payment backend (Firebase project configured for the PYQ app)
+### NCERT PYQ / payment backend (Firebase project `utility-destiny-476204-h0` per the current app documentation)
 
 - `FIREBASE_PROJECT_ID`
 - `FIREBASE_CLIENT_EMAIL`
