@@ -1029,7 +1029,9 @@ input[type=range]::-moz-range-thumb {
 
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw-proctor-cache.js').catch(() => {});
+                navigator.serviceWorker.register('/quiz/sw-proctor-cache.js')
+                    .then(() => console.log('✅ SUCCESS [NEELAXMI QUIZ] OFFLINE_WORKER_REGISTERED'))
+                    .catch((error) => console.error('❌ ERROR [NEELAXMI QUIZ] OFFLINE_WORKER_REGISTRATION_FAILED', error));
             });
         }
     </script>
