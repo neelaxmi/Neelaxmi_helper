@@ -19,6 +19,21 @@ const APP_SHELL = [
     '/js/head-loader.js',
     '/vendor/face-api.min.js'
 ];
+const EXTERNAL_SHELL = [
+    'https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js',
+    'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js',
+    'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js',
+    'https://cdn.tailwindcss.com',
+    'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css',
+    'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap',
+    'https://cdn.jsdelivr.net/npm/katex@0.16.47/dist/katex.min.css',
+    'https://cdn.jsdelivr.net/npm/katex@0.16.47/dist/katex.min.js',
+    'https://cdn.jsdelivr.net/npm/katex@0.16.47/dist/contrib/auto-render.min.js'
+];
+const STATIC_CDN_HOSTS = new Set([
+    'www.gstatic.com', 'cdn.tailwindcss.com', 'cdnjs.cloudflare.com',
+    'fonts.googleapis.com', 'fonts.gstatic.com', 'cdn.jsdelivr.net'
+]);
 
 function swSuccess(action, details = {}) {
     console.log('[QuizServiceWorker][SUCCESS]', action, details);
@@ -33,12 +48,20 @@ function swError(action, error, details = {}) {
 self.addEventListener('install', (event) => {
     event.waitUntil((async () => {
         const cache = await caches.open(CACHE_NAME);
-        const outcomes = await Promise.allSettled(APP_SHELL.map(async (url) => {
+        const assets = APP_SHELL.concat(EXTERNAL_SHELL);
+        const outcomes = await Promise.allSettled(assets.map(async (url) => {
             try {
-                const response = await fetch(url, { cache: 'reload' });
-                if (!response.ok) throw new Error('HTTP ' + response.status);
-                await cache.put(url, response.clone());
-                swSuccess('precache-asset', { url });
+                const parsed = new URL(url, self.location.origin);
+                const externalNoCors = parsed.origin !== self.location.origin
+                    && ['www.gstatic.com', 'cdn.tailwindcss.com', 'cdnjs.cloudflare.com', 'fonts.googleapis.com'].includes(parsed.hostname);
+                const request = new Request(parsed.href, {
+                    cache: 'reload',
+                    ...(externalNoCors ? { mode: 'no-cors' } : {})
+                });
+                const response = await fetch(request);
+                if (!response.ok && response.type !== 'opaque') throw new Error('HTTP ' + response.status);
+                await cache.put(request, response.clone());
+                swSuccess('precache-asset', { url, opaque: response.type === 'opaque' });
             } catch (error) {
                 swError('precache-asset', error, { url });
                 // A missing optional asset must not prevent the worker installing.
@@ -111,7 +134,30 @@ self.addEventListener('fetch', (event) => {
     if (request.method !== 'GET') return;
 
     const url = new URL(request.url);
-    if (url.origin !== self.location.origin) return;
+    if (url.origin !== self.location.origin) {
+        if (STATIC_CDN_HOSTS.has(url.hostname) && ['script', 'style', 'font'].includes(request.destination)) {
+            event.respondWith((async () => {
+                const cache = await caches.open(CACHE_NAME);
+                try {
+                    const response = await fetch(request);
+                    if (response && (response.ok || response.type === 'opaque')) {
+                        await cache.put(request, response.clone());
+                        swSuccess('cdn-asset-updated', { host: url.hostname, destination: request.destination });
+                    }
+                    return response;
+                } catch (error) {
+                    const cached = await cache.match(request);
+                    if (cached) {
+                        swSuccess('cdn-asset-served-offline', { host: url.hostname, destination: request.destination });
+                        return cached;
+                    }
+                    swError('cdn-asset-unavailable-offline', error, { host: url.hostname, destination: request.destination });
+                    return new Response('', { status: 503, statusText: 'Offline asset unavailable' });
+                }
+            })());
+        }
+        return;
+    }
 
     if (url.pathname.startsWith('/.netlify/functions/')) return;
     if (url.pathname.startsWith('/local-img/')) {
