@@ -24,7 +24,7 @@ self.addEventListener('install', (event) => {
     const cache = await caches.open(QUIZ_CACHE_NAME);
     await Promise.all(QUIZ_SHELL_ASSETS.map(async (asset) => {
       try {
-        const isCrossOrigin = /^https?:\\/\\//i.test(asset) && new URL(asset).origin !== self.location.origin;
+        const isCrossOrigin = asset.startsWith('http') && new URL(asset).origin !== self.location.origin;
         const request = isCrossOrigin
           ? new Request(asset, { mode: 'no-cors', cache: 'reload' })
           : new Request(asset, { cache: 'reload' });
