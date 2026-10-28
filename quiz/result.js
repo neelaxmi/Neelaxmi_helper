@@ -534,7 +534,159 @@ const calculateRank = (score, total) => {
     return "Top 80%";
 };
 
+let offlineSyncInProgress = false;
+function setOfflineSyncStatus(message, isError = false) {
+    const status = document.getElementById('offline-sync-status');
+    if (status) {
+        status.textContent = message;
+        status.className = isError ? 'mt-4 text-sm font-semibold text-red-600 dark:text-red-400' : 'mt-4 text-sm font-semibold text-slate-600 dark:text-slate-300';
+    }
+}
+window.showOfflineSyncScreen = function(snapshot) {
+    try {
+        resultEls.container.classList.add('hidden');
+        resultEls.resultBox.classList.remove('hidden');
+        const existing = document.getElementById('offline-sync-panel');
+        if (existing) existing.remove();
+        const main = resultEls.resultBox.querySelector('.max-w-7xl');
+        if (main) main.classList.add('hidden');
+        const panel = document.createElement('section');
+        panel.id = 'offline-sync-panel';
+        panel.className = 'max-w-lg mx-auto mt-16 p-6 sm:p-8 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-xl text-center';
+        const icon = document.createElement('div');
+        icon.className = 'text-4xl mb-4';
+        icon.textContent = '📥';
+        const heading = document.createElement('h2');
+        heading.className = 'text-2xl font-extrabold text-slate-900 dark:text-white';
+        heading.textContent = 'Test submitted — waiting to sync';
+        const description = document.createElement('p');
+        description.className = 'mt-3 text-sm leading-6 text-slate-600 dark:text-slate-300';
+        description.textContent = 'Your answers are saved on this device. Reconnect to the internet; the result will be checked and synced automatically. Do not clear this site’s browser storage until sync succeeds.';
+        const status = document.createElement('p');
+        status.id = 'offline-sync-status';
+        status.className = 'mt-4 text-sm font-semibold text-slate-600 dark:text-slate-300';
+        status.textContent = navigator.onLine ? 'Connection detected. Preparing secure sync…' : 'You are offline. Waiting for internet connection…';
+        const retry = document.createElement('button');
+        retry.type = 'button';
+        retry.id = 'offline-sync-retry';
+        retry.className = 'mt-6 w-full rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-5 py-3';
+        retry.textContent = 'Retry Sync';
+        retry.onclick = () => syncOfflineAttempt();
+        panel.append(icon, heading, description, status, retry);
+        resultEls.resultBox.prepend(panel);
+        console.info('[Quiz][offline-sync-screen][SUCCESS]', { quizId: snapshot && snapshot.quizId, attemptId: snapshot && snapshot.attemptId, online: navigator.onLine });
+        if (navigator.onLine) window.setTimeout(() => syncOfflineAttempt(), 0);
+    } catch (error) {
+        console.error('[Quiz][offline-sync-screen][ERROR]', { message: error && error.message });
+    }
+};
+async function submitOfflineTestAttempt(isTimeout = false) {
+    clearInterval(timerInterval);
+    if (resultEls.submit) {
+        resultEls.submit.disabled = true;
+        resultEls.submit.innerHTML = '<span class="loader w-4 h-4 border-2 mr-2 inline-block"></span> Saving on this device…';
+    }
+    try {
+        const snapshot = window.getOfflineAttemptSnapshot && window.getOfflineAttemptSnapshot();
+        if (!snapshot || !snapshot.attemptId || !Array.isArray(questions) || !questions.length) {
+            throw new Error('Offline attempt snapshot is missing. The attempt was not cleared.');
+        }
+        const submission = {
+            attemptId: snapshot.attemptId,
+            quizId: currentQuizId,
+            answers: questions.map(q => ({
+                qId: String(q.id),
+                userAnswer: userAnswers[q.id] || null
+            })),
+            totalQuestions: questions.length,
+            startedAt: snapshot.startedAt || Date.now(),
+            submittedAt: Date.now(),
+            durationSeconds: Number(snapshot.durationSeconds) || quizStartDurationSeconds || 0,
+            timeTakenSeconds: Math.max(0, (Number(snapshot.durationSeconds) || quizStartDurationSeconds || 0) - Math.max(0, Number(timeLeft) || 0)),
+            isTimeout: !!isTimeout
+        };
+        const saved = window.updateOfflineAttemptSnapshot({
+            status: 'submitted_pending_sync',
+            submittedAt: submission.submittedAt,
+            submission
+        }, 'submit-pending-sync');
+        if (!saved) throw new Error('Could not persist the pending submission to browser storage.');
+        console.info('[Quiz][submit-local][SUCCESS]', { quizId: currentQuizId, attemptId: submission.attemptId, answerCount: submission.answers.length });
+        window.showOfflineSyncScreen({ ...snapshot, status: 'submitted_pending_sync', submission });
+        return;
+    } catch (error) {
+        console.error('[Quiz][submit-local][ERROR]', { quizId: currentQuizId, message: error && error.message });
+        alert('Your test could not be safely queued on this device. Do not refresh or close this page. Please check browser storage and retry.');
+        if (resultEls.submit) {
+            resultEls.submit.disabled = false;
+            resultEls.submit.textContent = 'Submit Quiz';
+        }
+    }
+}
+async function syncOfflineAttempt() {
+    if (offlineSyncInProgress) {
+        console.info('[Quiz][offline-sync][INFO] A sync request is already running.');
+        return;
+    }
+    const snapshot = window.getOfflineAttemptSnapshot && window.getOfflineAttemptSnapshot();
+    if (!snapshot || snapshot.status !== 'submitted_pending_sync' || !snapshot.submission) {
+        console.info('[Quiz][offline-sync][INFO] No pending offline submission found.');
+        return;
+    }
+    if (!navigator.onLine) {
+        setOfflineSyncStatus('Still offline. Your answers remain saved on this device.');
+        console.warn('[Quiz][offline-sync][INFO] Sync deferred because the browser reports offline.');
+        return;
+    }
+    offlineSyncInProgress = true;
+    const retry = document.getElementById('offline-sync-retry');
+    if (retry) { retry.disabled = true; retry.textContent = 'Syncing…'; }
+    setOfflineSyncStatus('Connected. Checking answers and saving your result securely…');
+    try {
+        const auth = firebase && firebase.auth ? firebase.auth() : null;
+        const user = auth && auth.currentUser;
+        if (!user) throw new Error('Please sign in again to sync this attempt.');
+        const idToken = await user.getIdToken();
+        const response = await fetch('/.netlify/functions/quiz-submit', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + idToken },
+            body: JSON.stringify(snapshot.submission),
+            cache: 'no-store'
+        });
+        const body = await response.json().catch(() => ({}));
+        if (!response.ok || !body || body.success !== true || !body.result) {
+            throw new Error((body && body.error) || ('Sync endpoint returned HTTP ' + response.status));
+        }
+        console.info('[Quiz][offline-sync][SUCCESS]', { quizId: snapshot.quizId, attemptId: snapshot.attemptId, alreadySubmitted: !!body.alreadySubmitted });
+        if (typeof window.clearOfflineAttemptSnapshot === 'function' && !window.clearOfflineAttemptSnapshot()) {
+            console.error('[Quiz][offline-sync][ERROR] Server confirmed the result, but the local pending copy could not be cleared.');
+        }
+        const panel = document.getElementById('offline-sync-panel');
+        if (panel) panel.remove();
+        const main = resultEls.resultBox.querySelector('.max-w-7xl');
+        if (main) main.classList.remove('hidden');
+        renderFinalResult(body.result);
+    } catch (error) {
+        console.error('[Quiz][offline-sync][ERROR]', { quizId: snapshot.quizId, attemptId: snapshot.attemptId, message: error && error.message });
+        setOfflineSyncStatus('Sync failed: ' + (error && error.message ? error.message : 'unknown error') + '. Your pending answers are still saved; retry when ready.', true);
+        if (retry) { retry.disabled = false; retry.textContent = 'Retry Sync'; }
+    } finally {
+        offlineSyncInProgress = false;
+    }
+}
+window.syncOfflineAttempt = syncOfflineAttempt;
+window.addEventListener('online', () => {
+    console.info('[Quiz][network][SUCCESS] Browser reports internet connectivity restored.');
+    syncOfflineAttempt();
+});
+window.addEventListener('offline', () => {
+    console.warn('[Quiz][network][INFO] Browser reports offline connectivity.');
+});
+
 const submitQuiz = async (isTimeout = false) => {
+    if (typeof window.isOfflineNormalTestAttempt === 'function' && window.isOfflineNormalTestAttempt()) {
+        return submitOfflineTestAttempt(isTimeout);
+    }
     clearInterval(timerInterval); 
     resultEls.submit.disabled = true;
     resultEls.submit.innerHTML = '<span class="loader w-4 h-4 border-2 mr-2 inline-block"></span> Processing...';
@@ -867,6 +1019,10 @@ if (document.getElementById('neet-rank-info-btn')) {
 }
 
 function renderFinalResult(data) {
+    const pendingPanel = document.getElementById('offline-sync-panel');
+    if (pendingPanel) pendingPanel.remove();
+    const mainContent = resultEls.resultBox.querySelector('.max-w-7xl');
+    if (mainContent) mainContent.classList.remove('hidden');
     currentResultData = data;
     explanationCache = {};
     resultEls.container.classList.add('hidden');
