@@ -350,9 +350,31 @@ const renderQuestion = () => {
         checkBtn.className = "w-full md:w-auto px-6 py-2.5 rounded-xl text-white font-medium bg-purple-600 shadow-lg shadow-purple-500/30 hover:bg-purple-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed";
         checkBtn.innerHTML = '<i class="fa-solid fa-check-double mr-2"></i> Check Answer';
         checkBtn.disabled = !userAnswers[q.id];
-        checkBtn.onclick = () => {
-            checkedQuestions[q.id] = true;
-            renderQuestion();
+        checkBtn.onclick = async () => {
+            if (checkBtn.disabled || !currentAttemptId) return;
+            checkBtn.disabled = true;
+            try {
+                const check = await window.QuizReliability.api('checkAnswer', {
+                    quizId: currentQuizId,
+                    attemptId: currentAttemptId,
+                    questionId: q.id,
+                    answer: userAnswers[q.id] || null
+                });
+                q.answer = check.correctAnswer;
+                checkedQuestions[q.id] = true;
+                console.info('✅ SUCCESS [Quiz] Answer checked by server.', {
+                    quizId: currentQuizId, attemptId: currentAttemptId, questionId: q.id,
+                    isCorrect: check.isCorrect
+                });
+                renderQuestion();
+            } catch (error) {
+                console.error('❌ ERROR [Quiz] Answer check failed.', {
+                    quizId: currentQuizId, attemptId: currentAttemptId, questionId: q.id,
+                    message: error.message
+                });
+                alert('Answer check nahi ho paya. Internet check karke dobara try karein.');
+                checkBtn.disabled = false;
+            }
         };
         const footerDiv = document.querySelector('footer div.flex');
         if(quizEls.next) quizEls.next.classList.add('hidden');
@@ -424,11 +446,25 @@ if(quizEls.confirmSubmitModalBtn) {
 
 const startTimer = () => {
     clearInterval(timerInterval);
+    console.info('ℹ️ INFO [Quiz] Timer started.', {
+        quizId: currentQuizId, attemptId: currentAttemptId, mode: currentMode
+    });
     timerInterval = setInterval(() => {
-        if(!isPaused && timeLeft > 0) {
+        if (isPaused) return;
+
+        if (currentAttemptDeadlineAtMs) {
+            timeLeft = Math.max(0, Math.ceil((currentAttemptDeadlineAtMs - Date.now()) / 1000));
+        } else if (timeLeft > 0) {
             timeLeft--;
-            quizEls.time.textContent = formatTime(timeLeft);
-        } else if(timeLeft <= 0) {
+        }
+
+        if (quizEls.time) quizEls.time.textContent = formatTime(timeLeft);
+        if (currentMode === 'test') persistActiveAttemptLocally('active');
+
+        if (timeLeft <= 0) {
+            console.info('ℹ️ INFO [Quiz] Timer deadline reached; submitting attempt.', {
+                quizId: currentQuizId, attemptId: currentAttemptId, mode: currentMode
+            });
             submitQuiz(true);
         }
     }, 1000);
@@ -753,29 +789,78 @@ const loadQuiz = async (uid) => {
     };
 };
 
-const beginSelectedQuiz = () => {
-    const cfg = pendingStartConfig;
-    if (!cfg) return;
-    currentMode = cfg.mode;
-    timeLeft = cfg.selectedTime * 60;
-    quizStartDurationSeconds = timeLeft; // remember the real starting duration for result.js's Total Time calc
-    const [start, end] = cfg.rangeVal.split('-').map(Number);
+function persistActiveAttemptLocally(status = 'active') {
+    if (currentMode !== 'test' || !currentAttemptId || !CURRENT_USER_ID || !currentQuizId || !window.QuizReliability) return false;
+    return window.QuizReliability.saveLocalAttempt(CURRENT_USER_ID, currentQuizId, {
+        attemptId: currentAttemptId,
+        mode: currentMode,
+        status,
+        quizTitle: quizEls.title ? quizEls.title.textContent : '',
+        questions,
+        userAnswers,
+        visitedQuestions,
+        markedForReview,
+        currentIndex,
+        deadlineAtMs: currentAttemptDeadlineAtMs,
+        startedAtMs: currentAttemptStartedAtMs,
+        durationSeconds: currentAttemptDurationSeconds
+    });
+}
 
-    questions = allQuestions.slice(start, end);
+const beginSelectedQuiz = async () => {
+    const cfg = pendingStartConfig;
+    if (!cfg) {
+        console.warn('⚠️ WARNING [Quiz] Start requested without setup configuration.');
+        return;
+    }
+
+    currentMode = cfg.mode;
+    const [start, end] = cfg.rangeVal.split('-').map(Number);
+    questions = allQuestions.slice(start, end).map((q) => window.QuizReliability.sanitizeQuestions([q])[0]);
     currentIndex = 0;
     userAnswers = {};
     visitedQuestions = {};
     markedForReview = {};
     checkedQuestions = {};
+    currentAttemptId = null;
+    currentAttemptDeadlineAtMs = null;
+    currentAttemptStartedAtMs = null;
+    currentAttemptDurationSeconds = 0;
+
+    try {
+        const started = await window.QuizReliability.api('startAttempt', {
+            quizId: currentQuizId,
+            mode: currentMode,
+            durationMinutes: cfg.selectedTime,
+            questionIds: questions.map((q) => q.id)
+        });
+        currentAttemptId = started.attemptId;
+        currentAttemptStartedAtMs = started.startedAtMs;
+        currentAttemptDeadlineAtMs = started.deadlineAtMs;
+        currentAttemptDurationSeconds = started.durationSeconds;
+        timeLeft = Math.max(0, Math.ceil((currentAttemptDeadlineAtMs - Date.now()) / 1000));
+        quizStartDurationSeconds = currentAttemptDurationSeconds;
+        console.info('✅ SUCCESS [Quiz] Server attempt created.', {
+            quizId: currentQuizId, attemptId: currentAttemptId, mode: currentMode,
+            questionCount: questions.length, durationSeconds: currentAttemptDurationSeconds
+        });
+    } catch (error) {
+        console.error('❌ ERROR [Quiz] Attempt could not start; quiz remains unopened.', {
+            quizId: currentQuizId, mode: currentMode, message: error.message
+        });
+        stopProctoring();
+        alert('Quiz start nahi ho paya. Internet connection check karke dobara Start karein.\n\n' + error.message);
+        if (quizEls.setupModal) quizEls.setupModal.classList.remove('hidden');
+        return;
+    }
 
     // Fresh violation state for this attempt
     violationCount = 0;
     violationLog = [];
     persistViolationState();
-
-    // Fresh proctoring-detection state for this attempt
     noFaceSince = null;
 
+    if (currentMode === 'test') persistActiveAttemptLocally('active');
     startQuizSession();
 };
 
