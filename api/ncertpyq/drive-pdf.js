@@ -6,8 +6,7 @@ module.exports = async function handler(req, res) {
     const { default: drivePdf } = await import('../../ncertpyq/netlify/functions/drive-pdf.mjs');
     const url = new URL(req.url || '/api/ncertpyq/drive-pdf', 'https://vercel.invalid');
     const request = new Request(url, {
-      method: req.method,
-      headers: req.headers || {}
+      method: req.method
     });
     const response = await drivePdf(request);
     response.headers.forEach((value, key) => res.setHeader(key, value));
