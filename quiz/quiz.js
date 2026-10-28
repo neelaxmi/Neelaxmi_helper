@@ -1184,7 +1184,7 @@ function updateTestNetworkNotice() {
 }
 
 window.addEventListener('offline', () => {
-    if (currentMode === 'test' && currentAttemptId) {
+    if (currentMode === 'test' && currentAttemptId && quizActive()) {
         testModeWentOffline = true;
         persistActiveAttemptLocally(secureSubmissionPending ? 'submitted_pending_sync' : 'active');
         console.info('✅ SUCCESS [Quiz] Offline requirement registered for this Test Mode attempt.', {
