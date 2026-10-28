@@ -3,6 +3,10 @@ const { db, Timestamp, FieldValue, crypto, CFG, reply, verifyUser } = require(".
 const sha256 = (buf) => crypto.createHash("sha256").update(buf).digest("hex");
 exports.handler = async (event) => {
   if (event.httpMethod !== "POST") return reply(405, { error: "POST only" });
+  if (!process.env.INTERNAL_SECRET) {
+    console.error("[submit-order][ERROR] INTERNAL_SECRET is not configured.");
+    return reply(503, { error: "Payment processing is not configured yet. Please try again later." });
+  }
   try {
     const user = await verifyUser(event);
     const b = JSON.parse(event.body || "{}");
