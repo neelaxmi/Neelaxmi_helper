@@ -19,6 +19,7 @@ let currentAttemptDeadlineAtMs = null;
 let currentAttemptStartedAtMs = null;
 let currentAttemptDurationSeconds = 0;
 let isRestoringLocalAttempt = false;
+let testModeWentOffline = false;
 const DEFAULT_TEST_MODE_MINUTES_FALLBACK = 20; 
 const quizEls = {
     loader: document.getElementById('loading-screen'),
@@ -663,6 +664,7 @@ const loadQuiz = async (uid) => {
                 ? Math.max(0, Math.ceil((currentAttemptDeadlineAtMs - Date.now()) / 1000))
                 : currentAttemptDurationSeconds;
             checkedQuestions = {};
+            testModeWentOffline = offlineAttempt.wentOffline === true;
             if (quizEls.title) quizEls.title.textContent = offlineAttempt.quizTitle || 'Recovered Test';
             if (quizEls.setupTitle) quizEls.setupTitle.textContent = offlineAttempt.quizTitle || 'Recovered Test';
             quizEls.loader.classList.add('hidden');
@@ -837,6 +839,7 @@ const loadQuiz = async (uid) => {
                 ? Math.max(0, Math.ceil((currentAttemptDeadlineAtMs - Date.now()) / 1000))
                 : currentAttemptDurationSeconds;
             checkedQuestions = {};
+            testModeWentOffline = localAttempt.wentOffline === true;
             console.info('✅ SUCCESS [Quiz] Test Mode state restored from local JSON.', {
                 quizId: uid, attemptId: currentAttemptId, remainingSeconds: timeLeft,
                 status: localAttempt.status
@@ -990,7 +993,8 @@ function persistActiveAttemptLocally(status = 'active') {
         currentIndex,
         deadlineAtMs: currentAttemptDeadlineAtMs,
         startedAtMs: currentAttemptStartedAtMs,
-        durationSeconds: currentAttemptDurationSeconds
+        durationSeconds: currentAttemptDurationSeconds,
+        wentOffline: testModeWentOffline
     });
 }
 
@@ -1002,6 +1006,7 @@ const beginSelectedQuiz = async () => {
     }
 
     currentMode = cfg.mode;
+    testModeWentOffline = false;
     if (currentMode === 'test' && !window.QuizReliability.canUseLocalStorage()) {
         console.error('❌ ERROR [Quiz] Test Mode blocked because local storage is unavailable.', {
             quizId: currentQuizId
@@ -1151,6 +1156,45 @@ if (proctorEls.enableBtn) {
     };
 }
 
+function updateTestNetworkNotice() {
+    let notice = document.getElementById('test-network-notice');
+    if (currentMode !== 'test' || !quizActive()) {
+        if (notice) notice.remove();
+        return;
+    }
+    if (!notice) {
+        notice = document.createElement('div');
+        notice.id = 'test-network-notice';
+        notice.className = 'fixed bottom-3 left-3 right-3 z-[1200] rounded-xl px-4 py-3 text-sm font-semibold shadow-lg';
+        document.body.appendChild(notice);
+    }
+    if (navigator.onLine) {
+        notice.className = 'fixed bottom-3 left-3 right-3 z-[1200] rounded-xl px-4 py-3 text-sm font-semibold shadow-lg bg-amber-100 text-amber-900 border border-amber-300';
+        notice.textContent = testModeWentOffline
+            ? 'Test Mode: Offline requirement met. Reconnect only after submitting.'
+            : 'Test Mode: Disconnect Wi-Fi/mobile data now. Answers are saved locally; reconnect after Submit.';
+    } else {
+        notice.className = 'fixed bottom-3 left-3 right-3 z-[1200] rounded-xl px-4 py-3 text-sm font-semibold shadow-lg bg-emerald-100 text-emerald-900 border border-emerald-300';
+        notice.textContent = 'Offline Test Mode active — answers are being saved on this device only.';
+    }
+    console.info('ℹ️ INFO [Quiz] Test Mode network notice updated.', {
+        quizId: currentQuizId, attemptId: currentAttemptId, online: navigator.onLine,
+        offlineRequirementMet: testModeWentOffline
+    });
+}
+
+window.addEventListener('offline', () => {
+    if (currentMode === 'test' && currentAttemptId) {
+        testModeWentOffline = true;
+        persistActiveAttemptLocally(secureSubmissionPending ? 'submitted_pending_sync' : 'active');
+        console.info('✅ SUCCESS [Quiz] Offline requirement registered for this Test Mode attempt.', {
+            quizId: currentQuizId, attemptId: currentAttemptId
+        });
+    }
+    updateTestNetworkNotice();
+});
+window.addEventListener('online', updateTestNetworkNotice);
+
 const startQuizSession = () => {
     document.querySelectorAll('.fixed').forEach(m => { if(m.id!=='loading-screen' && m.id!=='proctor-widget') m.classList.add('hidden') });
     
@@ -1168,7 +1212,8 @@ const startQuizSession = () => {
 
     renderQuestion();
     startTimer();
-    
+    updateTestNetworkNotice();
+
     if (typeof setupAntiCheatingMeasures === 'function') {
         setupAntiCheatingMeasures();
     }
