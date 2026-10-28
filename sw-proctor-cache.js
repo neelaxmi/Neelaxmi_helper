@@ -86,10 +86,15 @@ self.addEventListener('activate', (event) => {
 });
 
 async function serveLocalQuizImage(pathname) {
-    if (pathname === '/local-img/_ping') {
+    // cbttopdf.html lives under /quiz/, so its relative local-img URLs use
+    // /quiz/local-img/...; also support the root path for other callers.
+    const normalizedPath = pathname.startsWith('/quiz/local-img/')
+        ? pathname.slice('/quiz'.length)
+        : pathname;
+    if (normalizedPath === '/local-img/_ping') {
         return new Response(null, { status: 204 });
     }
-    const match = pathname.match(/^\/local-img\/([^/]+)\/(\d+)\.jpg$/);
+    const match = normalizedPath.match(/^\/local-img\/([^/]+)\/(\d+)\.jpg$/);
     if (!match) return new Response('Not found', { status: 404 });
 
     const quizId = decodeURIComponent(match[1]);
@@ -160,7 +165,7 @@ self.addEventListener('fetch', (event) => {
     }
 
     if (url.pathname.startsWith('/.netlify/functions/')) return;
-    if (url.pathname.startsWith('/local-img/')) {
+    if (url.pathname.startsWith('/local-img/') || url.pathname.startsWith('/quiz/local-img/')) {
         event.respondWith(serveLocalQuizImage(url.pathname));
         return;
     }
