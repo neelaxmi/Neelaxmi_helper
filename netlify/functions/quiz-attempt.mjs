@@ -228,6 +228,28 @@ export const handler = async (event) => {
       });
     }
 
+    if (action === "resumeAttempt") {
+      attemptId = String(body.attemptId || "");
+      const attemptRef = db.collection("quiz_attempts").doc(attemptId);
+      const attemptSnap = await attemptRef.get();
+      if (!attemptSnap.exists) throw Object.assign(new Error("Attempt not found."), { statusCode: 404 });
+      const attempt = attemptSnap.data();
+      if (attempt.uid !== uid) throw Object.assign(new Error("Attempt access denied."), { statusCode: 403 });
+      if (attempt.status !== "active") throw Object.assign(new Error("Attempt is no longer active."), { statusCode: 409 });
+      const { data } = await resolveQuiz(db, attempt.quizId);
+      const chosen = selectedQuestions(data, attempt.questionIds);
+      logSuccess("resume-attempt", { uid, quizId: attempt.quizId, attemptId, mode: attempt.mode });
+      return response(200, {
+        attemptId, quizId: attempt.quizId, quizTitle: attempt.quizTitle || data.title || "Quiz",
+        mode: attempt.mode, questionIds: attempt.questionIds,
+        questions: chosen.map(({ question, index }) => safeQuestion(question, index)),
+        durationSeconds: attempt.durationSeconds,
+        startedAtMs: attempt.startedAt?.toMillis?.() || Date.now(),
+        deadlineAtMs: attempt.deadlineAt?.toMillis?.() || Date.now(),
+        proctoringEnabled: attempt.proctoringEnabled === true,
+      });
+    }
+
     if (action === "checkAnswer") {
       attemptId = String(body.attemptId || "");
       const attemptRef = db.collection("quiz_attempts").doc(attemptId);
