@@ -38,7 +38,9 @@ exports.handler = async (event) => {
       if (e.code === 6) return reply(409, { error: "This screenshot (or session) was already submitted." });
       throw e;
     }
-    await fetch(`${process.env.URL}/.netlify/functions/process-order-background`, {
+    const appBaseUrl = process.env.APP_BASE_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "");
+    if (!appBaseUrl) throw new Error("APP_BASE_URL or VERCEL_URL is required to process the order.");
+    await fetch(`${appBaseUrl}/api/ncertpyq/process-order-background`, {
       method: "POST",
       headers: { "Content-Type": "application/json", "x-internal-secret": process.env.INTERNAL_SECRET },
       body: JSON.stringify({ orderId: b.sessionId }),
