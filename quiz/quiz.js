@@ -904,13 +904,15 @@ const loadQuiz = async (uid) => {
                     const questionIds = Array.isArray(s.questionIds) && s.questionIds.length
                         ? s.questionIds
                         : allQuestions.map((q) => q.id);
-                    const started = await window.QuizReliability.api('startAttempt', {
-                        quizId: uid,
-                        mode: currentMode,
-                        durationMinutes: Math.max(1, Math.ceil((Number(s.timeLeft) || 60) / 60)),
-                        questionIds,
-                        proctoringEnabled: true
-                    });
+                    const started = s.attemptId
+                        ? await window.QuizReliability.api('resumeAttempt', { attemptId: s.attemptId })
+                        : await window.QuizReliability.api('startAttempt', {
+                            quizId: uid,
+                            mode: currentMode,
+                            durationMinutes: Math.max(1, Math.ceil((Number(s.timeLeft) || 60) / 60)),
+                            questionIds,
+                            proctoringEnabled: true
+                        });
                     currentAttemptId = started.attemptId;
                     currentAttemptDeadlineAtMs = null; // Preserve CBT's existing pausable countdown.
                     currentAttemptStartedAtMs = started.startedAtMs;
