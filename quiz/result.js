@@ -578,6 +578,15 @@ function showPendingSyncPanel(message = 'Your answers are saved on this device. 
 }
 
 async function submitSecureAttempt(isTimeout, proctorViolationCount, proctorViolationLog) {
+    if (currentMode === 'test' && !testModeWentOffline) {
+        console.warn('⚠️ WARNING (Result.js): Test Mode submission blocked until an offline period is recorded.', {
+            quizId: currentQuizId, attemptId: currentAttemptId, online: navigator.onLine
+        });
+        alert('Test Mode ke rules ke mutabik test ke dauran internet disconnect hona chahiye. Wi-Fi/mobile data disconnect karein, test submit karein, phir result sync karne ke liye internet reconnect karein.');
+        resultEls.submit.disabled = false;
+        resultEls.submit.innerHTML = 'Submit Quiz';
+        return;
+    }
     if (secureSubmissionInProgress) {
         console.warn('⚠️ WARNING (Result.js): Duplicate submit click ignored while request is in progress.', {
             quizId: currentQuizId, attemptId: currentAttemptId
