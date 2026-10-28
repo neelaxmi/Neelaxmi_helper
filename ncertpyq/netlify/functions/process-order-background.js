@@ -1,8 +1,13 @@
 "use strict";
 const { db, Timestamp, FieldValue, crypto, CFG, approveOrder, parsePaymentText, esc, tgSendPhoto } = require("./lib/common");
 exports.handler = async (event) => {
+  const configuredSecret = process.env.INTERNAL_SECRET;
+  if (!configuredSecret) {
+    console.error("[process-order-background][ERROR] INTERNAL_SECRET is not configured.");
+    return { statusCode: 503 };
+  }
   const got = Buffer.from(event.headers["x-internal-secret"] || "");
-  const want = Buffer.from(process.env.INTERNAL_SECRET || "x");
+  const want = Buffer.from(configuredSecret);
   if (got.length !== want.length || !crypto.timingSafeEqual(got, want)) return { statusCode: 403 };
   const { orderId } = JSON.parse(event.body || "{}");
   const orderRef = db.doc(`orders/${orderId}`);
