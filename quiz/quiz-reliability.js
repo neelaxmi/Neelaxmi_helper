@@ -124,10 +124,11 @@
     async function api(action, payload = {}) {
         const context = { mode: payload.mode || null, quizId: payload.quizId || null, attemptId: payload.attemptId || null };
         try {
-            if (!window.auth || !window.auth.currentUser) {
+            const authInstance = (typeof auth !== 'undefined' && auth) ? auth : window.auth;
+            if (!authInstance || !authInstance.currentUser) {
                 throw new Error('Signed-in user is required for the quiz service.');
             }
-            const idToken = await window.auth.currentUser.getIdToken();
+            const idToken = await authInstance.currentUser.getIdToken();
             const response = await fetch('/.netlify/functions/quiz-attempt', {
                 method: 'POST',
                 headers: {
