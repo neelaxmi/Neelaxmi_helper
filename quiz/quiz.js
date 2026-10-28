@@ -1633,6 +1633,21 @@ function handleFullscreenChange() {
 document.addEventListener('fullscreenchange', handleFullscreenChange);
 document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
 document.addEventListener('MSFullscreenChange', handleFullscreenChange);
+window.addEventListener('pagehide', () => {
+    if (quizActive() && currentMode === 'quiz' && !proctoringEnabled && !isExplicitSaveNavigation) {
+        try {
+            sessionStorage.setItem('ignoreSavedProgressOnce_' + currentQuizId, '1');
+            console.info('✅ SUCCESS [Quiz] Confirmed Quiz Mode page exit will not restore the active session.', {
+                quizId: currentQuizId
+            });
+        } catch (error) {
+            console.error('❌ ERROR [Quiz] Could not store refresh-discard preference after page exit.', {
+                quizId: currentQuizId, message: error.message
+            });
+        }
+    }
+});
+
 window.addEventListener('beforeunload', (event) => {
     stopProctoring();
     if (quizActive() && !proctoringEnabled) {
@@ -1645,18 +1660,6 @@ window.addEventListener('beforeunload', (event) => {
             console.warn('⚠️ WARNING [Quiz] Quiz Mode page is unloading; this mode is not restored after refresh.', {
                 quizId: currentQuizId, attemptId: currentAttemptId
             });
-            if (!isExplicitSaveNavigation) {
-                try {
-                    sessionStorage.setItem('ignoreSavedProgressOnce_' + currentQuizId, '1');
-                    console.info('✅ SUCCESS [Quiz] Refresh-discard preference stored without deleting Firebase records.', {
-                        quizId: currentQuizId
-                    });
-                } catch (storageError) {
-                    console.error('❌ ERROR [Quiz] Could not store Quiz Mode refresh-discard preference.', {
-                        quizId: currentQuizId, message: storageError.message
-                    });
-                }
-            }
         }
         event.preventDefault();
         event.returnValue = '';
