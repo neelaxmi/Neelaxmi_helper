@@ -900,20 +900,24 @@ const loadQuiz = async (uid) => {
             const s = prog.data();
             try {
                 if (s.proctoringEnabled) {
-                    const cbtDoc = await db.collection('quizzes').doc(uid).get();
-                    if (!cbtDoc.exists) throw new Error('CBT quiz document was not found.');
-                    const cbtData = cbtDoc.data();
-                    allQuestions = cbtData.questions.map((q, i) => ({ ...q, id: `Q${i + 1}` }));
-                    questions = Array.isArray(s.questionIds) && s.questionIds.length
-                        ? allQuestions.filter((q) => s.questionIds.includes(q.id))
-                        : allQuestions;
                     currentMode = s.mode === 'quiz' ? 'quiz' : 'test';
-                    currentAttemptId = null;
-                    currentAttemptDeadlineAtMs = null;
-                    currentAttemptStartedAtMs = null;
-                    currentAttemptDurationSeconds = 0;
+                    const questionIds = Array.isArray(s.questionIds) && s.questionIds.length
+                        ? s.questionIds
+                        : allQuestions.map((q) => q.id);
+                    const started = await window.QuizReliability.api('startAttempt', {
+                        quizId: uid,
+                        mode: currentMode,
+                        durationMinutes: Math.max(1, Math.ceil((Number(s.timeLeft) || 60) / 60)),
+                        questionIds,
+                        proctoringEnabled: true
+                    });
+                    currentAttemptId = started.attemptId;
+                    currentAttemptDeadlineAtMs = null; // Preserve CBT's existing pausable countdown.
+                    currentAttemptStartedAtMs = started.startedAtMs;
+                    currentAttemptDurationSeconds = started.durationSeconds;
+                    questions = window.QuizReliability.sanitizeQuestions(started.questions);
                     currentIndex = Math.min(Math.max(0, Number(s.currentIndex) || 0), Math.max(0, questions.length - 1));
-                    timeLeft = Number(s.timeLeft) || 0;
+                    timeLeft = Number(s.timeLeft) || currentAttemptDurationSeconds;
                     quizStartDurationSeconds = typeof s.quizStartDurationSeconds === 'number'
                         ? s.quizStartDurationSeconds : timeLeft;
                     userAnswers = s.userAnswers || {};
@@ -925,8 +929,8 @@ const loadQuiz = async (uid) => {
                     quizEls.resumeModal.classList.add('hidden');
                     if (proctorEls.consentError) proctorEls.consentError.classList.add('hidden');
                     if (proctorEls.consentModal) proctorEls.consentModal.classList.remove('hidden');
-                    console.info('✅ SUCCESS [Quiz] Existing CBT saved attempt restored using its original flow.', {
-                        quizId: uid, mode: currentMode, questionCount: questions.length
+                    console.info('✅ SUCCESS [Quiz] CBT saved progress resumed with server-delivered questions.', {
+                        quizId: uid, attemptId: currentAttemptId, mode: currentMode, questionCount: questions.length
                     });
                     return;
                 }
@@ -1061,54 +1065,22 @@ const beginSelectedQuiz = async () => {
     currentAttemptStartedAtMs = null;
     currentAttemptDurationSeconds = 0;
 
-    // Preserve the existing camera-proctored CBT path: it continues to use
-    // its existing Firestore progress/result flow and does not use offline Test Mode recovery.
-    if (proctoringEnabled) {
-        try {
-            const cbtDoc = await db.collection('quizzes').doc(currentQuizId).get();
-            if (!cbtDoc.exists) throw new Error('CBT quiz document was not found.');
-            const cbtData = cbtDoc.data();
-            allQuestions = cbtData.questions.map((q, i) => ({ ...q, id: `Q${i + 1}` }));
-            questions = allQuestions.slice(start, end);
-            timeLeft = cfg.selectedTime * 60;
-            quizStartDurationSeconds = timeLeft;
-            currentAttemptId = null;
-            currentAttemptDeadlineAtMs = null;
-            currentAttemptStartedAtMs = null;
-            currentAttemptDurationSeconds = 0;
-            console.info('✅ SUCCESS [Quiz] Existing CBT question-loading path retained.', {
-                quizId: currentQuizId, mode: currentMode, questionCount: questions.length
-            });
-        } catch (error) {
-            console.error('❌ ERROR [Quiz] Existing CBT question load failed.', {
-                quizId: currentQuizId, message: error.message
-            });
-            alert('CBT quiz load nahi ho paya. Internet/Firebase connection check karein.');
-            if (quizEls.setupModal) quizEls.setupModal.classList.remove('hidden');
-            return;
-        }
-
-        violationCount = 0;
-        violationLog = [];
-        persistViolationState();
-        noFaceSince = null;
-        startQuizSession();
-        return;
-    }
-
     try {
         const started = await window.QuizReliability.api('startAttempt', {
             quizId: currentQuizId,
             mode: currentMode,
             durationMinutes: cfg.selectedTime,
-            questionIds: selectedQuestionIds
+            questionIds: selectedQuestionIds,
+            proctoringEnabled: !!proctoringEnabled
         });
         questions = window.QuizReliability.sanitizeQuestions(started.questions);
         currentAttemptId = started.attemptId;
         currentAttemptStartedAtMs = started.startedAtMs;
-        currentAttemptDeadlineAtMs = started.deadlineAtMs;
+        currentAttemptDeadlineAtMs = proctoringEnabled ? null : started.deadlineAtMs;
         currentAttemptDurationSeconds = started.durationSeconds;
-        timeLeft = Math.max(0, Math.ceil((currentAttemptDeadlineAtMs - Date.now()) / 1000));
+        timeLeft = proctoringEnabled
+            ? currentAttemptDurationSeconds
+            : Math.max(0, Math.ceil((currentAttemptDeadlineAtMs - Date.now()) / 1000));
         quizStartDurationSeconds = currentAttemptDurationSeconds;
         console.info('✅ SUCCESS [Quiz] Server attempt created.', {
             quizId: currentQuizId, attemptId: currentAttemptId, mode: currentMode,
@@ -1328,6 +1300,8 @@ const saveProgress = async () => {
             quizStartDurationSeconds,
             status: 'active',
             mode: currentMode,
+            attemptId: currentAttemptId || null,
+            durationSeconds: currentAttemptDurationSeconds || quizStartDurationSeconds,
             questionIds: questions.map((q) => q.id),
             userAnswers,
             visitedQuestions,
