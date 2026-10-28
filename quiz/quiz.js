@@ -665,7 +665,7 @@ const loadQuiz = async (uid) => {
                 ? Math.max(0, Math.ceil((currentAttemptDeadlineAtMs - Date.now()) / 1000))
                 : currentAttemptDurationSeconds;
             checkedQuestions = {};
-            testModeWentOffline = offlineAttempt.wentOffline === true;
+            testModeWentOffline = offlineAttempt.wentOffline === true || !navigator.onLine;
             if (quizEls.title) quizEls.title.textContent = offlineAttempt.quizTitle || 'Recovered Test';
             if (quizEls.setupTitle) quizEls.setupTitle.textContent = offlineAttempt.quizTitle || 'Recovered Test';
             quizEls.loader.classList.add('hidden');
@@ -840,7 +840,7 @@ const loadQuiz = async (uid) => {
                 ? Math.max(0, Math.ceil((currentAttemptDeadlineAtMs - Date.now()) / 1000))
                 : currentAttemptDurationSeconds;
             checkedQuestions = {};
-            testModeWentOffline = localAttempt.wentOffline === true;
+            testModeWentOffline = localAttempt.wentOffline === true || !navigator.onLine;
             console.info('✅ SUCCESS [Quiz] Test Mode state restored from local JSON.', {
                 quizId: uid, attemptId: currentAttemptId, remainingSeconds: timeLeft,
                 status: localAttempt.status
