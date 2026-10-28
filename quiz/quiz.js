@@ -20,6 +20,7 @@ let currentAttemptStartedAtMs = null;
 let currentAttemptDurationSeconds = 0;
 let isRestoringLocalAttempt = false;
 let testModeWentOffline = false;
+let isExplicitSaveNavigation = false;
 const DEFAULT_TEST_MODE_MINUTES_FALLBACK = 20; 
 const quizEls = {
     loader: document.getElementById('loading-screen'),
@@ -1369,10 +1370,21 @@ if(document.getElementById('modal-cancel')) {
 }
 if(document.getElementById('modal-save')) {
     document.getElementById('modal-save').onclick = async () => {
-        stopProctoring();
-        await saveProgress();
-        window.onpopstate = null; 
-        window.location.replace('/index.html');
+        try {
+            stopProctoring();
+            await saveProgress();
+            isExplicitSaveNavigation = true;
+            console.info('✅ SUCCESS [Quiz] Explicit Save & Exit completed.', {
+                quizId: currentQuizId, mode: currentMode
+            });
+            window.onpopstate = null;
+            window.location.replace('/index.html');
+        } catch (error) {
+            console.error('❌ ERROR [Quiz] Explicit Save & Exit failed.', {
+                quizId: currentQuizId, mode: currentMode, message: error.message
+            });
+            alert('Progress save nahi ho paya. Internet/storage check karke dobara try karein.');
+        }
     };
 }
 
@@ -1657,6 +1669,18 @@ window.addEventListener('beforeunload', (event) => {
             console.warn('⚠️ WARNING [Quiz] Quiz Mode page is unloading; this mode is not restored after refresh.', {
                 quizId: currentQuizId, attemptId: currentAttemptId
             });
+            if (!isExplicitSaveNavigation) {
+                try {
+                    sessionStorage.setItem('ignoreSavedProgressOnce_' + currentQuizId, '1');
+                    console.info('✅ SUCCESS [Quiz] Refresh-discard preference stored without deleting Firebase records.', {
+                        quizId: currentQuizId
+                    });
+                } catch (storageError) {
+                    console.error('❌ ERROR [Quiz] Could not store Quiz Mode refresh-discard preference.', {
+                        quizId: currentQuizId, message: storageError.message
+                    });
+                }
+            }
         }
         event.preventDefault();
         event.returnValue = '';
