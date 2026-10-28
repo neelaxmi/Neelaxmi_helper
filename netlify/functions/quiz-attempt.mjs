@@ -290,7 +290,7 @@ export const handler = async (event) => {
         attemptId, quizId: attempt.quizId, quizTitle: attempt.quizTitle || data.title || "Quiz",
         score, total: detailed.length, wrong, skipped, answers: detailed,
         status: nowMs >= deadlineMs ? "Timed Out" : "Completed",
-        timestamp: admin.firestore.FieldValue.serverTimestamp(),
+        timestamp: new Date(nowMs).toISOString(),
         timeTaken: formattedTime, totalTimeSeconds,
         rank: "Unranked",
       };
