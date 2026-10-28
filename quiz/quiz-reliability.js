@@ -82,6 +82,7 @@
                 deadlineAtMs: Number(attempt.deadlineAtMs) || null,
                 startedAtMs: Number(attempt.startedAtMs) || null,
                 durationSeconds: Math.max(0, Number(attempt.durationSeconds) || 0),
+                wentOffline: attempt.wentOffline === true,
                 savedAtMs: Date.now()
             };
             localStorage.setItem(storageKey(uid, quizId), JSON.stringify(safePayload));
