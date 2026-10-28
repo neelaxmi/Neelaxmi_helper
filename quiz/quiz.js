@@ -1163,8 +1163,19 @@ if (proctorEls.enableBtn) {
 
 const startQuizSession = () => {
     document.querySelectorAll('.fixed').forEach(m => { if(m.id!=='loading-screen' && m.id!=='proctor-widget') m.classList.add('hidden') });
-    
+
     quizEls.container.classList.remove('hidden');
+    const existingLocalBanner = document.getElementById('normal-test-local-save-banner');
+    if (isNormalOfflineTest()) {
+        const banner = existingLocalBanner || document.createElement('div');
+        banner.id = 'normal-test-local-save-banner';
+        banner.className = 'mb-4 rounded-xl border border-emerald-300 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-900 dark:border-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-200';
+        banner.textContent = 'Normal Test Mode: answers are saved on this device. Refresh recovery uses this browser’s stored attempt; do not clear site data. Your browser may show its own refresh warning.';
+        if (!existingLocalBanner) quizEls.container.prepend(banner);
+        console.log('[NormalTest][SUCCESS] Local-save warning displayed.');
+    } else if (existingLocalBanner) {
+        existingLocalBanner.remove();
+    }
     quizEls.time.textContent = formatTime(timeLeft);
     const paletteToggleBtn = document.getElementById('palette-toggle-btn');
     const paletteAside = document.getElementById('question-palette');
