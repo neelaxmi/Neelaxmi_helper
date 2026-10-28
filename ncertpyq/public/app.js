@@ -1,7 +1,7 @@
 import { auth, onAuthStateChanged, db, doc, onSnapshot, collection, query, where } from "./firebase-config.js";
 import { syncReferral, getPendingRef, cleanCode, captureRefFromUrl } from "./referral.js";
 const $ = (id) => document.getElementById(id);
-const API = "/.netlify/functions";
+const API = "/api/ncertpyq";
 const GRACE_MS = 15 * 60 * 1000; 
 const MAX_BYTES = 700 * 1024; 
 let user = null, session = null, timerId = null;
