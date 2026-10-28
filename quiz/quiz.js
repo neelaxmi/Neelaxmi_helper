@@ -888,34 +888,69 @@ const loadQuiz = async (uid) => {
     
     quizEls.loader.classList.add('hidden');
     
-    if(prog.exists) {
+    const skipSavedResumeOnce = sessionStorage.getItem('ignoreSavedProgressOnce_' + uid) === '1';
+    if (skipSavedResumeOnce) sessionStorage.removeItem('ignoreSavedProgressOnce_' + uid);
+    if(prog.exists && !skipSavedResumeOnce) {
         quizEls.resumeModal.classList.remove('hidden');
-        document.getElementById('btn-resume-attempt').onclick = () => {
+        document.getElementById('btn-resume-attempt').onclick = async () => {
             const s = prog.data();
-            questions = allQuestions;
-            currentIndex = s.currentIndex; 
-            timeLeft = s.timeLeft; 
-            quizStartDurationSeconds = typeof s.quizStartDurationSeconds === 'number' ? s.quizStartDurationSeconds : s.timeLeft;
-            userAnswers = s.userAnswers;
-            
-            if(s.visitedQuestions) visitedQuestions = s.visitedQuestions;
-            if(s.markedForReview) markedForReview = s.markedForReview;
-            proctoringEnabled = !!s.proctoringEnabled;
+            try {
+                currentMode = s.mode === 'test' ? 'test' : 'quiz';
+                const questionIds = Array.isArray(s.questionIds) && s.questionIds.length
+                    ? s.questionIds
+                    : allQuestions.map((q) => q.id);
+                const started = await window.QuizReliability.api('startAttempt', {
+                    quizId: uid,
+                    mode: currentMode,
+                    durationMinutes: Math.max(1, Math.ceil((Number(s.timeLeft) || 60) / 60)),
+                    questionIds
+                });
+                currentAttemptId = started.attemptId;
+                currentAttemptDeadlineAtMs = started.deadlineAtMs;
+                currentAttemptStartedAtMs = started.startedAtMs;
+                currentAttemptDurationSeconds = started.durationSeconds;
+                questions = window.QuizReliability.sanitizeQuestions(started.questions);
+                currentIndex = Math.min(Math.max(0, Number(s.currentIndex) || 0), Math.max(0, questions.length - 1));
+                timeLeft = Math.max(0, Math.min(Number(s.timeLeft) || currentAttemptDurationSeconds,
+                    Math.ceil((currentAttemptDeadlineAtMs - Date.now()) / 1000)));
+                quizStartDurationSeconds = currentAttemptDurationSeconds;
+                userAnswers = s.userAnswers || {};
+                visitedQuestions = s.visitedQuestions || {};
+                markedForReview = s.markedForReview || {};
+                checkedQuestions = {};
+                proctoringEnabled = !!s.proctoringEnabled;
 
-            quizEls.resumeModal.classList.add('hidden');
+                quizEls.resumeModal.classList.add('hidden');
+                console.info('✅ SUCCESS [Quiz] Saved Quiz Mode attempt resumed through the secure API.', {
+                    quizId: uid, attemptId: currentAttemptId, mode: currentMode
+                });
 
-            if (proctoringEnabled && proctorEls.consentModal) {
-                pendingResume = true;
-                if (proctorEls.consentError) proctorEls.consentError.classList.add('hidden');
-                proctorEls.consentModal.classList.remove('hidden');
-            } else {
-                startQuizSession();
+                if (proctoringEnabled && proctorEls.consentModal) {
+                    pendingResume = true;
+                    if (proctorEls.consentError) proctorEls.consentError.classList.add('hidden');
+                    proctorEls.consentModal.classList.remove('hidden');
+                } else {
+                    startQuizSession();
+                }
+            } catch (error) {
+                console.error('❌ ERROR [Quiz] Saved attempt resume failed.', {
+                    quizId: uid, message: error.message
+                });
+                alert('Saved attempt resume nahi ho paya. Internet check karke dobara try karein.');
             }
         };
-        document.getElementById('btn-restart-attempt').onclick = async () => {
-            await prog.ref.delete(); 
-            quizEls.resumeModal.classList.add('hidden');
-            showPreQuizInitModal();
+        document.getElementById('btn-restart-attempt').onclick = () => {
+            try {
+                sessionStorage.setItem('ignoreSavedProgressOnce_' + uid, '1');
+                quizEls.resumeModal.classList.add('hidden');
+                console.warn('⚠️ WARNING [Quiz] Starting a fresh attempt without deleting existing Firebase progress.', {
+                    quizId: uid
+                });
+                showPreQuizInitModal();
+            } catch (error) {
+                console.error('❌ ERROR [Quiz] Could not set restart preference.', { quizId: uid, message: error.message });
+                showPreQuizInitModal();
+            }
         };
     } else {
         showPreQuizInitModal();
@@ -1178,6 +1213,8 @@ const saveProgress = async () => {
             currentIndex,
             timeLeft,
             quizStartDurationSeconds,
+            mode: currentMode,
+            questionIds: questions.map((q) => q.id),
             userAnswers,
             visitedQuestions,
             markedForReview,
