@@ -7,6 +7,11 @@ exports.handler = async (event) => {
     console.error("[submit-order][ERROR] INTERNAL_SECRET is not configured.");
     return reply(503, { error: "Payment processing is not configured yet. Please try again later." });
   }
+  const appBaseUrl = process.env.APP_BASE_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "");
+  if (!appBaseUrl) {
+    console.error("[submit-order][ERROR] APP_BASE_URL and VERCEL_URL are missing.");
+    return reply(503, { error: "Payment processing is not configured yet. Please try again later." });
+  }
   try {
     const user = await verifyUser(event);
     const b = JSON.parse(event.body || "{}");
@@ -42,8 +47,6 @@ exports.handler = async (event) => {
       if (e.code === 6) return reply(409, { error: "This screenshot (or session) was already submitted." });
       throw e;
     }
-    const appBaseUrl = process.env.APP_BASE_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "");
-    if (!appBaseUrl) throw new Error("APP_BASE_URL or VERCEL_URL is required to process the order.");
     try {
       const processingResponse = await fetch(`${appBaseUrl}/api/ncertpyq/process-order-background`, {
         method: "POST",
