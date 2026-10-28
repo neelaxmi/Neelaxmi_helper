@@ -213,6 +213,7 @@ export const handler = async (event) => {
         attemptId, uid, quizId, quizTitle: data.title || "Quiz", mode,
         questionIds: chosen.map((q) => q.id),
         durationSeconds: durationMinutes * 60,
+        proctoringEnabled: body.proctoringEnabled === true,
         startedAt: now, deadlineAt, status: "active",
         createdAt: admin.firestore.FieldValue.serverTimestamp(),
       };
@@ -236,7 +237,7 @@ export const handler = async (event) => {
       if (attempt.uid !== uid) throw Object.assign(new Error("Attempt access denied."), { statusCode: 403 });
       if (attempt.mode !== "quiz") throw Object.assign(new Error("Answer checks are disabled in Test Mode."), { statusCode: 403 });
       if (attempt.status !== "active") throw Object.assign(new Error("Attempt is no longer active."), { statusCode: 409 });
-      if (attempt.deadlineAt?.toMillis && Date.now() >= attempt.deadlineAt.toMillis()) {
+      if (!attempt.proctoringEnabled && attempt.deadlineAt?.toMillis && Date.now() >= attempt.deadlineAt.toMillis()) {
         throw Object.assign(new Error("Time is up. This attempt can be submitted, but answer checking is closed."), { statusCode: 409 });
       }
       const qId = String(body.questionId || "");
@@ -298,7 +299,7 @@ export const handler = async (event) => {
         score, total: detailed.length, wrong, skipped, answers: detailed,
         status: body.proctoring && Number(body.proctoring.violationCount) > 3
           ? "Auto-Submitted (Proctoring Violation)"
-          : (nowMs >= deadlineMs || body.timedOut === true ? "Timed Out" : "Completed"),
+          : (body.timedOut === true || (!attempt.proctoringEnabled && nowMs >= deadlineMs) ? "Timed Out" : "Completed"),
         timestamp: new Date(nowMs).toISOString(),
         timeTaken: formattedTime, totalTimeSeconds,
         rank: "Unranked",
