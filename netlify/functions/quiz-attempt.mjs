@@ -57,7 +57,9 @@ function response(statusCode, payload) {
 }
 
 function safeQuestion(question, index) {
-  const { answer, correctAnswer, answerKey, solutionAnswer, ...publicFields } = question || {};
+  const publicFields = { ...(question || {}) };
+  ["answer", "correctAnswer", "correct_answer", "correctOption", "correct_option",
+   "answerKey", "answer_key", "solutionAnswer", "solution_answer"].forEach((key) => delete publicFields[key]);
   return { ...publicFields, id: `Q${index + 1}` };
 }
 
