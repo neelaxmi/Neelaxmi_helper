@@ -94,6 +94,15 @@ function saveOfflineAttemptSnapshot(reason = 'state-change', patch = {}) {
         return true;
     } catch (error) {
         console.error('[Quiz][offline-save][ERROR]', { reason, quizId: currentQuizId, message: error && error.message });
+        if (reason !== 'before-unload' && typeof quizActive === 'function' && quizActive()) {
+            try {
+                if (!isPaused && typeof togglePause === 'function') togglePause(true);
+                alert('Local saving failed, so the test has been paused to protect your answers. Do not refresh or close this page. Check browser storage and retry.');
+                console.error('[Quiz][offline-save][ERROR] Active test paused after a local persistence failure.');
+            } catch (pauseError) {
+                console.error('[Quiz][offline-save][ERROR] Could not pause the test after a local persistence failure.', { message: pauseError && pauseError.message });
+            }
+        }
         return false;
     }
 }
