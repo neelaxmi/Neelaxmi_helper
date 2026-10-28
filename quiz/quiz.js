@@ -627,7 +627,7 @@ const loadQuiz = async (uid) => {
         }
         console.info('✅ SUCCESS [Quiz] Secure question payload loaded.', {
             quizId: uid,
-            questionCount: Array.isArray(data.questions) ? data.questions.length : 0
+            questionCount: Number(data.questionCount) || 0
         });
     } catch (error) {
         console.error('❌ ERROR [Quiz] Secure quiz load failed.', { quizId: uid, message: error.message });
@@ -716,7 +716,8 @@ const loadQuiz = async (uid) => {
 
     quizEls.title.textContent = data.title;
     quizEls.setupTitle.textContent = data.title;
-    allQuestions = data.questions.map((q,i)=>({...q, id:`Q${i+1}`}));
+    const totalQuestionCount = Math.max(0, Number(data.questionCount) || 0);
+    allQuestions = Array.from({ length: totalQuestionCount }, (_, i) => ({ id: `Q${i + 1}` }));
 
     currentQuizIsTest = data.test_quiz === true;
 
@@ -975,7 +976,8 @@ const beginSelectedQuiz = async () => {
         return;
     }
     const [start, end] = cfg.rangeVal.split('-').map(Number);
-    questions = allQuestions.slice(start, end).map((q) => window.QuizReliability.sanitizeQuestions([q])[0]);
+    const selectedQuestionIds = allQuestions.slice(start, end).map((q) => q.id);
+    questions = [];
     currentIndex = 0;
     userAnswers = {};
     visitedQuestions = {};
@@ -991,8 +993,9 @@ const beginSelectedQuiz = async () => {
             quizId: currentQuizId,
             mode: currentMode,
             durationMinutes: cfg.selectedTime,
-            questionIds: questions.map((q) => q.id)
+            questionIds: selectedQuestionIds
         });
+        questions = window.QuizReliability.sanitizeQuestions(started.questions);
         currentAttemptId = started.attemptId;
         currentAttemptStartedAtMs = started.startedAtMs;
         currentAttemptDeadlineAtMs = started.deadlineAtMs;
