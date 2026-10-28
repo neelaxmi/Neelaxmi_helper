@@ -900,7 +900,7 @@ const loadQuiz = async (uid) => {
             const s = prog.data();
             try {
                 if (s.proctoringEnabled) {
-                    currentMode = s.mode === 'quiz' ? 'quiz' : 'test';
+                    currentMode = s.mode === 'quiz' ? 'quiz' : (s.mode === 'test' ? 'test' : (currentQuizIsTest ? 'test' : 'quiz'));
                     const questionIds = Array.isArray(s.questionIds) && s.questionIds.length
                         ? s.questionIds
                         : allQuestions.map((q) => q.id);
