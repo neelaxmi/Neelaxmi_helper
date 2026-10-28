@@ -738,33 +738,57 @@ const loadQuiz = async (uid) => {
     }
 
     const localAttempt = window.QuizReliability.loadLocalAttempt(CURRENT_USER_ID, uid);
-    if (localAttempt && localAttempt.mode === 'test' && localAttempt.status === 'active') {
+    if (localAttempt && localAttempt.mode === 'test'
+        && ['active', 'submitted_pending_sync'].includes(localAttempt.status)) {
         quizEls.loader.classList.add('hidden');
+
+        const restoreLocalAttemptState = () => {
+            currentMode = 'test';
+            currentAttemptId = localAttempt.attemptId;
+            currentAttemptDeadlineAtMs = localAttempt.deadlineAtMs;
+            currentAttemptStartedAtMs = localAttempt.startedAtMs;
+            currentAttemptDurationSeconds = localAttempt.durationSeconds;
+            quizStartDurationSeconds = currentAttemptDurationSeconds;
+            questions = window.QuizReliability.sanitizeQuestions(localAttempt.questions);
+            userAnswers = localAttempt.userAnswers || {};
+            visitedQuestions = localAttempt.visitedQuestions || {};
+            markedForReview = localAttempt.markedForReview || {};
+            currentIndex = Math.min(Math.max(0, localAttempt.currentIndex || 0), Math.max(0, questions.length - 1));
+            timeLeft = currentAttemptDeadlineAtMs
+                ? Math.max(0, Math.ceil((currentAttemptDeadlineAtMs - Date.now()) / 1000))
+                : currentAttemptDurationSeconds;
+            checkedQuestions = {};
+            console.info('✅ SUCCESS [Quiz] Test Mode state restored from local JSON.', {
+                quizId: uid, attemptId: currentAttemptId, remainingSeconds: timeLeft,
+                status: localAttempt.status
+            });
+        };
+
+        if (localAttempt.status === 'submitted_pending_sync') {
+            try {
+                restoreLocalAttemptState();
+                console.warn('⚠️ WARNING [Quiz] Found a submitted attempt waiting for server sync.', {
+                    quizId: uid, attemptId: localAttempt.attemptId, online: navigator.onLine
+                });
+                if (typeof submitQuiz === 'function') submitQuiz(false);
+                else throw new Error('Submission handler is not available yet.');
+            } catch (error) {
+                console.error('❌ ERROR [Quiz] Pending submission recovery failed.', {
+                    quizId: uid, attemptId: localAttempt.attemptId, message: error.message
+                });
+                alert('Saved submission could not be restored. Please reconnect and reload this page.');
+            }
+            return;
+        }
+
         console.info('ℹ️ INFO [Quiz] Recoverable local Test Mode attempt found.', {
             quizId: uid, attemptId: localAttempt.attemptId
         });
         quizEls.resumeModal.classList.remove('hidden');
         document.getElementById('btn-resume-attempt').onclick = () => {
             try {
-                currentMode = 'test';
-                currentAttemptId = localAttempt.attemptId;
-                currentAttemptDeadlineAtMs = localAttempt.deadlineAtMs;
-                currentAttemptStartedAtMs = localAttempt.startedAtMs;
-                currentAttemptDurationSeconds = localAttempt.durationSeconds;
-                quizStartDurationSeconds = currentAttemptDurationSeconds;
-                questions = window.QuizReliability.sanitizeQuestions(localAttempt.questions);
-                userAnswers = localAttempt.userAnswers || {};
-                visitedQuestions = localAttempt.visitedQuestions || {};
-                markedForReview = localAttempt.markedForReview || {};
-                currentIndex = Math.min(Math.max(0, localAttempt.currentIndex || 0), Math.max(0, questions.length - 1));
-                timeLeft = currentAttemptDeadlineAtMs
-                    ? Math.max(0, Math.ceil((currentAttemptDeadlineAtMs - Date.now()) / 1000))
-                    : currentAttemptDurationSeconds;
-                checkedQuestions = {};
+                restoreLocalAttemptState();
                 quizEls.resumeModal.classList.add('hidden');
-                console.info('✅ SUCCESS [Quiz] Test Mode attempt recovered from local JSON.', {
-                    quizId: uid, attemptId: currentAttemptId, remainingSeconds: timeLeft
-                });
                 startQuizSession();
             } catch (error) {
                 console.error('❌ ERROR [Quiz] Local Test Mode recovery failed.', {
