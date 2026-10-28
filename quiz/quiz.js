@@ -890,7 +890,7 @@ const loadQuiz = async (uid) => {
     
     const skipSavedResumeOnce = sessionStorage.getItem('ignoreSavedProgressOnce_' + uid) === '1';
     if (skipSavedResumeOnce) sessionStorage.removeItem('ignoreSavedProgressOnce_' + uid);
-    if(prog.exists && !skipSavedResumeOnce) {
+    if(prog.exists && !skipSavedResumeOnce && prog.data().status !== 'submitted') {
         quizEls.resumeModal.classList.remove('hidden');
         document.getElementById('btn-resume-attempt').onclick = async () => {
             const s = prog.data();
@@ -1213,6 +1213,7 @@ const saveProgress = async () => {
             currentIndex,
             timeLeft,
             quizStartDurationSeconds,
+            status: 'active',
             mode: currentMode,
             questionIds: questions.map((q) => q.id),
             userAnswers,
