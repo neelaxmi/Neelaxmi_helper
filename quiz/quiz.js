@@ -738,13 +738,18 @@ const loadQuiz = async (uid) => {
             const localAttempt = window.NormalTestOffline
                 ? await window.NormalTestOffline.load(normalTestStorageKey(uid))
                 : null;
-            if (localAttempt && localAttempt.mode === 'normal-test' && localAttempt.status === 'in_progress') {
+            if (localAttempt && localAttempt.mode === 'normal-test'
+                && ['in_progress', 'submitted_pending_sync'].includes(localAttempt.status)) {
                 currentQuizId = uid;
                 currentQuizIsTest = false;
                 allQuestions = Array.isArray(localAttempt.questions) ? localAttempt.questions : [];
                 if (quizEls.title) quizEls.title.textContent = localAttempt.quizTitle || 'Offline Test';
                 if (quizEls.setupTitle) quizEls.setupTitle.textContent = localAttempt.quizTitle || 'Offline Test';
-                await restoreNormalTestAttempt(localAttempt, 'offline-refresh');
+                if (localAttempt.status === 'submitted_pending_sync' && typeof window.resumePendingNormalTestSync === 'function') {
+                    await window.resumePendingNormalTestSync(localAttempt);
+                } else {
+                    await restoreNormalTestAttempt(localAttempt, 'offline-refresh');
+                }
                 return;
             }
         } catch (recoveryError) {
@@ -905,7 +910,16 @@ const loadQuiz = async (uid) => {
 
     quizEls.loader.classList.add('hidden');
 
-    if (localNormalAttempt && localNormalAttempt.mode === 'normal-test' && localNormalAttempt.status === 'in_progress') {
+    if (localNormalAttempt && localNormalAttempt.mode === 'normal-test'
+        && ['in_progress', 'submitted_pending_sync'].includes(localNormalAttempt.status)) {
+        if (localNormalAttempt.status === 'submitted_pending_sync') {
+            if (typeof window.resumePendingNormalTestSync === 'function') {
+                console.log('[NormalTestSync][SUCCESS] Found pending submitted attempt; resuming server sync.');
+                await window.resumePendingNormalTestSync(localNormalAttempt);
+                return;
+            }
+            console.error('[NormalTestSync][ERROR] Pending sync handler is not available yet.');
+        }
         quizEls.resumeModal.classList.remove('hidden');
         console.log('[NormalTest][SUCCESS] Local recovery attempt found.', {
             attemptId: localNormalAttempt.attemptId,
