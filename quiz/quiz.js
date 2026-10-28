@@ -888,6 +888,14 @@ const beginSelectedQuiz = async () => {
     }
 
     currentMode = cfg.mode;
+    if (currentMode === 'test' && !window.QuizReliability.canUseLocalStorage()) {
+        console.error('❌ ERROR [Quiz] Test Mode blocked because local storage is unavailable.', {
+            quizId: currentQuizId
+        });
+        alert('Test Mode start nahi ho sakta: browser local storage available nahi hai. Browser storage enable karke ya space free karke dobara try karein.');
+        if (quizEls.setupModal) quizEls.setupModal.classList.remove('hidden');
+        return;
+    }
     const [start, end] = cfg.rangeVal.split('-').map(Number);
     questions = allQuestions.slice(start, end).map((q) => window.QuizReliability.sanitizeQuestions([q])[0]);
     currentIndex = 0;
@@ -933,7 +941,15 @@ const beginSelectedQuiz = async () => {
     persistViolationState();
     noFaceSince = null;
 
-    if (currentMode === 'test') persistActiveAttemptLocally('active');
+    if (currentMode === 'test' && !persistActiveAttemptLocally('active')) {
+        console.error('❌ ERROR [Quiz] Test Mode blocked because the first local recovery snapshot failed.', {
+            quizId: currentQuizId, attemptId: currentAttemptId
+        });
+        alert('Test Mode start nahi ho sakta: answers local device par save nahi ho pa rahe. Storage space check karke dobara try karein.');
+        stopProctoring();
+        if (quizEls.setupModal) quizEls.setupModal.classList.remove('hidden');
+        return;
+    }
     startQuizSession();
 };
 
