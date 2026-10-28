@@ -538,6 +538,16 @@ let pendingNormalTestAttempt = null;
 let pendingNormalTestSyncInFlight = false;
 let pendingNormalTestOnlineListenerAttached = false;
 
+function attachPendingNormalTestOnlineListener() {
+    if (pendingNormalTestOnlineListenerAttached) return;
+    pendingNormalTestOnlineListenerAttached = true;
+    window.addEventListener('online', () => {
+        console.log('[NormalTestSync][SUCCESS] Browser reports internet restored; retrying pending sync.');
+        if (pendingNormalTestAttempt) void syncNormalTestAttemptToServer(pendingNormalTestAttempt);
+    });
+    console.log('[NormalTestSync][SUCCESS] Automatic reconnect listener attached.');
+}
+
 function showNormalTestSyncNotice(message, canRetry = true) {
     let panel = document.getElementById('normal-test-sync-pending');
     if (!panel) {
@@ -577,13 +587,7 @@ async function syncNormalTestAttemptToServer(attempt) {
     pendingNormalTestAttempt = attempt;
     if (!navigator.onLine) {
         showNormalTestSyncNotice('Your answers are safely saved locally. Reconnect to the internet; this page will sync automatically.');
-        if (!pendingNormalTestOnlineListenerAttached) {
-            pendingNormalTestOnlineListenerAttached = true;
-            window.addEventListener('online', () => {
-                console.log('[NormalTestSync][SUCCESS] Internet connection restored; retrying pending sync.');
-                if (pendingNormalTestAttempt) void syncNormalTestAttemptToServer(pendingNormalTestAttempt);
-            });
-        }
+        attachPendingNormalTestOnlineListener();
         console.log('[NormalTestSync][SUCCESS] Submission queued for reconnect.', { attemptId: attempt.attemptId });
         return false;
     }
@@ -648,6 +652,7 @@ async function syncNormalTestAttemptToServer(attempt) {
             attemptId: attempt.attemptId,
             message: error && error.message ? error.message : String(error)
         });
+        attachPendingNormalTestOnlineListener();
         showNormalTestSyncNotice(
             'Your test is still saved on this device, but the server could not confirm it yet. Check your connection or try again. Do not clear browser storage.',
             true
