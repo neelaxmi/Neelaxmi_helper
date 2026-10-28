@@ -14,6 +14,11 @@ let currentMode = 'test';
 let checkedQuestions = {};
 let currentQuizIsTest = false;
 let lockedTestDurationMinutes = null; 
+let currentAttemptId = null;
+let currentAttemptDeadlineAtMs = null;
+let currentAttemptStartedAtMs = null;
+let currentAttemptDurationSeconds = 0;
+let isRestoringLocalAttempt = false;
 const DEFAULT_TEST_MODE_MINUTES_FALLBACK = 20; 
 const quizEls = {
     loader: document.getElementById('loading-screen'),
@@ -511,28 +516,15 @@ function showTokenUnlockModal(quizId, quizTitle, onUnlocked) {
 
 async function verifyAndConsumeToken(quizId, rawCode) {
     const code = String(rawCode || '').trim();
-    if (!/^\d{6}$/.test(code)) {
+    if (!/^\\d{6}$/.test(code)) {
         throw new Error('Enter the 6-digit token exactly as shown.');
     }
+    if (!window.QuizReliability) throw new Error('Secure quiz service is not ready.');
+    const result = await window.QuizReliability.api('unlockPaidQuiz', { quizId, code });
+    if (!result || result.unlocked !== true) throw new Error('Quiz unlock could not be confirmed.');
+    console.info('✅ SUCCESS [Quiz] Paid quiz token verified by server.', { quizId });
+    return true;
 
-    const poolRef = db.collection('quiz_tokens').doc(quizId);
-    const tokensCol = poolRef.collection('tokens');
-
-    const candidateSnap = await tokensCol.where('code', '==', code).limit(1).get();
-    if (candidateSnap.empty) {
-        throw new Error('That token is invalid, already used, or not for this quiz.');
-    }
-    const tokenRef = candidateSnap.docs[0].ref;
-
-    return db.runTransaction(async (t) => {
-        const tokenDoc = await t.get(tokenRef);
-        if (!tokenDoc.exists) {
-            throw new Error('That token is invalid, already used, or not for this quiz.');
-        }
-        t.delete(tokenRef);
-        t.set(poolRef, { usedCount: firebase.firestore.FieldValue.increment(1) }, { merge: true });
-        return true;
-    });
 }
 
 if (tokenUnlockEls.verifyBtn) {
@@ -576,32 +568,29 @@ if (tokenUnlockEls.input) {
 const loadQuiz = async (uid) => {
     quizEls.loader.classList.remove('hidden');
 
-    let doc = await db.collection('quizzes').doc(uid).get();
-
-    if (!doc.exists) {
-        try {
-            const aliasDoc = await db.collection('quiz_aliases').doc(uid).get();
-            if (aliasDoc.exists && aliasDoc.data().quizId) {
-                uid = aliasDoc.data().quizId; // switch to the real doc id for everything below
-                doc = await db.collection('quizzes').doc(uid).get();
-            }
-        } catch (e) {
-            console.warn('Alias lookup failed:', e);
-        }
-    }
-
-    if(!doc.exists) {
-        document.getElementById('error-text').textContent = "Quiz not found or deleted.";
-        document.getElementById('error-message-area').classList.remove('hidden');
+    let data;
+    try {
+        if (!window.QuizReliability) throw new Error('Quiz reliability module did not load.');
+        data = await window.QuizReliability.api('getQuiz', { quizId: uid });
+        uid = data.quizId;
+        currentQuizId = uid;
+        console.info('✅ SUCCESS [Quiz] Secure question payload loaded.', {
+            quizId: uid,
+            questionCount: Array.isArray(data.questions) ? data.questions.length : 0
+        });
+    } catch (error) {
+        console.error('❌ ERROR [Quiz] Secure quiz load failed.', { quizId: uid, message: error.message });
+        quizEls.loader.classList.add('hidden');
+        const errorText = document.getElementById('error-text');
+        const errorArea = document.getElementById('error-message-area');
+        if (errorText) errorText.textContent = error.message || 'Unable to load quiz. Please reconnect and try again.';
+        if (errorArea) errorArea.classList.remove('hidden');
         return;
     }
 
-    currentQuizId = uid;
-
-    const data = doc.data();
-
-    if (data.isPaid === true && !isQuizUnlockedInSession(uid)) {
+    if (data.requiresUnlock === true || (data.isPaid === true && !isQuizUnlockedInSession(uid))) {
         quizEls.loader.classList.add('hidden');
+        console.warn('⚠️ WARNING [Quiz] Paid quiz is locked; requesting token.', { quizId: uid });
         showTokenUnlockModal(uid, data.title, () => loadQuiz(uid));
         return;
     }
