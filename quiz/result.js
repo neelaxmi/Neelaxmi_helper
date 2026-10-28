@@ -626,6 +626,22 @@ async function submitSecureAttempt(isTimeout, proctorViolationCount, proctorViol
 
         if (currentMode === 'test' && window.QuizReliability) {
             window.QuizReliability.clearLocalAttempt(CURRENT_USER_ID, currentQuizId, currentAttemptId);
+        } else if (currentMode === 'quiz' && typeof db !== 'undefined' && CURRENT_USER_ID && currentQuizId) {
+            // Keep the existing progress record for audit/history; mark it completed rather than deleting it.
+            try {
+                await db.collection('user_progress').doc(CURRENT_USER_ID)
+                    .collection('saved_quizzes').doc(currentQuizId).set({
+                        status: 'submitted',
+                        submittedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    }, { merge: true });
+                console.info('✅ SUCCESS (Result.js): Existing progress record marked submitted, not deleted.', {
+                    quizId: currentQuizId, attemptId: currentAttemptId
+                });
+            } catch (progressError) {
+                console.warn('⚠️ WARNING (Result.js): Could not mark saved progress as submitted; result is already safely stored.', {
+                    quizId: currentQuizId, attemptId: currentAttemptId, message: progressError.message
+                });
+            }
         }
         secureSubmissionPending = false;
         const panel = document.getElementById('quiz-sync-pending-panel');
