@@ -534,8 +534,168 @@ const calculateRank = (score, total) => {
     return "Top 80%";
 };
 
+let pendingNormalTestAttempt = null;
+let pendingNormalTestSyncInFlight = false;
+let pendingNormalTestOnlineListenerAttached = false;
+
+function showNormalTestSyncNotice(message, canRetry = true) {
+    let panel = document.getElementById('normal-test-sync-pending');
+    if (!panel) {
+        panel = document.createElement('div');
+        panel.id = 'normal-test-sync-pending';
+        panel.className = 'fixed inset-0 z-[10000] flex items-center justify-center p-5 bg-slate-950/90';
+        panel.innerHTML = `
+            <div class="w-full max-w-md rounded-2xl bg-white dark:bg-slate-800 p-6 text-center shadow-2xl">
+                <div class="text-4xl mb-3">☁️</div>
+                <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-2">Test saved on this device</h2>
+                <p id="normal-test-sync-message" class="text-sm text-slate-600 dark:text-slate-300 mb-5"></p>
+                <button id="normal-test-sync-retry" type="button" class="w-full rounded-xl bg-indigo-600 px-4 py-3 font-bold text-white">Retry Sync</button>
+            </div>`;
+        document.body.appendChild(panel);
+    }
+    const messageEl = document.getElementById('normal-test-sync-message');
+    const retryBtn = document.getElementById('normal-test-sync-retry');
+    if (messageEl) messageEl.textContent = message;
+    if (retryBtn) {
+        retryBtn.classList.toggle('hidden', !canRetry);
+        retryBtn.disabled = pendingNormalTestSyncInFlight;
+        retryBtn.onclick = () => {
+            if (pendingNormalTestAttempt) void syncNormalTestAttemptToServer(pendingNormalTestAttempt);
+        };
+    }
+    console.log('[NormalTestSync][SUCCESS] Sync status displayed.', { canRetry, online: navigator.onLine });
+}
+
+async function syncNormalTestAttemptToServer(attempt) {
+    if (!attempt || !attempt.attemptId || !attempt.quizId) {
+        const error = new Error('Pending attempt is missing its ID or quiz ID.');
+        console.error('[NormalTestSync][ERROR] Cannot sync invalid attempt.', error);
+        showNormalTestSyncNotice('The saved attempt could not be read correctly. Please contact support before clearing browser data.', false);
+        return false;
+    }
+
+    pendingNormalTestAttempt = attempt;
+    if (!navigator.onLine) {
+        showNormalTestSyncNotice('Your answers are safely saved locally. Reconnect to the internet; this page will sync automatically.');
+        if (!pendingNormalTestOnlineListenerAttached) {
+            pendingNormalTestOnlineListenerAttached = true;
+            window.addEventListener('online', () => {
+                console.log('[NormalTestSync][SUCCESS] Internet connection restored; retrying pending sync.');
+                if (pendingNormalTestAttempt) void syncNormalTestAttemptToServer(pendingNormalTestAttempt);
+            });
+        }
+        console.log('[NormalTestSync][SUCCESS] Submission queued for reconnect.', { attemptId: attempt.attemptId });
+        return false;
+    }
+
+    if (pendingNormalTestSyncInFlight) {
+        console.log('[NormalTestSync][SUCCESS] Duplicate sync request ignored while one is in flight.');
+        return false;
+    }
+
+    pendingNormalTestSyncInFlight = true;
+    showNormalTestSyncNotice('Internet detected. Verifying your answers and saving your result…', false);
+    try {
+        if (typeof auth === 'undefined' || !auth.currentUser) {
+            throw new Error('You must be signed in again before this test can sync.');
+        }
+        const idToken = await auth.currentUser.getIdToken();
+        const response = await fetch('/.netlify/functions/submit-normal-test', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + idToken
+            },
+            body: JSON.stringify({
+                attemptId: attempt.attemptId,
+                quizId: attempt.quizId,
+                quizTitle: attempt.quizTitle || '',
+                answers: attempt.answers || {},
+                questionIds: attempt.questionIds || (attempt.questions || []).map(q => q.id),
+                startedAt: attempt.startedAt || Date.now(),
+                durationSeconds: attempt.durationSeconds || 0,
+                isTimeout: !!attempt.isTimeout
+            })
+        });
+        const payload = await response.json().catch(() => ({}));
+        if (!response.ok || !payload.ok || !payload.result) {
+            throw new Error(payload.error || ('Test sync failed (HTTP ' + response.status + ').'));
+        }
+
+        console.log('[NormalTestSync][SUCCESS] Server verified and saved the attempt.', {
+            attemptId: attempt.attemptId,
+            duplicate: !!payload.duplicate,
+            score: payload.result.score,
+            total: payload.result.total
+        });
+
+        try {
+            if (window.NormalTestOffline) await window.NormalTestOffline.remove(attempt.storageKey);
+            console.log('[NormalTestSync][SUCCESS] Local pending attempt cleared after server confirmation.');
+        } catch (cleanupError) {
+            // The deterministic attempt ID makes a repeated sync safe even if cleanup fails.
+            console.error('[NormalTestSync][ERROR] Server saved the result but local cleanup failed.', cleanupError);
+        }
+
+        pendingNormalTestAttempt = null;
+        const panel = document.getElementById('normal-test-sync-pending');
+        if (panel) panel.remove();
+        window.onpopstate = null;
+        renderFinalResult(payload.result);
+        return true;
+    } catch (error) {
+        console.error('[NormalTestSync][ERROR] Server sync failed; local attempt retained for retry.', {
+            attemptId: attempt.attemptId,
+            message: error && error.message ? error.message : String(error)
+        });
+        showNormalTestSyncNotice(
+            'Your test is still saved on this device, but the server could not confirm it yet. Check your connection or try again. Do not clear browser storage.',
+            true
+        );
+        return false;
+    } finally {
+        pendingNormalTestSyncInFlight = false;
+        const retryBtn = document.getElementById('normal-test-sync-retry');
+        if (retryBtn) retryBtn.disabled = false;
+    }
+}
+
+window.resumePendingNormalTestSync = async (attempt) => {
+    console.log('[NormalTestSync][SUCCESS] Resuming a previously submitted pending attempt.');
+    return syncNormalTestAttemptToServer(attempt);
+};
+
 const submitQuiz = async (isTimeout = false) => {
-    clearInterval(timerInterval); 
+    if (typeof isNormalOfflineTest === 'function' && isNormalOfflineTest()) {
+        clearInterval(timerInterval);
+        resultEls.submit.disabled = true;
+        resultEls.submit.innerHTML = '<span class="loader w-4 h-4 border-2 mr-2 inline-block"></span> Saving test…';
+        if (typeof window.stopProctoring === 'function') window.stopProctoring();
+
+        try {
+            if (typeof makeNormalTestAttempt !== 'function' || !window.NormalTestOffline) {
+                throw new Error('Normal Test local storage is not ready.');
+            }
+            const attempt = makeNormalTestAttempt('submitted_pending_sync');
+            attempt.status = 'submitted_pending_sync';
+            attempt.isTimeout = !!isTimeout;
+            const locallySaved = await window.NormalTestOffline.save(attempt);
+            if (!locallySaved) throw new Error('The test could not be saved locally.');
+            console.log('[NormalTestSync][SUCCESS] Submission stored locally before sync.', {
+                attemptId: attempt.attemptId,
+                questionCount: attempt.questionIds.length
+            });
+            await syncNormalTestAttemptToServer(attempt);
+        } catch (error) {
+            console.error('[NormalTestSync][ERROR] Could not queue Normal Test submission.', error);
+            resultEls.submit.disabled = false;
+            resultEls.submit.innerHTML = 'Submit Quiz';
+            alert('Your test could not be saved safely. Please do not refresh or close this page; try again and check browser storage.');
+        }
+        return;
+    }
+
+    clearInterval(timerInterval);
     resultEls.submit.disabled = true;
     resultEls.submit.innerHTML = '<span class="loader w-4 h-4 border-2 mr-2 inline-block"></span> Processing...';
 
@@ -552,31 +712,19 @@ const submitQuiz = async (isTimeout = false) => {
         const u = userAnswers[q.id];
         const isCorrect = u === q.answer;
         if(isCorrect) score++;
-        else if (u !== null && u !== undefined) wrongCount++; // answered but wrong (skipped = neither)
+        else if (u !== null && u !== undefined) wrongCount++;
         const timeSpent = 20;
         return { qId: q.id, qText: q.question, imageUrl: q.imageUrl || null, userAnswer: u||null, correctAnswer: q.answer, isCorrect, timeSpent };
     });
     const skippedCount = Math.max(0, questions.length - score - wrongCount);
-
-    // BUGFIX: this used to read `questions[0].durationMinutes` — a field
-    // that never actually existed on question objects (durationMinutes is
-    // set once on the top-level quiz document, not per question), so this
-    // silently fell back to `questions.length * 60` (a flat 1-minute-per-
-    // question guess) on every single submit. That guess rarely matched the
-    // quiz's real timer, which is why "Total Time" often looked wrong /
-    // clamped to 00:00. Now reads quizStartDurationSeconds — the actual
-    // starting duration captured in quiz.js when the attempt began.
     const totalQuizDuration = quizStartDurationSeconds > 0 ? quizStartDurationSeconds : (questions.length * 60);
-    const totalTimeSpent = totalQuizDuration - timeLeft; 
+    const totalTimeSpent = totalQuizDuration - timeLeft;
     const formattedTime = formatTime(totalTimeSpent > 0 ? totalTimeSpent : 0);
-    
+
     const resultData = {
         quizId: currentQuizId,
         quizTitle: resultEls.title.textContent,
         score, total: questions.length,
-        // Added for the NEET-style result dashboard (see scoring.js /
-        // renderNeetDashboard). `score`/`total` above are untouched so
-        // nothing that already reads them breaks.
         wrong: wrongCount,
         skipped: skippedCount,
         answers: detailed,
@@ -593,25 +741,22 @@ const submitQuiz = async (isTimeout = false) => {
     };
 
     try {
-        // 1. Save Result
         await db.collection('user_results').doc(CURRENT_USER_ID).collection('attempts').add(resultData);
-        console.log("✅ Success (Result.js): Quiz result saved successfully.");
-        
-        // 2. Clear Progress
+        console.log('[Result][SUCCESS] Quiz result saved successfully.');
+
         const progRef = db.collection('user_progress').doc(CURRENT_USER_ID).collection('saved_quizzes').doc(currentQuizId);
         const progDoc = await progRef.get();
-        if(progDoc.exists) await progRef.delete(); 
+        if(progDoc.exists) await progRef.delete();
 
-        // 2b. Clear locally-persisted proctoring violation state for this attempt
-        try { sessionStorage.removeItem('quiz_violations_' + (currentQuizId || 'session')); } catch(e) {}
-        
-        // 3. Render
+        try { sessionStorage.removeItem('quiz_violations_' + (currentQuizId || 'session')); } catch(e) {
+            console.error('[Result][ERROR] Could not clear proctoring session state.', e);
+        }
+
         renderFinalResult(resultData);
-        window.onpopstate = null; 
-
+        window.onpopstate = null;
     } catch(e) {
-        console.error("❌ Error (Result.js): Error submitting quiz result to Firebase.", e);
-        alert("Error submitting. Please check connection and Firebase permissions.");
+        console.error('[Result][ERROR] Error submitting quiz result to Firebase.', e);
+        alert('Error submitting. Please check connection and Firebase permissions.');
         resultEls.submit.disabled = false;
         resultEls.submit.innerHTML = 'Submit Quiz';
     }
