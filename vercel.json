@@ -1,12 +1,14 @@
 {
-  "rewrites": [
+  "redirects": [
     {
       "source": "/ncertpyq",
-      "destination": "/ncertpyq/public/index.html"
+      "destination": "/ncertpyq/public/index.html",
+      "permanent": false
     },
     {
       "source": "/ncertpyq/",
-      "destination": "/ncertpyq/public/index.html"
+      "destination": "/ncertpyq/public/index.html",
+      "permanent": false
     }
   ]
 }
