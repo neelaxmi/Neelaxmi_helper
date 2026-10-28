@@ -578,7 +578,7 @@ function showPendingSyncPanel(message = 'Your answers are saved on this device. 
 }
 
 async function submitSecureAttempt(isTimeout, proctorViolationCount, proctorViolationLog) {
-    if (currentMode === 'test' && !testModeWentOffline) {
+    if (currentMode === 'test' && !proctoringEnabled && !testModeWentOffline) {
         console.warn('⚠️ WARNING (Result.js): Test Mode submission blocked until an offline period is recorded.', {
             quizId: currentQuizId, attemptId: currentAttemptId, online: navigator.onLine
         });
@@ -595,12 +595,12 @@ async function submitSecureAttempt(isTimeout, proctorViolationCount, proctorViol
     }
     secureSubmissionInProgress = true;
     try {
-        if (currentMode === 'test' && typeof persistActiveAttemptLocally === 'function') {
+        if (currentMode === 'test' && !proctoringEnabled && typeof persistActiveAttemptLocally === 'function') {
             persistActiveAttemptLocally('submitted_pending_sync');
         }
 
         if (!navigator.onLine) {
-            if (currentMode === 'test') {
+            if (currentMode === 'test' && !proctoringEnabled) {
                 secureSubmissionPending = true;
                 showPendingSyncPanel();
                 console.warn('⚠️ WARNING (Result.js): Test submitted offline; local payload retained for later sync.', {
@@ -633,9 +633,9 @@ async function submitSecureAttempt(isTimeout, proctorViolationCount, proctorViol
             log: Array.isArray(proctorViolationLog) ? proctorViolationLog : []
         };
 
-        if (currentMode === 'test' && window.QuizReliability) {
+        if (currentMode === 'test' && !proctoringEnabled && window.QuizReliability) {
             window.QuizReliability.clearLocalAttempt(CURRENT_USER_ID, currentQuizId, currentAttemptId);
-        } else if (currentMode === 'quiz' && typeof db !== 'undefined' && CURRENT_USER_ID && currentQuizId) {
+        } else if ((currentMode === 'quiz' || proctoringEnabled) && typeof db !== 'undefined' && CURRENT_USER_ID && currentQuizId) {
             // Keep the existing progress record for audit/history; mark it completed rather than deleting it.
             try {
                 await db.collection('user_progress').doc(CURRENT_USER_ID)
@@ -666,7 +666,7 @@ async function submitSecureAttempt(isTimeout, proctorViolationCount, proctorViol
         console.error('❌ ERROR (Result.js): Secure quiz submission/sync failed.', {
             quizId: currentQuizId, attemptId: currentAttemptId, mode: currentMode, message: error.message
         });
-        if (currentMode === 'test') {
+        if (currentMode === 'test' && !proctoringEnabled) {
             secureSubmissionPending = true;
             if (typeof persistActiveAttemptLocally === 'function') persistActiveAttemptLocally('submitted_pending_sync');
             showPendingSyncPanel('Your submitted answers are saved locally, but the server has not confirmed them yet. Keep this page open or reconnect and tap Retry Sync.');
