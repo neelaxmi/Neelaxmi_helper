@@ -587,6 +587,9 @@ if (tokenUnlockEls.verifyBtn) {
             tokenGateOnUnlocked = null;
             if (typeof proceed === 'function') proceed();
         } catch (e) {
+            console.error('❌ ERROR [Quiz] Paid quiz token verification failed.', {
+                quizId: tokenGateQuizId, message: e.message
+            });
             if (tokenUnlockEls.error) {
                 tokenUnlockEls.error.textContent = e.message;
                 tokenUnlockEls.error.classList.remove('hidden');
