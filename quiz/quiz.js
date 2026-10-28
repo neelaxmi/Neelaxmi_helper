@@ -621,6 +621,74 @@ const loadQuiz = async (uid) => {
         });
     } catch (error) {
         console.error('❌ ERROR [Quiz] Secure quiz load failed.', { quizId: uid, message: error.message });
+
+        // A Test Mode refresh must be recoverable even when the device is still offline.
+        let offlineAttempt = null;
+        try {
+            offlineAttempt = CURRENT_USER_ID && window.QuizReliability
+                ? window.QuizReliability.loadLocalAttempt(CURRENT_USER_ID, uid)
+                : null;
+        } catch (recoveryError) {
+            console.error('❌ ERROR [Quiz] Could not inspect local recovery data after API failure.', {
+                quizId: uid, message: recoveryError.message
+            });
+        }
+
+        if (offlineAttempt && offlineAttempt.mode === 'test'
+            && ['active', 'submitted_pending_sync'].includes(offlineAttempt.status)) {
+            currentQuizId = uid;
+            currentMode = 'test';
+            currentAttemptId = offlineAttempt.attemptId;
+            currentAttemptDeadlineAtMs = offlineAttempt.deadlineAtMs;
+            currentAttemptStartedAtMs = offlineAttempt.startedAtMs;
+            currentAttemptDurationSeconds = offlineAttempt.durationSeconds;
+            quizStartDurationSeconds = currentAttemptDurationSeconds;
+            questions = window.QuizReliability.sanitizeQuestions(offlineAttempt.questions);
+            allQuestions = questions.slice();
+            userAnswers = offlineAttempt.userAnswers || {};
+            visitedQuestions = offlineAttempt.visitedQuestions || {};
+            markedForReview = offlineAttempt.markedForReview || {};
+            currentIndex = Math.min(Math.max(0, offlineAttempt.currentIndex || 0), Math.max(0, questions.length - 1));
+            timeLeft = currentAttemptDeadlineAtMs
+                ? Math.max(0, Math.ceil((currentAttemptDeadlineAtMs - Date.now()) / 1000))
+                : currentAttemptDurationSeconds;
+            checkedQuestions = {};
+            if (quizEls.title) quizEls.title.textContent = offlineAttempt.quizTitle || 'Recovered Test';
+            if (quizEls.setupTitle) quizEls.setupTitle.textContent = offlineAttempt.quizTitle || 'Recovered Test';
+            quizEls.loader.classList.add('hidden');
+
+            console.warn('⚠️ WARNING [Quiz] Restoring Test Mode from local JSON because the server is unavailable.', {
+                quizId: uid, attemptId: currentAttemptId, online: navigator.onLine,
+                status: offlineAttempt.status
+            });
+
+            if (offlineAttempt.status === 'submitted_pending_sync') {
+                if (typeof submitQuiz === 'function') submitQuiz(false);
+                else {
+                    const errorText = document.getElementById('error-text');
+                    const errorArea = document.getElementById('error-message-area');
+                    if (errorText) errorText.textContent = 'Your submission is saved locally. Reconnect to sync it.';
+                    if (errorArea) errorArea.classList.remove('hidden');
+                }
+            } else {
+                quizEls.resumeModal.classList.remove('hidden');
+                document.getElementById('btn-resume-attempt').onclick = () => {
+                    quizEls.resumeModal.classList.add('hidden');
+                    console.info('✅ SUCCESS [Quiz] Offline Test Mode recovery accepted.', {
+                        quizId: uid, attemptId: currentAttemptId, remainingSeconds: timeLeft
+                    });
+                    startQuizSession();
+                };
+                document.getElementById('btn-restart-attempt').onclick = () => {
+                    console.warn('⚠️ WARNING [Quiz] Restart is blocked while the server is unavailable.', {
+                        quizId: uid, attemptId: currentAttemptId
+                    });
+                    alert('Offline saved test ko restart karne ke liye pehle internet reconnect karein. Aapka saved attempt safe hai.');
+                };
+            }
+            return;
+        }
+
         quizEls.loader.classList.add('hidden');
         const errorText = document.getElementById('error-text');
         const errorArea = document.getElementById('error-message-area');
