@@ -18,13 +18,14 @@ const DEFAULT_TEST_MODE_MINUTES_FALLBACK = 20;
 
 // Normal Mode + Test Mode uses local-only attempt persistence. CBT and Quiz Mode
 // keep their existing persistence paths.
+let normalTestFlowActive = false;
 let normalTestAttemptId = null;
 let normalTestDeadlineAt = null;
 let normalTestPauseStartedAt = null;
 let normalTestPersistQueue = Promise.resolve();
 
 function isNormalOfflineTest() {
-    return currentMode === 'test' && !proctoringEnabled && !currentQuizIsTest;
+    return normalTestFlowActive && currentMode === 'test' && !proctoringEnabled && !currentQuizIsTest;
 }
 
 function normalTestStorageKey(quizId = currentQuizId) {
@@ -104,6 +105,7 @@ async function restoreNormalTestAttempt(attempt, source = 'local') {
         currentMode = 'test';
         currentQuizIsTest = false;
         proctoringEnabled = false;
+        normalTestFlowActive = true;
 
         const savedQuestions = attempt.questions;
         questions = savedQuestions.map((savedQuestion) => {
@@ -1034,6 +1036,7 @@ const beginSelectedQuiz = async () => {
         return;
     }
     currentMode = cfg.mode;
+    normalTestFlowActive = currentMode === 'test' && !proctoringEnabled && !currentQuizIsTest;
     timeLeft = cfg.selectedTime * 60;
     quizStartDurationSeconds = timeLeft; // remember the real starting duration for result.js's Total Time calc
     const [start, end] = cfg.rangeVal.split('-').map(Number);
@@ -1164,15 +1167,6 @@ if (proctorEls.enableBtn) {
 const startQuizSession = () => {
     document.querySelectorAll('.fixed').forEach(m => { if(m.id!=='loading-screen' && m.id!=='proctor-widget') m.classList.add('hidden') });
 
-    if (isNormalOfflineTest() && !normalTestAttemptId) {
-        // Compatibility for a legacy Firestore-saved normal test resumed after this update.
-        normalTestAttemptId = (window.crypto && typeof window.crypto.randomUUID === 'function')
-            ? window.crypto.randomUUID()
-            : `attempt-${Date.now()}-${Math.random().toString(36).slice(2)}`;
-        normalTestAttemptStartedAt = Date.now();
-        normalTestDeadlineAt = Date.now() + Math.max(0, timeLeft) * 1000;
-        console.log('[NormalTest][SUCCESS] Recovery metadata initialized for a legacy attempt.');
-    }
     quizEls.container.classList.remove('hidden');
     const existingLocalBanner = document.getElementById('normal-test-local-save-banner');
     if (isNormalOfflineTest()) {
