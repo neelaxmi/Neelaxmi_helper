@@ -1,7 +1,7 @@
 import { auth } from "./firebase-config.js";
 
 const PENDING_KEY = "neelaxmi:pendingRef";
-const API = "/.netlify/functions";
+const API = "/api/ncertpyq";
 
 export const cleanCode = (c) => String(c || "").trim().toUpperCase().replace(/[^A-Z0-9]/g, "");
 export function savePendingRef(code) { try { localStorage.setItem(PENDING_KEY, cleanCode(code)); } catch (e) {} }
