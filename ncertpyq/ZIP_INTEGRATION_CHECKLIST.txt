@@ -7,7 +7,7 @@ Structure
 - Netlify functions are under ncertpyq/netlify/functions/.
 - Shared function libraries are under ncertpyq/netlify/functions/lib/.
 - Root package.json, package-lock.json, readme.md and netlify.toml stay in ncertpyq/.
-- ncertpyq/index.html redirects to https://pyqncert.netlify.app/ so main-site visitors reach the standalone app deployment.
+- ncertpyq/index.html redirects to /ncertpyq/public/index.html so the app is served from the same Vercel project.
 - The root Netlify config uses publish = public and functions = netlify/functions.
 - The separate pyq/ pages were renamed to pyqncert/ and site links/sitemap were updated.
 
@@ -27,6 +27,7 @@ Archive/documentation mismatch
 - readme.md refers to landing.html and landing.js, but neither file is present in pyq.zip. landing.css is present.
 - The ZIP has no public/assets/neelaxmi.png; public/logo.png is present and site-config.js now uses it.
 
-Validation still recommended after deployment
-- Deploy the ncertpyq folder as the Netlify base directory to apply its nested netlify.toml.
-- Confirm Firebase/Netlify environment variables are configured for the standalone PYQ app.
+Vercel migration notes
+- The root Vercel project exposes backend routes under /api/ncertpyq/ and /api/quiz-submit.
+- Legacy Netlify function source is retained for rollback; it is not the active API URL after migration.
+- Configure the environment variables listed in VERCEL_MIGRATION.md before testing payments, referrals, Telegram review actions, and quiz result sync.

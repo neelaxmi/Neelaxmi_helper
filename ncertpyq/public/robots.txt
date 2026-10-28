@@ -4,5 +4,6 @@ Disallow: /checkout.html
 Disallow: /profile.html
 Disallow: /dashboard.html
 Disallow: /.netlify/
+Disallow: /api/
 
-Sitemap: https://pyqncert.netlify.app/sitemap.xml
+Sitemap: https://neelaxmi.site/ncertpyq/public/sitemap.xml

@@ -158,7 +158,7 @@
     e.preventDefault();
     var btn = form.querySelector('button[type=submit]'), note = form.querySelector('.form-note');
     btn.disabled = true; btn.textContent = 'Sending…';
-    fetch('/.netlify/functions/send-feedback', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({
+    fetch('/api/ncertpyq/send-feedback', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({
       type: document.getElementById('kind').value, name: document.getElementById('name').value, email: document.getElementById('email').value, subject: document.getElementById('subject').value,
       message: document.getElementById('message').value, website: document.getElementById('website').value }) })
       .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })

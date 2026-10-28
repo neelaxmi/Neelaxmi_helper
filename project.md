@@ -96,7 +96,7 @@ The repository includes a web app manifest (`manifest.json`) and service-worker 
 - **HTML, CSS, and JavaScript** form the core of the website.
 - The homepage uses utility/component styling and iconography for its responsive interface.
 - **Firebase / Cloud Firestore** is used by the homepage's contact-related submission flow.
-- **Netlify** is part of the project's deployment setup; any serverless functions or backend-dependent bundle must be deployed with the correct Netlify build and functions configuration.
+- **Vercel** is the planned deployment target. API routes live under `api/`; the old Netlify function sources are retained temporarily for rollback. Backend-dependent bundles still require the correct environment variables and live integration tests.
 - **PWA manifest and service worker** support installability and offline/cache behavior where applicable.
 - The repository is hosted on GitHub and can be deployed from the configured production branch.
 
@@ -113,7 +113,7 @@ A folder copied into the static site is not automatically a separately configure
 
 ## 7. Current organization changes
 
-This repository organization keeps all APK files in `/apks/`, removes scattered Markdown documentation in favor of this single `project.md` overview, and adds a dedicated NCERT PYQ entry point to the homepage. The NCERT PYQ archive itself still needs to be placed and integrated under `ncertpyq/` before the bundled application's complete functionality can be considered available from this repository.
+This repository organization keeps all APK files in `/apks/`, removes scattered Markdown documentation in favor of this single `project.md` overview, and adds a dedicated NCERT PYQ entry point to the homepage. The NCERT PYQ frontend and its legacy backend source are integrated under `ncertpyq/`; Vercel adapters are under `api/ncertpyq/`. Its complete functionality should only be considered live after Vercel secrets and Firebase/Telegram/payment flows have been tested.
 
 ## 8. Suggested validation checklist
 
@@ -123,4 +123,4 @@ This repository organization keeps all APK files in `/apks/`, removes scattered 
 - [ ] Submit a test contact/feedback form and verify the expected Firestore record is created.
 - [ ] Verify Firebase permissions and security rules.
 - [ ] Test PWA installability and service-worker caching after deployment.
-- [ ] If the NCERT PYQ bundle is added, configure any required Netlify functions, package dependencies, environment variables, and redirects before calling it fully deployed.
+- [ ] Configure the Vercel API routes, package dependencies, environment variables, redirects, and Telegram webhook described in `VERCEL_MIGRATION.md` before calling the migration complete.

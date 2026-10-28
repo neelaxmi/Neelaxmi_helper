@@ -43,4 +43,4 @@ export async function chapterFileId(chapterId) {
 }
 // 1st try: straight from Drive (works if Google allows it for the visitor's browser). 2nd: our tiny CORS pass-through.
 export const driveDirectUrl = (id) => `https://drive.usercontent.google.com/download?id=${id}&export=download&confirm=t`;
-export const driveProxyUrl = (id) => `/.netlify/functions/drive-pdf?id=${encodeURIComponent(id)}`;
+export const driveProxyUrl = (id) => `/api/ncertpyq/drive-pdf?id=${encodeURIComponent(id)}`;

@@ -1,6 +1,6 @@
 "use strict";
 /**
- * lib/common.js — shared helpers for all payment functions (runs on Netlify's free plan).
+ * lib/common.js — shared helpers for payment and referral serverless functions.
  * Uses the Firebase Admin SDK, which works on Firebase's FREE Spark plan (Auth + Firestore only).
  */
 const admin = require("firebase-admin");

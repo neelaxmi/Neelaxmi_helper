@@ -54,7 +54,7 @@ modal, so editing `site-config.js` updates both pages at once.
    outro page) pulls from this file automatically.
 4. **Serve it over http(s)**, not by double-clicking `index.html` — the app
    uses ES modules (`import`/`export`), which browsers block on `file://`.
-   Any static host (Firebase Hosting, Netlify, etc.) works.
+   Vercel serves the static app and its API routes from this repository.
 
 ## What's new for students
 
@@ -101,7 +101,7 @@ tiny `drive-pdf` function (a plain CORS pass-through, no login, no link list). C
 Edit name, subscription status/expiry, referral code + link + coin balance + withdraw form, and "More from Neelaxmi" links
 (set the URLs in `SITE_CONFIG.otherWebsites` in `site-config.js`; empty URLs are hidden).
 
-### Referral rules (all enforced server-side in Netlify Functions)
+### Referral rules (all enforced server-side in Vercel API routes)
 - Every user gets a permanent code + link (`/pyq.html?ref=CODE`).
 - A code can be entered at sign-up or on checkout, applied once, only before the first purchase. It is snapshotted on the order at submit time.
 - Referrer gets **30 coins (1 coin = ₹1)** only when the referred user's order is **approved** (auto or Telegram "Confirm"), once per referred user.
@@ -112,4 +112,4 @@ Edit name, subscription status/expiry, referral code + link + coin balance + wit
 ### Deploy checklist
 1. Fill `public/chapters.json`.
 2. Publish the updated **`firestore.rules`** (adds `referralRewards` and `withdrawals`, read-only for owners).
-3. Deploy to Netlify (new functions: `referral-init`, `request-withdrawal`, `drive-pdf`). No new environment variables needed.
+3. Deploy the repository root to Vercel. Configure the server environment variables listed in `VERCEL_MIGRATION.md`, then set the Telegram webhook to `/api/ncertpyq/telegram-webhook`.

@@ -1,11 +1,12 @@
 {
-  "name": "neelaxmi-helper-netlify-functions",
+  "name": "neelaxmi-helper-serverless",
   "private": true,
-  "description": "Dependencies for Neelaxmi Netlify serverless functions",
+  "description": "Shared dependencies for Neelaxmi Vercel API routes and serverless backend",
   "engines": {
     "node": ">=18"
   },
   "dependencies": {
-    "firebase-admin": "^13.0.0"
+    "firebase-admin": "^13.0.0",
+    "qrcode": "^1.5.3"
   }
 }

@@ -653,7 +653,7 @@ async function syncOfflineAttempt() {
         const user = auth && auth.currentUser;
         if (!user) throw new Error('Please sign in again to sync this attempt.');
         const idToken = await user.getIdToken();
-        const response = await fetch('/.netlify/functions/quiz-submit', {
+        const response = await fetch('/api/quiz-submit', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + idToken },
             body: JSON.stringify(snapshot.submission),
