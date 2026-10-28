@@ -226,7 +226,7 @@ const renderMath = (element = document.body) => {
 };
 
 window.goToQuestion = (index) => {
-    if (currentQuizIsTest) return;
+    if (currentMode === 'test' || currentQuizIsTest) return;
     if (index >= 0 && index < questions.length) {
         currentIndex = index;
         renderQuestion();
@@ -234,7 +234,7 @@ window.goToQuestion = (index) => {
 };
 
 const updateQuestionPalette = () => {
-    if (currentQuizIsTest) return; // Disable Navigation: no palette/grid to update in strict Test Mode
+    if (currentMode === 'test' || currentQuizIsTest) return; // Test Mode has no question palette
     if (typeof window.renderQuestionPalette === 'function') {
         const paletteItems = questions.map((q, idx) => {
             let status = 'not-visited';
@@ -1120,7 +1120,7 @@ const startQuizSession = () => {
     quizEls.time.textContent = formatTime(timeLeft);
     const paletteToggleBtn = document.getElementById('palette-toggle-btn');
     const paletteAside = document.getElementById('question-palette');
-    if (currentQuizIsTest) {
+    if (currentMode === 'test' || currentQuizIsTest) {
         if (paletteToggleBtn) paletteToggleBtn.classList.add('hidden');
         if (paletteAside) paletteAside.classList.add('hidden');
     } else {
