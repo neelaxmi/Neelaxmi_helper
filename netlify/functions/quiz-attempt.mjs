@@ -52,7 +52,7 @@ function response(statusCode, payload) {
       "Access-Control-Allow-Methods": "POST, OPTIONS",
       "Vary": "Origin",
     },
-    body: JSON.stringify(payload),
+    body: statusCode === 204 ? "" : JSON.stringify(payload),
   };
 }
 
@@ -234,6 +234,9 @@ export const handler = async (event) => {
       if (attempt.uid !== uid) throw Object.assign(new Error("Attempt access denied."), { statusCode: 403 });
       if (attempt.mode !== "quiz") throw Object.assign(new Error("Answer checks are disabled in Test Mode."), { statusCode: 403 });
       if (attempt.status !== "active") throw Object.assign(new Error("Attempt is no longer active."), { statusCode: 409 });
+      if (attempt.deadlineAt?.toMillis && Date.now() >= attempt.deadlineAt.toMillis()) {
+        throw Object.assign(new Error("Time is up. This attempt can be submitted, but answer checking is closed."), { statusCode: 409 });
+      }
       const qId = String(body.questionId || "");
       if (!attempt.questionIds.includes(qId)) throw Object.assign(new Error("Question does not belong to this attempt."), { statusCode: 400 });
       const { data } = await resolveQuiz(db, attempt.quizId);
@@ -291,10 +294,17 @@ export const handler = async (event) => {
       const resultData = {
         attemptId, quizId: attempt.quizId, quizTitle: attempt.quizTitle || data.title || "Quiz",
         score, total: detailed.length, wrong, skipped, answers: detailed,
-        status: nowMs >= deadlineMs ? "Timed Out" : "Completed",
+        status: body.proctoring && Number(body.proctoring.violationCount) > 3
+          ? "Auto-Submitted (Proctoring Violation)"
+          : (nowMs >= deadlineMs || body.timedOut === true ? "Timed Out" : "Completed"),
         timestamp: new Date(nowMs).toISOString(),
         timeTaken: formattedTime, totalTimeSeconds,
         rank: "Unranked",
+        proctoring: {
+          violationCount: Math.max(0, Number(body.proctoring?.violationCount) || 0),
+          autoSubmitted: body.proctoring?.autoSubmitted === true,
+          log: Array.isArray(body.proctoring?.log) ? body.proctoring.log.slice(0, 100) : [],
+        },
       };
 
       const transactionResult = await db.runTransaction(async (tx) => {
