@@ -1501,12 +1501,19 @@ window.addEventListener('beforeunload', (event) => {
         return '';
     }
     if (currentMode === 'quiz' && !proctoringEnabled && quizActive()) {
-        try { sessionStorage.setItem('quiz_refresh_discard_' + (currentQuizId || 'session'), '1'); }
-        catch (error) { console.error('[Quiz][refresh-policy][ERROR] Could not store Quiz Mode refresh marker.', { message: error && error.message }); }
-        console.warn('[Quiz][refresh-policy][INFO] Quiz Mode refresh warning requested; this session is intentionally not locally recoverable.');
+        console.warn('[Quiz][refresh-policy][INFO] Quiz Mode refresh warning requested; if navigation proceeds, this active session will not be restored.');
         event.preventDefault();
         event.returnValue = '';
         return '';
+    }
+});
+window.addEventListener('pagehide', () => {
+    if (window.__quizIntentionalExit || currentMode !== 'quiz' || proctoringEnabled || !quizActive()) return;
+    try {
+        sessionStorage.setItem('quiz_refresh_discard_' + (currentQuizId || 'session'), '1');
+        console.info('[Quiz][refresh-policy][SUCCESS] Quiz Mode navigation confirmed; active session will not be restored. Existing Firebase records were not deleted.');
+    } catch (error) {
+        console.error('[Quiz][refresh-policy][ERROR] Could not store Quiz Mode refresh marker.', { message: error && error.message });
     }
 });
 document.addEventListener('keydown', (e) => {
