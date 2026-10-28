@@ -398,6 +398,13 @@ const renderQuestion = () => {
     if (currentLanguage !== 'en') {
         applyQuestionLanguage(currentLanguage);
     }
+    // Persist after every answer/navigation/mark/clear render in Test Mode.
+    // The serializer removes any answer-key fields before writing JSON.
+    if (currentMode === 'test') persistActiveAttemptLocally('active');
+    console.info('✅ SUCCESS [Quiz] Question rendered.', {
+        quizId: currentQuizId, attemptId: currentAttemptId, mode: currentMode,
+        questionNumber: currentIndex + 1, totalQuestions: questions.length
+    });
 };
 
 
@@ -459,8 +466,6 @@ const startTimer = () => {
         }
 
         if (quizEls.time) quizEls.time.textContent = formatTime(timeLeft);
-        if (currentMode === 'test') persistActiveAttemptLocally('active');
-
         if (timeLeft <= 0) {
             console.info('ℹ️ INFO [Quiz] Timer deadline reached; submitting attempt.', {
                 quizId: currentQuizId, attemptId: currentAttemptId, mode: currentMode
@@ -732,6 +737,50 @@ const loadQuiz = async (uid) => {
         if (quizRadio) quizRadio.disabled = false;
     }
 
+    const localAttempt = window.QuizReliability.loadLocalAttempt(CURRENT_USER_ID, uid);
+    if (localAttempt && localAttempt.mode === 'test' && localAttempt.status === 'active') {
+        quizEls.loader.classList.add('hidden');
+        console.info('ℹ️ INFO [Quiz] Recoverable local Test Mode attempt found.', {
+            quizId: uid, attemptId: localAttempt.attemptId
+        });
+        quizEls.resumeModal.classList.remove('hidden');
+        document.getElementById('btn-resume-attempt').onclick = () => {
+            try {
+                currentMode = 'test';
+                currentAttemptId = localAttempt.attemptId;
+                currentAttemptDeadlineAtMs = localAttempt.deadlineAtMs;
+                currentAttemptStartedAtMs = localAttempt.startedAtMs;
+                currentAttemptDurationSeconds = localAttempt.durationSeconds;
+                quizStartDurationSeconds = currentAttemptDurationSeconds;
+                questions = window.QuizReliability.sanitizeQuestions(localAttempt.questions);
+                userAnswers = localAttempt.userAnswers || {};
+                visitedQuestions = localAttempt.visitedQuestions || {};
+                markedForReview = localAttempt.markedForReview || {};
+                currentIndex = Math.min(Math.max(0, localAttempt.currentIndex || 0), Math.max(0, questions.length - 1));
+                timeLeft = currentAttemptDeadlineAtMs
+                    ? Math.max(0, Math.ceil((currentAttemptDeadlineAtMs - Date.now()) / 1000))
+                    : currentAttemptDurationSeconds;
+                checkedQuestions = {};
+                quizEls.resumeModal.classList.add('hidden');
+                console.info('✅ SUCCESS [Quiz] Test Mode attempt recovered from local JSON.', {
+                    quizId: uid, attemptId: currentAttemptId, remainingSeconds: timeLeft
+                });
+                startQuizSession();
+            } catch (error) {
+                console.error('❌ ERROR [Quiz] Local Test Mode recovery failed.', {
+                    quizId: uid, attemptId: localAttempt.attemptId, message: error.message
+                });
+                alert('Saved test could not be restored. Please restart the test.');
+            }
+        };
+        document.getElementById('btn-restart-attempt').onclick = () => {
+            window.QuizReliability.clearLocalAttempt(CURRENT_USER_ID, uid, localAttempt.attemptId);
+            quizEls.resumeModal.classList.add('hidden');
+            showPreQuizInitModal();
+        };
+        return;
+    }
+
     const prog = await db.collection('user_progress').doc(CURRENT_USER_ID).collection('saved_quizzes').doc(uid).get();
     
     quizEls.loader.classList.add('hidden');
@@ -995,16 +1044,31 @@ const startQuizSession = () => {
 };
 
 const saveProgress = async () => {
-    await db.collection('user_progress').doc(CURRENT_USER_ID).collection('saved_quizzes').doc(currentQuizId).set({
-        currentIndex, 
-        timeLeft, 
-        quizStartDurationSeconds, // so a resumed attempt still knows its real total duration
-        userAnswers, 
-        visitedQuestions,
-        markedForReview,
-        proctoringEnabled,
-        lastSaved: firebase.firestore.FieldValue.serverTimestamp()
-    });
+    if (currentMode === 'test') {
+        const saved = persistActiveAttemptLocally('active');
+        if (!saved) throw new Error('Local Test Mode progress could not be saved.');
+        console.info('✅ SUCCESS [Quiz] Test Mode progress saved locally; no Firebase progress write was made.', {
+            quizId: currentQuizId, attemptId: currentAttemptId
+        });
+        return true;
+    }
+    try {
+        await db.collection('user_progress').doc(CURRENT_USER_ID).collection('saved_quizzes').doc(currentQuizId).set({
+            currentIndex,
+            timeLeft,
+            quizStartDurationSeconds,
+            userAnswers,
+            visitedQuestions,
+            markedForReview,
+            proctoringEnabled,
+            lastSaved: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        console.info('✅ SUCCESS [Quiz] Quiz Mode progress saved to Firestore.', { quizId: currentQuizId });
+        return true;
+    } catch (error) {
+        console.error('❌ ERROR [Quiz] Could not save Quiz Mode progress.', { quizId: currentQuizId, message: error.message });
+        throw error;
+    }
 };
 
 if(quizEls.prev) quizEls.prev.onclick = () => { if(currentIndex>0) { currentIndex--; renderQuestion(); }};
@@ -1310,7 +1374,23 @@ function handleFullscreenChange() {
 document.addEventListener('fullscreenchange', handleFullscreenChange);
 document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
 document.addEventListener('MSFullscreenChange', handleFullscreenChange);
-window.addEventListener('beforeunload', () => { stopProctoring(); });
+window.addEventListener('beforeunload', (event) => {
+    stopProctoring();
+    if (quizActive()) {
+        if (currentMode === 'test') {
+            persistActiveAttemptLocally('active');
+            console.warn('⚠️ WARNING [Quiz] Test Mode page is unloading; local recovery snapshot saved.', {
+                quizId: currentQuizId, attemptId: currentAttemptId
+            });
+        } else if (currentMode === 'quiz') {
+            console.warn('⚠️ WARNING [Quiz] Quiz Mode page is unloading; this mode is not restored after refresh.', {
+                quizId: currentQuizId, attemptId: currentAttemptId
+            });
+        }
+        event.preventDefault();
+        event.returnValue = '';
+    }
+});
 document.addEventListener('keydown', (e) => {
     if (!quizActive()) return;
     const key = e.key ? e.key.toLowerCase() : '';
