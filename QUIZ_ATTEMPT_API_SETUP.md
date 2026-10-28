@@ -27,6 +27,7 @@ Optional: set `QUIZ_ALLOWED_ORIGIN` to the exact deployed origin if you want to 
 
 ## Important constraints
 
+- Before production use, verify the Firebase Console Firestore rules deny direct client reads of the `quizzes` answer-key documents (except a properly authorized admin path) and deny client writes to `user_results`, `quiz_attempts`, and `quiz_unlocks`. No root-level Firestore rules file was found in this repository, so the currently deployed rules could not be audited or safely replaced here. The Netlify Function uses Admin SDK privileges and is the intended trusted write path.
 - The browser cannot programmatically turn the user's internet connection off. The student must disconnect it manually if that is part of the exam rules.
 - An offline browser timer cannot be perfectly tamper-proof against a user changing the device clock or editing browser storage. The server records an authoritative deadline and marks submissions arriving after it as timed out, but offline answer timestamps themselves cannot be independently proven by the server.
 - The existing Firebase Firestore security rules still need to prevent clients from writing forged attempt results directly to `user_results`. This function uses Firebase Admin and therefore bypasses Firestore rules; it does not replace the need for secure client rules.
