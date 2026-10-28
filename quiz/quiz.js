@@ -1164,6 +1164,15 @@ if (proctorEls.enableBtn) {
 const startQuizSession = () => {
     document.querySelectorAll('.fixed').forEach(m => { if(m.id!=='loading-screen' && m.id!=='proctor-widget') m.classList.add('hidden') });
 
+    if (isNormalOfflineTest() && !normalTestAttemptId) {
+        // Compatibility for a legacy Firestore-saved normal test resumed after this update.
+        normalTestAttemptId = (window.crypto && typeof window.crypto.randomUUID === 'function')
+            ? window.crypto.randomUUID()
+            : `attempt-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+        normalTestAttemptStartedAt = Date.now();
+        normalTestDeadlineAt = Date.now() + Math.max(0, timeLeft) * 1000;
+        console.log('[NormalTest][SUCCESS] Recovery metadata initialized for a legacy attempt.');
+    }
     quizEls.container.classList.remove('hidden');
     const existingLocalBanner = document.getElementById('normal-test-local-save-banner');
     if (isNormalOfflineTest()) {
