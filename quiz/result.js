@@ -534,6 +534,136 @@ const calculateRank = (score, total) => {
     return "Top 80%";
 };
 
+let secureSubmissionInProgress = false;
+let secureSubmissionPending = false;
+
+function showPendingSyncPanel(message = 'Your answers are saved on this device. Reconnect to the internet to sync and calculate your result.') {
+    const box = resultEls.resultBox;
+    if (!box) {
+        console.error('❌ ERROR (Result.js): Result container missing while showing sync state.');
+        alert(message);
+        return;
+    }
+    let panel = document.getElementById('quiz-sync-pending-panel');
+    if (!panel) {
+        panel = document.createElement('section');
+        panel.id = 'quiz-sync-pending-panel';
+        panel.className = 'm-4 rounded-2xl border border-amber-300 bg-amber-50 p-5 text-slate-800 dark:bg-slate-800 dark:text-slate-100';
+        box.prepend(panel);
+    }
+    panel.innerHTML = `
+        <h2 class="text-xl font-bold mb-2">Test saved — waiting to sync</h2>
+        <p class="text-sm mb-4"></p>
+        <div class="flex flex-wrap gap-3">
+            <span class="text-sm font-semibold" id="quiz-sync-state">Waiting for internet connection…</span>
+            <button type="button" id="quiz-sync-retry-btn" class="px-4 py-2 rounded-lg bg-primary text-white font-bold">Retry Sync</button>
+        </div>
+    `;
+    panel.querySelector('p').textContent = message;
+    const state = panel.querySelector('#quiz-sync-state');
+    if (navigator.onLine && state) state.textContent = 'Internet detected — syncing can be retried.';
+    const retry = panel.querySelector('#quiz-sync-retry-btn');
+    if (retry) retry.onclick = () => {
+        console.info('ℹ️ INFO (Result.js): Student requested a manual sync retry.', {
+            quizId: currentQuizId, attemptId: typeof currentAttemptId !== 'undefined' ? currentAttemptId : null
+        });
+        submitQuiz(false);
+    };
+    resultEls.container.classList.add('hidden');
+    box.classList.remove('hidden');
+    console.warn('⚠️ WARNING (Result.js): Showing pending-sync state.', {
+        quizId: currentQuizId, attemptId: typeof currentAttemptId !== 'undefined' ? currentAttemptId : null,
+        online: navigator.onLine
+    });
+}
+
+async function submitSecureAttempt(isTimeout, proctorViolationCount, proctorViolationLog) {
+    if (secureSubmissionInProgress) {
+        console.warn('⚠️ WARNING (Result.js): Duplicate submit click ignored while request is in progress.', {
+            quizId: currentQuizId, attemptId: currentAttemptId
+        });
+        return;
+    }
+    secureSubmissionInProgress = true;
+    try {
+        if (currentMode === 'test' && typeof persistActiveAttemptLocally === 'function') {
+            persistActiveAttemptLocally('submitted_pending_sync');
+        }
+
+        if (!navigator.onLine) {
+            if (currentMode === 'test') {
+                secureSubmissionPending = true;
+                showPendingSyncPanel();
+                console.warn('⚠️ WARNING (Result.js): Test submitted offline; local payload retained for later sync.', {
+                    quizId: currentQuizId, attemptId: currentAttemptId
+                });
+            } else {
+                throw new Error('Quiz Mode requires an internet connection to submit.');
+            }
+            return;
+        }
+
+        const response = await window.QuizReliability.api('submitAttempt', {
+            quizId: currentQuizId,
+            attemptId: currentAttemptId,
+            answers: userAnswers || {},
+            timedOut: !!isTimeout,
+            proctoring: {
+                violationCount: Number(proctorViolationCount) || 0,
+                autoSubmitted: (Number(proctorViolationCount) || 0) > 3,
+                log: Array.isArray(proctorViolationLog) ? proctorViolationLog : []
+            }
+        });
+        if (!response || !response.result) throw new Error('Server did not return a quiz result.');
+
+        const resultData = response.result;
+        resultData.timestamp = resultData.timestamp || new Date().toISOString();
+        resultData.proctoring = {
+            violationCount: Number(proctorViolationCount) || 0,
+            autoSubmitted: (Number(proctorViolationCount) || 0) > 3,
+            log: Array.isArray(proctorViolationLog) ? proctorViolationLog : []
+        };
+
+        if (currentMode === 'test' && window.QuizReliability) {
+            window.QuizReliability.clearLocalAttempt(CURRENT_USER_ID, currentQuizId, currentAttemptId);
+        }
+        secureSubmissionPending = false;
+        const panel = document.getElementById('quiz-sync-pending-panel');
+        if (panel) panel.remove();
+
+        console.info('✅ SUCCESS (Result.js): Server verified and stored quiz result.', {
+            quizId: currentQuizId, attemptId: currentAttemptId, score: resultData.score,
+            total: resultData.total, alreadySubmitted: !!response.alreadySubmitted
+        });
+        renderFinalResult(resultData);
+        window.onpopstate = null;
+    } catch (error) {
+        console.error('❌ ERROR (Result.js): Secure quiz submission/sync failed.', {
+            quizId: currentQuizId, attemptId: currentAttemptId, mode: currentMode, message: error.message
+        });
+        if (currentMode === 'test') {
+            secureSubmissionPending = true;
+            if (typeof persistActiveAttemptLocally === 'function') persistActiveAttemptLocally('submitted_pending_sync');
+            showPendingSyncPanel('Your submitted answers are saved locally, but the server has not confirmed them yet. Keep this page open or reconnect and tap Retry Sync.');
+        } else {
+            alert('Quiz submit nahi ho paya. Internet check karke dobara submit karein.\n\n' + error.message);
+            resultEls.submit.disabled = false;
+            resultEls.submit.innerHTML = 'Submit Quiz';
+        }
+    } finally {
+        secureSubmissionInProgress = false;
+    }
+}
+
+window.addEventListener('online', () => {
+    if (secureSubmissionPending) {
+        console.info('ℹ️ INFO (Result.js): Connection restored; retrying pending Test Mode submission.', {
+            quizId: currentQuizId, attemptId: typeof currentAttemptId !== 'undefined' ? currentAttemptId : null
+        });
+        submitQuiz(false);
+    }
+});
+
 const submitQuiz = async (isTimeout = false) => {
     clearInterval(timerInterval); 
     resultEls.submit.disabled = true;
@@ -545,6 +675,10 @@ const submitQuiz = async (isTimeout = false) => {
     const proctorViolationCount = (typeof violationCount !== 'undefined') ? violationCount : 0;
     const proctorViolationLog = (typeof violationLog !== 'undefined') ? violationLog : [];
     const autoSubmittedForViolations = proctorViolationCount > 3;
+
+    if (typeof currentAttemptId !== 'undefined' && currentAttemptId && window.QuizReliability) {
+        return submitSecureAttempt(isTimeout, proctorViolationCount, proctorViolationLog);
+    }
 
     let score = 0;
     let wrongCount = 0;
@@ -869,8 +1003,13 @@ if (document.getElementById('neet-rank-info-btn')) {
 function renderFinalResult(data) {
     currentResultData = data;
     explanationCache = {};
+    const syncPanel = document.getElementById('quiz-sync-pending-panel');
+    if (syncPanel) syncPanel.remove();
     resultEls.container.classList.add('hidden');
     resultEls.resultBox.classList.remove('hidden');
+    console.info('✅ SUCCESS (Result.js): Final result rendered.', {
+        quizId: currentQuizId, attemptId: typeof currentAttemptId !== 'undefined' ? currentAttemptId : null
+    });
 
     updateSummaryData(data);
     filterResults('all'); 
