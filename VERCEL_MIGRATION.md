@@ -8,7 +8,8 @@ This repository now has Vercel-compatible API adapters while retaining the origi
 2. Set the project Root Directory to the repository root (`.`), not `ncertpyq/`.
 3. Use the **Other** framework preset. Leave Build Command and Output Directory empty/default; this is a static site with Node API routes.
 4. Add the environment variables below to Preview and Production as appropriate, then redeploy.
-5. Test the Vercel preview deployment before moving the `neelaxmi.site` domain away from Netlify.
+5. In Firebase Authentication settings, add the Vercel preview hostname and `neelaxmi.site` to Authorized domains. Do not blindly replace the existing `authDomain` value; verify the Firebase project's configured auth handler and test login/OAuth flows first.
+6. Test the Vercel preview deployment before moving the `neelaxmi.site` domain away from Netlify.
 
 ## API route mapping
 
