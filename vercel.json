@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    {
+      "source": "/ncertpyq",
+      "destination": "/ncertpyq/public/index.html"
+    },
+    {
+      "source": "/ncertpyq/",
+      "destination": "/ncertpyq/public/index.html"
+    }
+  ]
+}
