@@ -776,8 +776,34 @@ const loadQuiz = async (uid) => {
     }
 
     if(!doc.exists) {
-        document.getElementById('error-text').textContent = "Quiz not found or deleted.";
-        document.getElementById('error-message-area').classList.remove('hidden');
+        // A cached Firestore miss should not discard a local Normal Test attempt.
+        try {
+            const localAttempt = window.NormalTestOffline
+                ? await window.NormalTestOffline.load(normalTestStorageKey(uid))
+                : null;
+            if (localAttempt && localAttempt.mode === 'normal-test'
+                && ['in_progress', 'submitted_pending_sync'].includes(localAttempt.status)) {
+                currentQuizId = uid;
+                currentQuizIsTest = false;
+                allQuestions = Array.isArray(localAttempt.questions) ? localAttempt.questions : [];
+                if (quizEls.title) quizEls.title.textContent = localAttempt.quizTitle || 'Offline Test';
+                if (quizEls.setupTitle) quizEls.setupTitle.textContent = localAttempt.quizTitle || 'Offline Test';
+                if (localAttempt.status === 'submitted_pending_sync' && typeof window.resumePendingNormalTestSync === 'function') {
+                    await window.resumePendingNormalTestSync(localAttempt);
+                } else {
+                    await restoreNormalTestAttempt(localAttempt, 'offline-cache-miss');
+                }
+                return;
+            }
+        } catch (recoveryError) {
+            console.error('[NormalTest][ERROR] Local recovery after quiz cache miss failed.', recoveryError);
+        }
+        if (quizEls.loader) quizEls.loader.classList.add('hidden');
+        const errorText = document.getElementById('error-text');
+        const errorArea = document.getElementById('error-message-area');
+        if (errorText) errorText.textContent = "Quiz not found or deleted, and no saved offline attempt is available.";
+        if (errorArea) errorArea.classList.remove('hidden');
+        console.error('[Quiz][ERROR] Quiz document missing and local recovery unavailable.', { quizId: uid });
         return;
     }
 
