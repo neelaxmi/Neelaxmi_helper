@@ -1116,7 +1116,10 @@ const startQuizSession = () => {
 
     renderQuestion();
     startTimer();
-    
+    quizReliabilityLog('success', 'QUIZ_SESSION_STARTED', {
+        quizId: currentQuizId, mode: currentMode, questionCount: questions.length
+    });
+
     if (typeof setupAntiCheatingMeasures === 'function') {
         setupAntiCheatingMeasures();
     }
@@ -1148,16 +1151,22 @@ const startQuizSession = () => {
 };
 
 const saveProgress = async () => {
-    await db.collection('user_progress').doc(CURRENT_USER_ID).collection('saved_quizzes').doc(currentQuizId).set({
-        currentIndex, 
-        timeLeft, 
-        quizStartDurationSeconds, // so a resumed attempt still knows its real total duration
-        userAnswers, 
-        visitedQuestions,
-        markedForReview,
-        proctoringEnabled,
-        lastSaved: firebase.firestore.FieldValue.serverTimestamp()
-    });
+    try {
+        await db.collection('user_progress').doc(CURRENT_USER_ID).collection('saved_quizzes').doc(currentQuizId).set({
+            currentIndex,
+            timeLeft,
+            quizStartDurationSeconds, // so a resumed attempt still knows its real total duration
+            userAnswers,
+            visitedQuestions,
+            markedForReview,
+            proctoringEnabled,
+            lastSaved: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        quizReliabilityLog('success', 'LEGACY_FIREBASE_PROGRESS_SAVED', { quizId: currentQuizId });
+    } catch (error) {
+        quizReliabilityLog('error', 'LEGACY_FIREBASE_PROGRESS_SAVE_FAILED', { quizId: currentQuizId, error: error.message });
+        throw error;
+    }
 };
 
 if(quizEls.prev) quizEls.prev.onclick = () => { if(currentIndex>0) { currentIndex--; renderQuestion(); }};
