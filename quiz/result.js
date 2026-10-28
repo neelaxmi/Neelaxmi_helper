@@ -536,10 +536,16 @@ const calculateRank = (score, total) => {
 
 let offlineSyncInProgress = false;
 function setOfflineSyncStatus(message, isError = false) {
-    const status = document.getElementById('offline-sync-status');
-    if (status) {
-        status.textContent = message;
-        status.className = isError ? 'mt-4 text-sm font-semibold text-red-600 dark:text-red-400' : 'mt-4 text-sm font-semibold text-slate-600 dark:text-slate-300';
+    try {
+        const status = document.getElementById('offline-sync-status');
+        if (status) {
+            status.textContent = message;
+            status.className = isError ? 'mt-4 text-sm font-semibold text-red-600 dark:text-red-400' : 'mt-4 text-sm font-semibold text-slate-600 dark:text-slate-300';
+        }
+        if (isError) console.error('[Quiz][offline-sync-status][ERROR]', { message });
+        else console.info('[Quiz][offline-sync-status][SUCCESS]', { message });
+    } catch (error) {
+        console.error('[Quiz][offline-sync-status][ERROR]', { message: error && error.message });
     }
 }
 window.showOfflineSyncScreen = function(snapshot) {
