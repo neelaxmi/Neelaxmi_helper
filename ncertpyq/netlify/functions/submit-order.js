@@ -44,11 +44,27 @@ exports.handler = async (event) => {
     }
     const appBaseUrl = process.env.APP_BASE_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "");
     if (!appBaseUrl) throw new Error("APP_BASE_URL or VERCEL_URL is required to process the order.");
-    await fetch(`${appBaseUrl}/api/ncertpyq/process-order-background`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "x-internal-secret": process.env.INTERNAL_SECRET },
-      body: JSON.stringify({ orderId: b.sessionId }),
-    });
+    try {
+      const processingResponse = await fetch(`${appBaseUrl}/api/ncertpyq/process-order-background`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-internal-secret": process.env.INTERNAL_SECRET },
+        body: JSON.stringify({ orderId: b.sessionId }),
+      });
+      if (!processingResponse.ok) {
+        console.error("[submit-order][background][ERROR]", {
+          orderId: b.sessionId,
+          status: processingResponse.status
+        });
+      } else {
+        console.info("[submit-order][background][SUCCESS]", { orderId: b.sessionId });
+      }
+    } catch (processingError) {
+      // The order and screenshot are already stored. Do not make the client retry and create a duplicate order.
+      console.error("[submit-order][background][ERROR]", {
+        orderId: b.sessionId,
+        message: processingError && processingError.message || "Background request failed"
+      });
+    }
     return reply(200, { ok: true });
   } catch (e) {
     console.error(e);
