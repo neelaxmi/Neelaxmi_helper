@@ -557,7 +557,7 @@ function showTokenUnlockModal(quizId, quizTitle, onUnlocked) {
 
 async function verifyAndConsumeToken(quizId, rawCode) {
     const code = String(rawCode || '').trim();
-    if (!/^\\d{6}$/.test(code)) {
+    if (!/^\d{6}$/.test(code)) {
         throw new Error('Enter the 6-digit token exactly as shown.');
     }
     if (!window.QuizReliability) throw new Error('Secure quiz service is not ready.');
