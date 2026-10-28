@@ -2,8 +2,13 @@
 const { db, FieldValue, crypto, approveOrder, reverseReferral, settleWithdrawal, tgAnswer, tgEditCaption, tgEditText, esc } = require("./lib/common");
 exports.handler = async (event) => {
   if (event.httpMethod !== "POST") return { statusCode: 405 };
+  const configuredSecret = process.env.TELEGRAM_WEBHOOK_SECRET;
+  if (!configuredSecret) {
+    console.error("[telegram-webhook][ERROR] TELEGRAM_WEBHOOK_SECRET is not configured.");
+    return { statusCode: 503 };
+  }
   const got = Buffer.from(event.headers["x-telegram-bot-api-secret-token"] || "");
-  const want = Buffer.from(process.env.TELEGRAM_WEBHOOK_SECRET || "x");
+  const want = Buffer.from(configuredSecret);
   if (got.length !== want.length || !crypto.timingSafeEqual(got, want)) return { statusCode: 403 };
   const cq = (JSON.parse(event.body || "{}")).callback_query;
   if (!cq) return { statusCode: 200 };
