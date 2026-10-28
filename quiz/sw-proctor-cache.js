@@ -8,7 +8,15 @@ const QUIZ_SHELL_ASSETS = [
   '/quiz/scoring.js',
   '/quiz/result.js',
   '/quiz/vedio.js',
-  '/quiz/style.css'
+  '/quiz/style.css',
+  '/js/head-loader.js',
+  '/vendor/face-api.min.js',
+  'https://cdn.jsdelivr.net/npm/katex@0.16.47/dist/katex.min.js',
+  'https://cdn.jsdelivr.net/npm/katex@0.16.47/dist/contrib/auto-render.min.js',
+  'https://cdn.tailwindcss.com',
+  'https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js',
+  'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js',
+  'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js'
 ];
 
 self.addEventListener('install', (event) => {
@@ -16,9 +24,13 @@ self.addEventListener('install', (event) => {
     const cache = await caches.open(QUIZ_CACHE_NAME);
     await Promise.all(QUIZ_SHELL_ASSETS.map(async (asset) => {
       try {
-        const response = await fetch(asset, { cache: 'reload' });
-        if (response.ok) {
-          await cache.put(asset, response.clone());
+        const isCrossOrigin = /^https?:\\/\\//i.test(asset) && new URL(asset).origin !== self.location.origin;
+        const request = isCrossOrigin
+          ? new Request(asset, { mode: 'no-cors', cache: 'reload' })
+          : new Request(asset, { cache: 'reload' });
+        const response = await fetch(request);
+        if (response.ok || response.type === 'opaque') {
+          await cache.put(request, response.clone());
           console.log('[NEELAXMI QUIZ SW] SUCCESS precached', asset);
         } else {
           console.error('[NEELAXMI QUIZ SW] ERROR precache response', asset, response.status);
