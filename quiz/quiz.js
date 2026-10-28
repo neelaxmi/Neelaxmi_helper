@@ -401,7 +401,7 @@ const renderQuestion = () => {
     }
     // Persist after every answer/navigation/mark/clear render in Test Mode.
     // The serializer removes any answer-key fields before writing JSON.
-    if (currentMode === 'test') persistActiveAttemptLocally('active');
+    if (currentMode === 'test' && !proctoringEnabled) persistActiveAttemptLocally('active');
     console.info('✅ SUCCESS [Quiz] Question rendered.', {
         quizId: currentQuizId, attemptId: currentAttemptId, mode: currentMode,
         questionNumber: currentIndex + 1, totalQuestions: questions.length
@@ -1007,7 +1007,7 @@ const beginSelectedQuiz = async () => {
 
     currentMode = cfg.mode;
     testModeWentOffline = false;
-    if (currentMode === 'test' && !window.QuizReliability.canUseLocalStorage()) {
+    if (currentMode === 'test' && !proctoringEnabled && !window.QuizReliability.canUseLocalStorage()) {
         console.error('❌ ERROR [Quiz] Test Mode blocked because local storage is unavailable.', {
             quizId: currentQuizId
         });
@@ -1027,6 +1027,41 @@ const beginSelectedQuiz = async () => {
     currentAttemptDeadlineAtMs = null;
     currentAttemptStartedAtMs = null;
     currentAttemptDurationSeconds = 0;
+
+    // Preserve the existing camera-proctored CBT path: it continues to use
+    // its existing Firestore progress/result flow and does not use offline Test Mode recovery.
+    if (proctoringEnabled) {
+        try {
+            const cbtDoc = await db.collection('quizzes').doc(currentQuizId).get();
+            if (!cbtDoc.exists) throw new Error('CBT quiz document was not found.');
+            const cbtData = cbtDoc.data();
+            allQuestions = cbtData.questions.map((q, i) => ({ ...q, id: `Q${i + 1}` }));
+            questions = allQuestions.slice(start, end);
+            timeLeft = cfg.selectedTime * 60;
+            quizStartDurationSeconds = timeLeft;
+            currentAttemptId = null;
+            currentAttemptDeadlineAtMs = null;
+            currentAttemptStartedAtMs = null;
+            currentAttemptDurationSeconds = 0;
+            console.info('✅ SUCCESS [Quiz] Existing CBT question-loading path retained.', {
+                quizId: currentQuizId, mode: currentMode, questionCount: questions.length
+            });
+        } catch (error) {
+            console.error('❌ ERROR [Quiz] Existing CBT question load failed.', {
+                quizId: currentQuizId, message: error.message
+            });
+            alert('CBT quiz load nahi ho paya. Internet/Firebase connection check karein.');
+            if (quizEls.setupModal) quizEls.setupModal.classList.remove('hidden');
+            return;
+        }
+
+        violationCount = 0;
+        violationLog = [];
+        persistViolationState();
+        noFaceSince = null;
+        startQuizSession();
+        return;
+    }
 
     try {
         const started = await window.QuizReliability.api('startAttempt', {
@@ -1062,7 +1097,7 @@ const beginSelectedQuiz = async () => {
     persistViolationState();
     noFaceSince = null;
 
-    if (currentMode === 'test' && !persistActiveAttemptLocally('active')) {
+    if (currentMode === 'test' && !proctoringEnabled && !persistActiveAttemptLocally('active')) {
         console.error('❌ ERROR [Quiz] Test Mode blocked because the first local recovery snapshot failed.', {
             quizId: currentQuizId, attemptId: currentAttemptId
         });
@@ -1158,7 +1193,7 @@ if (proctorEls.enableBtn) {
 
 function updateTestNetworkNotice() {
     let notice = document.getElementById('test-network-notice');
-    if (currentMode !== 'test' || !quizActive()) {
+    if (currentMode !== 'test' || proctoringEnabled || !quizActive()) {
         if (notice) notice.remove();
         return;
     }
@@ -1184,7 +1219,7 @@ function updateTestNetworkNotice() {
 }
 
 window.addEventListener('offline', () => {
-    if (currentMode === 'test' && currentAttemptId && quizActive()) {
+    if (currentMode === 'test' && !proctoringEnabled && currentAttemptId && quizActive()) {
         testModeWentOffline = true;
         persistActiveAttemptLocally(secureSubmissionPending ? 'submitted_pending_sync' : 'active');
         console.info('✅ SUCCESS [Quiz] Offline requirement registered for this Test Mode attempt.', {
@@ -1245,7 +1280,7 @@ const startQuizSession = () => {
 };
 
 const saveProgress = async () => {
-    if (currentMode === 'test') {
+    if (currentMode === 'test' && !proctoringEnabled) {
         const saved = persistActiveAttemptLocally('active');
         if (!saved) throw new Error('Local Test Mode progress could not be saved.');
         console.info('✅ SUCCESS [Quiz] Test Mode progress saved locally; no Firebase progress write was made.', {
@@ -1580,7 +1615,7 @@ document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
 document.addEventListener('MSFullscreenChange', handleFullscreenChange);
 window.addEventListener('beforeunload', (event) => {
     stopProctoring();
-    if (quizActive()) {
+    if (quizActive() && !proctoringEnabled) {
         if (currentMode === 'test') {
             persistActiveAttemptLocally('active');
             console.warn('⚠️ WARNING [Quiz] Test Mode page is unloading; local recovery snapshot saved.', {
