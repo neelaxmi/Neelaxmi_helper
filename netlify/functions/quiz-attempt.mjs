@@ -127,8 +127,56 @@ export const handler = async (event) => {
     action = String(body.action || "");
     uid = await requireUser(event, db);
 
+    if (action === "unlockPaidQuiz") {
+      const { quizId, data } = await resolveQuiz(db, body.quizId);
+      if (data.isPaid !== true) {
+        logInfo("unlock-not-required", { uid, quizId });
+        return response(200, { unlocked: true, alreadyUnlocked: true });
+      }
+      const code = String(body.code || "").trim();
+      if (!/^\\d{6}$/.test(code)) throw Object.assign(new Error("Enter the 6-digit token exactly as shown."), { statusCode: 400 });
+      const poolRef = db.collection("quiz_tokens").doc(quizId);
+      const tokensCol = poolRef.collection("tokens");
+      const candidateSnap = await tokensCol.where("code", "==", code).limit(1).get();
+      if (candidateSnap.empty) throw Object.assign(new Error("That token is invalid, already used, or not for this quiz."), { statusCode: 403 });
+      const tokenRef = candidateSnap.docs[0].ref;
+      const unlockRef = db.collection("quiz_unlocks").doc(`${uid}_${quizId}`);
+      const alreadyUnlocked = await unlockRef.get();
+      if (alreadyUnlocked.exists) {
+        logSuccess("paid-quiz-already-unlocked", { uid, quizId });
+        return response(200, { unlocked: true, alreadyUnlocked: true });
+      }
+      await db.runTransaction(async (tx) => {
+        const tokenDoc = await tx.get(tokenRef);
+        const currentUnlock = await tx.get(unlockRef);
+        if (currentUnlock.exists) return;
+        if (!tokenDoc.exists) throw Object.assign(new Error("That token is invalid, already used, or not for this quiz."), { statusCode: 403 });
+        tx.delete(tokenRef);
+        tx.set(poolRef, { usedCount: admin.firestore.FieldValue.increment(1) }, { merge: true });
+        tx.set(unlockRef, {
+          uid, quizId,
+          unlockedAt: admin.firestore.FieldValue.serverTimestamp(),
+          tokenId: tokenRef.id,
+        });
+      });
+      logSuccess("paid-quiz-unlocked", { uid, quizId });
+      return response(200, { unlocked: true, alreadyUnlocked: false });
+    }
+
     if (action === "getQuiz") {
       const { quizId, data } = await resolveQuiz(db, body.quizId);
+      if (data.isPaid === true) {
+        const unlockSnap = await db.collection("quiz_unlocks").doc(`${uid}_${quizId}`).get();
+        if (!unlockSnap.exists) {
+          logWarning("paid-quiz-locked", { uid, quizId });
+          return response(200, {
+            quizId, title: data.title || "Quiz",
+            durationMinutes: Number(data.durationMinutes) || null,
+            test_quiz: data.test_quiz === true, isPaid: true,
+            requiresUnlock: true, questions: [],
+          });
+        }
+      }
       logSuccess("get-quiz", { uid, quizId, questionCount: data.questions.length });
       return response(200, {
         quizId,
@@ -136,6 +184,7 @@ export const handler = async (event) => {
         durationMinutes: Number(data.durationMinutes) || null,
         test_quiz: data.test_quiz === true,
         isPaid: data.isPaid === true,
+        requiresUnlock: false,
         questions: data.questions.map(safeQuestion),
       });
     }
@@ -145,10 +194,8 @@ export const handler = async (event) => {
       const mode = body.mode === "quiz" ? "quiz" : body.mode === "test" ? "test" : null;
       if (!mode) throw Object.assign(new Error("mode must be test or quiz."), { statusCode: 400 });
       if (data.isPaid === true) {
-        // Paid-token validation remains in the existing client flow. This endpoint
-        // still requires Firebase auth, but token enforcement should be mirrored
-        // here before production use for paid quizzes.
-        logWarning("paid-quiz-attempt-request", { uid, quizId });
+        const unlockSnap = await db.collection("quiz_unlocks").doc(`${uid}_${quizId}`).get();
+        if (!unlockSnap.exists) throw Object.assign(new Error("This paid quiz is locked. Unlock it with a valid token first."), { statusCode: 403 });
       }
       const chosen = selectedQuestions(data, body.questionIds);
       const maxMinutes = Number(data.durationMinutes) || Math.max(1, chosen.length);
