@@ -977,6 +977,11 @@ const beginSelectedQuiz = () => {
         return;
     }
     currentMode = cfg.mode;
+    if (currentMode === 'test' && !proctoringEnabled && !currentQuizIsTest && navigator.onLine) {
+        alert('Normal Mode > Test Mode ke liye internet disconnect karein, phir Start dobara press karein. Quiz questions pehle hi load ho chuke hain.');
+        quizReliabilityLog('warn', 'TEST_START_BLOCKED_INTERNET_ON', { quizId: currentQuizId });
+        return;
+    }
     timeLeft = cfg.selectedTime * 60;
     quizStartDurationSeconds = timeLeft; // remember the real starting duration for result.js's Total Time calc
     const [start, end] = cfg.rangeVal.split('-').map(Number);
