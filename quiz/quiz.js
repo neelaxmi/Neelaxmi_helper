@@ -482,6 +482,7 @@ window.setQuizAttemptLanguageLock = (locked) => {
 };
 const TRANSLATION_CACHE_STORAGE_KEY = 'neelaxmi_translation_cache_v1';
 const translationCache = new Map(); // `${lang}::${text}` -> translated text, persisted for offline reuse
+let lastOfflineTranslationWarningLanguage = null;
 const langEls = { select: document.getElementById('language-select') };
 if (langEls.select) {
     langEls.select.value = currentLanguage;
@@ -547,7 +548,10 @@ async function translateText(text, targetLang) {
     }
 
     if (typeof navigator !== 'undefined' && !navigator.onLine) {
-        console.warn('[Quiz][translate][ERROR] Translation is not cached and internet is unavailable.', { language: targetLang });
+        if (lastOfflineTranslationWarningLanguage !== targetLang) {
+            lastOfflineTranslationWarningLanguage = targetLang;
+            console.error('[Quiz][translate][ERROR] Offline translation pack is missing entries for this language. Select the language while online and wait for pre-cache to finish before disconnecting.', { language: targetLang });
+        }
         return text;
     }
 
@@ -570,15 +574,17 @@ async function translateText(text, targetLang) {
     }
 }
 
-async function preCacheQuestionTranslations(lang, questionSet = questions) {
+async function preCacheQuestionTranslations(lang, questionSet = null) {
     try {
+        // Before the attempt starts, `questions` is empty while `allQuestions` already contains the loaded quiz bank.
+        const sourceQuestions = Array.isArray(questionSet) ? questionSet : (questions.length ? questions : allQuestions);
         if (!lang || lang === 'en') return { cached: 0, failed: 0 };
         if (!navigator.onLine) {
             console.warn('[Quiz][translation-precache][ERROR] Cannot prepare offline translations without internet.', { language: lang });
             return { cached: 0, failed: 0 };
         }
         const uniqueTexts = new Set();
-        (Array.isArray(questionSet) ? questionSet : []).forEach(question => {
+        (Array.isArray(sourceQuestions) ? sourceQuestions : []).forEach(question => {
             if (question && question.question) uniqueTexts.add(String(question.question));
             const options = question && question.options;
             if (options && typeof options === 'object') {
