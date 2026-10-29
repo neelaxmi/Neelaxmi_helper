@@ -288,10 +288,24 @@ const MAX_VIOLATIONS = 3;          // exactly 3 warnings allowed; the 4th trigge
 let violationLog = [];
 let violationModalOpen = false;
 
-let currentLanguage = 'en';
+const SAVED_LANGUAGE_STORAGE_KEY = 'neelaxmi_quiz_language_v1';
+let currentLanguage = (() => {
+    try {
+        const saved = localStorage.getItem(SAVED_LANGUAGE_STORAGE_KEY);
+        console.info('[Quiz][translate-mode][SUCCESS] Loaded saved language preference.', { language: saved || 'en' });
+        return saved || 'en';
+    } catch (error) {
+        console.error('[Quiz][translate-mode][ERROR] Could not load saved language preference.', { message: error && error.message });
+        return 'en';
+    }
+})();
 const TRANSLATION_CACHE_STORAGE_KEY = 'neelaxmi_translation_cache_v1';
 const translationCache = new Map(); // `${lang}::${text}` -> translated text, persisted for offline reuse
 const langEls = { select: document.getElementById('language-select') };
+if (langEls.select) {
+    langEls.select.value = currentLanguage;
+    if (!langEls.select.value) currentLanguage = 'en';
+}
 
 (function restoreTranslationCache() {
     try {
@@ -375,6 +389,53 @@ async function translateText(text, targetLang) {
     }
 }
 
+async function preCacheQuestionTranslations(lang, questionSet = questions) {
+    try {
+        if (!lang || lang === 'en') return { cached: 0, failed: 0 };
+        if (!navigator.onLine) {
+            console.warn('[Quiz][translation-precache][ERROR] Cannot prepare offline translations without internet.', { language: lang });
+            return { cached: 0, failed: 0 };
+        }
+        const uniqueTexts = new Set();
+        (Array.isArray(questionSet) ? questionSet : []).forEach(question => {
+            if (question && question.question) uniqueTexts.add(String(question.question));
+            const options = question && question.options;
+            if (options && typeof options === 'object') {
+                Object.values(options).forEach(option => {
+                    if (typeof option === 'string' && option.trim()) uniqueTexts.add(option);
+                });
+            }
+        });
+        const missing = Array.from(uniqueTexts).filter(text => !translationCache.has(`${lang}::${text}`));
+        if (!missing.length) {
+            console.info('[Quiz][translation-precache][SUCCESS] All current quiz text is already cached.', { language: lang, total: uniqueTexts.size });
+            return { cached: 0, failed: 0 };
+        }
+
+        let cursor = 0;
+        let cached = 0;
+        let failed = 0;
+        const worker = async () => {
+            while (cursor < missing.length) {
+                const text = missing[cursor++];
+                await translateText(text, lang);
+                if (translationCache.has(`${lang}::${text}`)) cached++;
+                else failed++;
+                if ((cached + failed) % 20 === 0) {
+                    console.info('[Quiz][translation-precache][SUCCESS] Translation pack progress.', { language: lang, completed: cached + failed, total: missing.length });
+                }
+            }
+        };
+        await Promise.all(Array.from({ length: Math.min(3, missing.length) }, () => worker()));
+        console.info('[Quiz][translation-precache][SUCCESS] Finished preparing current quiz translations for offline reuse.', { language: lang, cached, failed, total: missing.length });
+        if (failed) console.error('[Quiz][translation-precache][ERROR] Some strings could not be cached; those strings need internet to translate.', { language: lang, failed });
+        return { cached, failed };
+    } catch (error) {
+        console.error('[Quiz][translation-precache][ERROR] Failed to prepare offline translations.', { language: lang, message: error && error.message });
+        return { cached: 0, failed: 1 };
+    }
+}
+
 async function applyStaticUILanguage(lang) {
     const nodes = document.querySelectorAll('[data-i18n-default]');
     await Promise.all(Array.from(nodes).map(async (node) => {
@@ -410,14 +471,26 @@ async function applyLanguage(lang) {
         currentLanguage = lang;
         document.documentElement.setAttribute('dir', lang === 'ur' || lang === 'sd' || lang === 'ks' ? 'auto' : 'ltr');
         await Promise.all([applyStaticUILanguage(lang), applyQuestionLanguage(lang)]);
+        try {
+            localStorage.setItem(SAVED_LANGUAGE_STORAGE_KEY, lang);
+            console.info('[Quiz][translate-mode][SUCCESS] Saved language preference.', { language: lang });
+        } catch (storageError) {
+            console.error('[Quiz][translate-mode][ERROR] Could not save language preference.', { language: lang, message: storageError && storageError.message });
+        }
         console.info('[Quiz][translate-mode][SUCCESS] Language applied.', { language: lang, cachedEntries: translationCache.size });
+        if (navigator.onLine && lang !== 'en') {
+            preCacheQuestionTranslations(lang).catch(error => console.error('[Quiz][translation-precache][ERROR] Background pre-cache failed.', { language: lang, message: error && error.message }));
+        }
     } catch (error) {
         console.error('[Quiz][translate-mode][ERROR] Could not fully apply selected language.', { language: lang, message: error && error.message });
     }
 }
 
 if (langEls.select) {
-    langEls.select.onchange = () => applyLanguage(langEls.select.value);
+    langEls.select.onchange = () => {
+        console.info('[Quiz][translate-mode][SUCCESS] Language selector changed.', { language: langEls.select.value });
+        applyLanguage(langEls.select.value);
+    };
 }
 
 const formatTime = (s) => `${Math.floor(s/60).toString().padStart(2,'0')}:${(s%60).toString().padStart(2,'0')}`;
