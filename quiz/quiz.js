@@ -730,7 +730,10 @@ const renderQuestion = () => {
             imageFrame.classList.add('cursor-zoom-in');
         }, { once: true });
         questionImage.addEventListener('error', () => {
-            console.error('[Quiz][image][ERROR] Third-party question image failed to load.', { questionId: q.id, imageHost: (() => { try { return new URL(q.imageUrl, location.href).host; } catch (_) { return 'invalid-url'; } })() });
+            console.error('[Quiz][image][ERROR] Question image failed to load.', {
+                questionId: q.id, imageUrl: String(q.imageUrl || ''), pageUrl: location.href,
+                imageHost: (() => { try { return new URL(q.imageUrl, location.href).host; } catch (_) { return 'invalid-url'; } })()
+            });
             imageFrame.classList.remove('cursor-zoom-in');
             imageFrame.innerHTML = '';
             const fallback = document.createElement('div');
@@ -748,7 +751,20 @@ const renderQuestion = () => {
         quizEls.qText.parentNode.insertBefore(imgContainer, quizEls.qText.nextSibling);
 
         try {
-            questionImage.src = new URL(String(q.imageUrl), location.href).href;
+            const originalImageUrl = new URL(String(q.imageUrl), location.href).href;
+            getCachedQuizImage(originalImageUrl).then(cachedImageUrl => {
+                if (!questionImage.isConnected) return;
+                questionImage.src = cachedImageUrl || originalImageUrl;
+                console.info('[Quiz][image][SUCCESS] Question image source selected.', {
+                    questionId: q.id, source: cachedImageUrl ? 'local-cache' : 'remote-url',
+                    imageUrl: originalImageUrl, pageUrl: location.href
+                });
+            }).catch(error => {
+                console.error('[Quiz][image][ERROR] Cached image lookup failed; using remote URL.', {
+                    questionId: q.id, imageUrl: originalImageUrl, pageUrl: location.href, message: error && error.message
+                });
+                if (questionImage.isConnected) questionImage.src = originalImageUrl;
+            });
             imageFrame.addEventListener('click', () => {
                 if (questionImage.complete && questionImage.naturalWidth > 0 && typeof window.openImageZoom === 'function') {
                     window.openImageZoom(questionImage.src);
@@ -1313,7 +1329,7 @@ const loadQuiz = async (uid) => {
     };
 };
 
-const beginSelectedQuiz = () => {
+const beginSelectedQuiz = async () => {
     const cfg = pendingStartConfig;
     if (!cfg) {
         console.error('[Quiz][start][ERROR] Missing selected quiz configuration.');
@@ -1321,8 +1337,20 @@ const beginSelectedQuiz = () => {
     }
     currentMode = cfg.mode;
     if (currentMode === 'test' && !proctoringEnabled && navigator.onLine) {
+        try {
+            const [prepStart, prepEnd] = String(cfg.rangeVal || '0-20').split('-').map(Number);
+            const prepQuestions = allQuestions.slice(prepStart, prepEnd);
+            console.info('[Quiz][preparation][SUCCESS] Online preparation started before offline Test Mode.', { questionCount: prepQuestions.length, language: currentLanguage });
+            await Promise.all([
+                prepareQuizImages(prepQuestions),
+                currentLanguage !== 'en' ? preCacheQuestionTranslations(currentLanguage, prepQuestions) : Promise.resolve({ cached: 0, failed: 0 })
+            ]);
+            await showQuizPreparationCountdown(10);
+        } catch (error) {
+            console.error('[Quiz][preparation][ERROR] Online pre-test preparation encountered an error; continuing to offline reminder.', { message: error && error.message });
+        }
         console.warn('[Quiz][start][INFO] Test Mode requires disconnecting the internet before starting.');
-        alert('Test Mode is designed for offline use. Questions are already loaded. Please disconnect your internet, then press Start Test again.');
+        alert('Preparation finished. Now disconnect your internet, then press Start Test again to begin.');
         return;
     }
     if (currentMode === 'quiz' && !navigator.onLine) {
@@ -1330,11 +1358,23 @@ const beginSelectedQuiz = () => {
         alert('Quiz Mode needs internet because it shows the correct answer immediately. Please reconnect and try again.');
         return;
     }
+    const [start, end] = cfg.rangeVal.split('-').map(Number);
+    const selectedQuestions = allQuestions.slice(start, end);
+    try {
+        await Promise.all([
+            prepareQuizImages(selectedQuestions),
+            currentLanguage !== 'en' && navigator.onLine
+                ? preCacheQuestionTranslations(currentLanguage, selectedQuestions)
+                : Promise.resolve({ cached: 0, failed: 0 })
+        ]);
+        await showQuizPreparationCountdown(10);
+    } catch (error) {
+        console.error('[Quiz][preparation][ERROR] Quiz preparation failed; attempting to continue with available assets.', { message: error && error.message });
+    }
     timeLeft = cfg.selectedTime * 60;
     quizStartDurationSeconds = timeLeft; // remember the real starting duration for result.js's Total Time calc
-    const [start, end] = cfg.rangeVal.split('-').map(Number);
 
-    questions = allQuestions.slice(start, end);
+    questions = selectedQuestions;
     currentIndex = 0;
     userAnswers = {};
     visitedQuestions = {};
