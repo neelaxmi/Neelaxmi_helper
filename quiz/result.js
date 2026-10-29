@@ -690,6 +690,7 @@ window.addEventListener('offline', () => {
 });
 
 const submitQuiz = async (isTimeout = false) => {
+    if (typeof window.setQuizAttemptLanguageLock === 'function') window.setQuizAttemptLanguageLock(false);
     if (typeof window.isOfflineNormalTestAttempt === 'function' && window.isOfflineNormalTestAttempt()) {
         return submitOfflineTestAttempt(isTimeout);
     }
