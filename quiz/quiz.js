@@ -722,7 +722,7 @@ const togglePause = (state) => {
 // is saved before warning so the student's answers survive a refresh or retry.
 window.addEventListener('online', () => {
     try {
-        if (!isOfflineNormalTest() || !quizEls.container || quizEls.container.classList.contains('hidden')) return;
+        if (!isOfflineNormalTest() || !quizEls.container || quizEls.container.classList.contains('hidden') || (typeof quizActive === 'function' && !quizActive())) return;
         saveOfflineAttemptSnapshot('internet-enabled-during-test');
         if (!isPaused) togglePause(true);
         console.warn('[Quiz][network-guard][ERROR] Internet became available during Normal Test Mode; attempt paused.');
