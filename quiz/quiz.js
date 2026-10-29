@@ -412,22 +412,31 @@ async function preCacheQuestionTranslations(lang, questionSet = questions) {
             return { cached: 0, failed: 0 };
         }
 
+        // Keep background pre-caching bounded so a very large question bank
+        // cannot accidentally generate thousands of translation requests.
+        const MAX_TRANSLATION_PRECACHE_STRINGS = 250;
+        const skipped = Math.max(0, missing.length - MAX_TRANSLATION_PRECACHE_STRINGS);
+        const workList = missing.slice(0, MAX_TRANSLATION_PRECACHE_STRINGS);
+        if (skipped) {
+            console.warn('[Quiz][translation-precache][INFO] Pre-cache batch capped; remaining text will translate on demand while online.', { language: lang, queued: workList.length, skipped });
+        }
+
         let cursor = 0;
         let cached = 0;
         let failed = 0;
         const worker = async () => {
-            while (cursor < missing.length) {
-                const text = missing[cursor++];
+            while (cursor < workList.length) {
+                const text = workList[cursor++];
                 await translateText(text, lang);
                 if (translationCache.has(`${lang}::${text}`)) cached++;
                 else failed++;
                 if ((cached + failed) % 20 === 0) {
-                    console.info('[Quiz][translation-precache][SUCCESS] Translation pack progress.', { language: lang, completed: cached + failed, total: missing.length });
+                    console.info('[Quiz][translation-precache][SUCCESS] Translation pack progress.', { language: lang, completed: cached + failed, total: workList.length });
                 }
             }
         };
         await Promise.all(Array.from({ length: Math.min(3, missing.length) }, () => worker()));
-        console.info('[Quiz][translation-precache][SUCCESS] Finished preparing current quiz translations for offline reuse.', { language: lang, cached, failed, total: missing.length });
+        console.info('[Quiz][translation-precache][SUCCESS] Finished preparing current quiz translations for offline reuse.', { language: lang, cached, failed, total: workList.length, skipped });
         if (failed) console.error('[Quiz][translation-precache][ERROR] Some strings could not be cached; those strings need internet to translate.', { language: lang, failed });
         return { cached, failed };
     } catch (error) {
