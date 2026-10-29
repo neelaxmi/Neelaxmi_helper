@@ -1232,7 +1232,7 @@ const loadQuiz = async (uid) => {
 
     currentQuizId = uid;
 
-    const data = doc.data();
+    let data = doc.data();
 
     if (data.isPaid === true && !isQuizUnlockedInSession(uid)) {
         quizEls.loader.classList.add('hidden');
@@ -1240,9 +1240,43 @@ const loadQuiz = async (uid) => {
         return;
     }
 
+    // Chapter-ready quizzes store metadata in quizzes/{id} and keep individual
+    // questions in question_bank. Load them at runtime so chapter quizzes stay
+    // current as new questions are imported, without exceeding Firestore's 1 MiB
+    // document limit. Time is capped at one minute per question.
+    if (data.questionBankChapterQuiz === true) {
+        console.info('[ChapterQuiz][START] Loading chapter questions from question_bank.', { quizId: uid, subject: data.subject, chapter: data.chapter });
+        try {
+            if (!data.chapter) throw new Error('Chapter metadata is missing from this chapter quiz.');
+            const bankSnap = await db.collection('question_bank').where('chapter', '==', data.chapter).get();
+            const wantedSubject = String(data.subject || 'Unclassified').trim().toLowerCase();
+            data.questions = bankSnap.docs
+                .map(d => ({ id: d.id, ...d.data() }))
+                .filter(q => String(q.subject || 'Unclassified').trim().toLowerCase() === wantedSubject)
+                .map(q => {
+                    const normalized = { ...q };
+                    delete normalized.bankId;
+                    delete normalized.schemaVersion;
+                    delete normalized.createdAt;
+                    delete normalized.updatedAt;
+                    return normalized;
+                });
+            if (!data.questions.length) throw new Error(`No questions found for ${data.subject || 'Unclassified'} / ${data.chapter}.`);
+            data.questionCount = data.questions.length;
+            data.durationMinutes = Math.max(1, data.questions.length);
+            console.info('[ChapterQuiz][SUCCESS] Chapter questions loaded.', { quizId: uid, questionCount: data.questions.length, durationMinutes: data.durationMinutes });
+        } catch (error) {
+            console.error('[ChapterQuiz][ERROR] Could not load chapter questions.', { quizId: uid, message: error && error.message, error });
+            document.getElementById('error-text').textContent = `Could not load this chapter quiz: ${error.message}`;
+            document.getElementById('error-message-area').classList.remove('hidden');
+            quizEls.loader.classList.add('hidden');
+            return;
+        }
+    }
+
     quizEls.title.textContent = data.title;
     quizEls.setupTitle.textContent = data.title;
-    allQuestions = data.questions.map((q,i)=>({...q, id:`Q${i+1}`}));
+    allQuestions = (Array.isArray(data.questions) ? data.questions : []).map((q,i)=>({...q, id:`Q${i+1}`}));
 
     currentQuizIsTest = data.test_quiz === true;
 
