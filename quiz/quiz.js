@@ -1387,7 +1387,6 @@ const beginSelectedQuiz = async () => {
                 prepareQuizImages(prepQuestions),
                 currentLanguage !== 'en' ? preCacheQuestionTranslations(currentLanguage, prepQuestions) : Promise.resolve({ cached: 0, failed: 0 })
             ]);
-            await showQuizPreparationCountdown(10);
         } catch (error) {
             console.error('[Quiz][preparation][ERROR] Online pre-test preparation encountered an error; continuing to offline reminder.', { message: error && error.message });
         }
