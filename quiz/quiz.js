@@ -289,8 +289,41 @@ let violationLog = [];
 let violationModalOpen = false;
 
 let currentLanguage = 'en';
-const translationCache = new Map(); // `${lang}::${text}` -> translated text
+const TRANSLATION_CACHE_STORAGE_KEY = 'neelaxmi_translation_cache_v1';
+const translationCache = new Map(); // `${lang}::${text}` -> translated text, persisted for offline reuse
 const langEls = { select: document.getElementById('language-select') };
+
+(function restoreTranslationCache() {
+    try {
+        const raw = localStorage.getItem(TRANSLATION_CACHE_STORAGE_KEY);
+        if (!raw) {
+            console.info('[Quiz][translation-cache][SUCCESS] No previous translation cache; starting empty.');
+            return;
+        }
+        const entries = JSON.parse(raw);
+        if (!Array.isArray(entries)) throw new Error('Translation cache format is invalid.');
+        entries.slice(-600).forEach(entry => {
+            if (Array.isArray(entry) && typeof entry[0] === 'string' && typeof entry[1] === 'string') {
+                translationCache.set(entry[0], entry[1]);
+            }
+        });
+        console.info('[Quiz][translation-cache][SUCCESS] Restored cached translations.', { entries: translationCache.size });
+    } catch (error) {
+        console.error('[Quiz][translation-cache][ERROR] Could not restore cached translations.', { message: error && error.message });
+    }
+})();
+
+function persistTranslationCache() {
+    try {
+        const entries = Array.from(translationCache.entries()).slice(-600);
+        localStorage.setItem(TRANSLATION_CACHE_STORAGE_KEY, JSON.stringify(entries));
+        console.info('[Quiz][translation-cache][SUCCESS] Saved translation cache.', { entries: entries.length });
+        return true;
+    } catch (error) {
+        console.error('[Quiz][translation-cache][ERROR] Could not persist translations for offline use.', { message: error && error.message });
+        return false;
+    }
+}
 
 const MATH_PLACEHOLDER_RE = /%%MATH(\d+)%%/g;
 
@@ -313,22 +346,32 @@ function restoreMath(text, segments) {
 async function translateText(text, targetLang) {
     if (!text || !targetLang || targetLang === 'en') return text;
     const cacheKey = `${targetLang}::${text}`;
-    if (translationCache.has(cacheKey)) return translationCache.get(cacheKey);
+    if (translationCache.has(cacheKey)) {
+        console.info('[Quiz][translate][SUCCESS] Translation served from local cache.', { language: targetLang });
+        return translationCache.get(cacheKey);
+    }
+
+    if (typeof navigator !== 'undefined' && !navigator.onLine) {
+        console.warn('[Quiz][translate][ERROR] Translation is not cached and internet is unavailable.', { language: targetLang });
+        return text;
+    }
 
     const { protectedText, segments } = protectMath(text);
-
     try {
         const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=${encodeURIComponent(targetLang)}&dt=t&q=${encodeURIComponent(protectedText)}`;
         const res = await fetch(url);
         if (!res.ok) throw new Error(`Translate HTTP ${res.status}`);
         const data = await res.json();
         const translated = (data[0] || []).map(chunk => chunk[0]).join('');
+        if (!translated) throw new Error('Translation provider returned an empty result.');
         const restored = restoreMath(translated, segments);
         translationCache.set(cacheKey, restored);
+        persistTranslationCache();
+        console.info('[Quiz][translate][SUCCESS] Text translated.', { language: targetLang });
         return restored;
     } catch (err) {
-        console.warn('Translation unavailable, showing original text:', err);
-        return text; // graceful fallback — quiz always stays usable
+        console.error('[Quiz][translate][ERROR] Translation failed; original text is retained.', { language: targetLang, message: err && err.message });
+        return text; // never block answering if translation service fails
     }
 }
 
@@ -437,23 +480,54 @@ const renderQuestion = () => {
     if (q.imageUrl) {
         const imgContainer = document.createElement('div');
         imgContainer.id = 'current-quiz-image';
-        imgContainer.className = "w-full flex justify-center my-4";
-        
-        imgContainer.innerHTML = `
-            <div id="trigger-zoom" class="relative group w-full max-w-lg mx-auto bg-gray-100 dark:bg-gray-800 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 cursor-zoom-in transition-all hover:shadow-md">
-                <img src="${q.imageUrl}" alt="Question" class="w-full h-32 md:h-48 object-contain mx-auto p-2">
-                <div class="absolute inset-0 flex items-center justify-center bg-black/10 group-hover:bg-black/20 transition-colors">
-                     <div class="bg-white/90 dark:bg-slate-800/90 text-primary px-4 py-2 rounded-full text-xs font-bold shadow-sm backdrop-blur-sm">
-                        <i class="fa-solid fa-expand mr-2"></i> Click to Zoom Image
-                     </div>
-                </div>
-            </div>
-        `;
+        imgContainer.className = 'w-full flex justify-center my-4';
+
+        const imageFrame = document.createElement('div');
+        imageFrame.id = 'trigger-zoom';
+        imageFrame.className = 'relative group w-full max-w-lg mx-auto bg-gray-100 dark:bg-gray-800 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 transition-all hover:shadow-md';
+
+        const questionImage = document.createElement('img');
+        questionImage.alt = 'Question image';
+        questionImage.loading = 'eager';
+        questionImage.decoding = 'async';
+        questionImage.referrerPolicy = 'no-referrer';
+        questionImage.className = 'w-full h-32 md:h-48 object-contain mx-auto p-2';
+        questionImage.addEventListener('load', () => {
+            console.info('[Quiz][image][SUCCESS] Question image loaded.', { questionId: q.id });
+            imageFrame.classList.add('cursor-zoom-in');
+        }, { once: true });
+        questionImage.addEventListener('error', () => {
+            console.error('[Quiz][image][ERROR] Third-party question image failed to load.', { questionId: q.id, imageHost: (() => { try { return new URL(q.imageUrl, location.href).host; } catch (_) { return 'invalid-url'; } })() });
+            imageFrame.classList.remove('cursor-zoom-in');
+            imageFrame.innerHTML = '';
+            const fallback = document.createElement('div');
+            fallback.className = 'px-4 py-6 text-center text-sm text-slate-600 dark:text-slate-300';
+            fallback.textContent = 'Question image is unavailable right now. You can continue answering using the question text.';
+            imageFrame.appendChild(fallback);
+        }, { once: true });
+
+        const zoomOverlay = document.createElement('div');
+        zoomOverlay.className = 'absolute inset-0 flex items-center justify-center bg-black/10 group-hover:bg-black/20 transition-colors pointer-events-none';
+        zoomOverlay.innerHTML = '<div class="bg-white/90 dark:bg-slate-800/90 text-primary px-4 py-2 rounded-full text-xs font-bold shadow-sm backdrop-blur-sm"><i class="fa-solid fa-expand mr-2"></i> Click to Zoom Image</div>';
+        imageFrame.appendChild(questionImage);
+        imageFrame.appendChild(zoomOverlay);
+        imgContainer.appendChild(imageFrame);
         quizEls.qText.parentNode.insertBefore(imgContainer, quizEls.qText.nextSibling);
 
-        document.getElementById('trigger-zoom').addEventListener('click', function() {
-            window.openImageZoom(q.imageUrl);
-        });
+        try {
+            questionImage.src = new URL(String(q.imageUrl), location.href).href;
+            imageFrame.addEventListener('click', () => {
+                if (questionImage.complete && questionImage.naturalWidth > 0 && typeof window.openImageZoom === 'function') {
+                    window.openImageZoom(questionImage.src);
+                    console.info('[Quiz][image-zoom][SUCCESS] Opened question image zoom.', { questionId: q.id });
+                } else {
+                    console.warn('[Quiz][image-zoom][ERROR] Zoom skipped because the image is not available.', { questionId: q.id });
+                }
+            });
+        } catch (error) {
+            console.error('[Quiz][image][ERROR] Invalid question image URL.', { questionId: q.id, message: error && error.message });
+            questionImage.dispatchEvent(new Event('error'));
+        }
     }
 
     document.getElementById('question-meta').textContent = `Question ${currentIndex+1} of ${questions.length}`;
@@ -616,6 +690,11 @@ const startTimer = () => {
 };
 
 const togglePause = (state) => {
+    if (!state && isOfflineNormalTest() && navigator.onLine) {
+        console.warn('[Quiz][network-guard][ERROR] Resume blocked because internet is ON during Normal Test Mode.');
+        alert('Internet connection is ON. For a fair offline Test Mode, turn internet OFF before resuming. Your answers are saved locally.');
+        return;
+    }
     if (isOfflineNormalTest() && offlineDeadlineAt) {
         if (state && !isPaused) offlinePauseStartedAt = Date.now();
         if (!state && isPaused && offlinePauseStartedAt) {
@@ -638,6 +717,25 @@ const togglePause = (state) => {
         if(quizEls.pausedOverlay) quizEls.pausedOverlay.classList.add('hidden');
     }
 };
+
+// Guard Normal Test Mode if connectivity returns mid-attempt. The local snapshot
+// is saved before warning so the student's answers survive a refresh or retry.
+window.addEventListener('online', () => {
+    try {
+        if (!isOfflineNormalTest() || !quizEls.container || quizEls.container.classList.contains('hidden')) return;
+        saveOfflineAttemptSnapshot('internet-enabled-during-test');
+        if (!isPaused) togglePause(true);
+        console.warn('[Quiz][network-guard][ERROR] Internet became available during Normal Test Mode; attempt paused.');
+        alert('Internet is ON. Normal Test Mode has been paused and your answers are saved locally. Turn internet OFF, then press Resume to continue.');
+    } catch (error) {
+        console.error('[Quiz][network-guard][ERROR] Failed to handle internet reconnect during test.', { message: error && error.message });
+        try { togglePause(true); } catch (pauseError) { console.error('[Quiz][network-guard][ERROR] Could not pause the test.', { message: pauseError && pauseError.message }); }
+    }
+});
+
+window.addEventListener('offline', () => {
+    console.info('[Quiz][network][SUCCESS] Browser reports internet connectivity is offline.');
+});
 
 function showPreQuizInitModal() {
     if (!preQuizEls.modal) {
