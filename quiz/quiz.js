@@ -72,6 +72,27 @@ async function getCachedQuizImage(url) {
     }
 }
 
+async function fetchQuizImageResponse(absoluteUrl) {
+    let directError = null;
+    try {
+        const direct = await fetch(absoluteUrl, { mode: 'cors', cache: 'force-cache' });
+        if (direct.ok && String(direct.headers.get('content-type') || '').toLowerCase().startsWith('image/')) return direct;
+        directError = new Error('Direct image request returned HTTP ' + direct.status);
+    } catch (error) {
+        directError = error;
+    }
+    const host = new URL(absoluteUrl).hostname.toLowerCase();
+    const isImgBB = ['i.ibb.co', 'ibb.co', 'imgbb.com', 'www.imgbb.com'].includes(host);
+    if (!isImgBB || !navigator.onLine) throw directError || new Error('Direct image download failed.');
+    const proxyUrl = '/api/quiz-image-cache?url=' + encodeURIComponent(absoluteUrl);
+    const proxied = await fetch(proxyUrl, { cache: 'force-cache' });
+    if (!proxied.ok || !String(proxied.headers.get('content-type') || '').toLowerCase().startsWith('image/')) {
+        throw new Error('Direct download failed (' + (directError && directError.message || 'unknown') + '); ImgBB download fallback returned HTTP ' + proxied.status);
+    }
+    console.info('[Quiz][image-cache][SUCCESS] Same-origin ImgBB download fallback used.', { hostname: host });
+    return proxied;
+}
+
 async function cacheQuizImage(url, questionId) {
     try {
         if (!url) return false;
@@ -79,7 +100,7 @@ async function cacheQuizImage(url, questionId) {
         if (quizImageMemoryCache.has(absoluteUrl)) return true;
         const existing = await getCachedQuizImage(absoluteUrl);
         if (existing) return true;
-        const response = await fetch(absoluteUrl, { mode: 'cors', cache: 'force-cache' });
+        const response = await fetchQuizImageResponse(absoluteUrl);
         if (!response.ok) throw new Error('Image download returned HTTP ' + response.status);
         const blob = await response.blob();
         if (!blob.type.startsWith('image/')) throw new Error('URL did not return an image.');
