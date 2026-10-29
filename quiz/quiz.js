@@ -406,9 +406,14 @@ async function applyQuestionLanguage(lang) {
 }
 
 async function applyLanguage(lang) {
-    currentLanguage = lang;
-    document.documentElement.setAttribute('dir', lang === 'ur' || lang === 'sd' || lang === 'ks' ? 'auto' : 'ltr');
-    await Promise.all([applyStaticUILanguage(lang), applyQuestionLanguage(lang)]);
+    try {
+        currentLanguage = lang;
+        document.documentElement.setAttribute('dir', lang === 'ur' || lang === 'sd' || lang === 'ks' ? 'auto' : 'ltr');
+        await Promise.all([applyStaticUILanguage(lang), applyQuestionLanguage(lang)]);
+        console.info('[Quiz][translate-mode][SUCCESS] Language applied.', { language: lang, cachedEntries: translationCache.size });
+    } catch (error) {
+        console.error('[Quiz][translate-mode][ERROR] Could not fully apply selected language.', { language: lang, message: error && error.message });
+    }
 }
 
 if (langEls.select) {
@@ -467,6 +472,7 @@ const updateQuestionPalette = () => {
 
 
 const renderQuestion = () => {
+    try {
     const q = questions[currentIndex];
     
     // Mark as visited as soon as it renders
@@ -616,6 +622,10 @@ const renderQuestion = () => {
         applyQuestionLanguage(currentLanguage);
     }
     if (isOfflineNormalTest()) saveOfflineAttemptSnapshot('question-rendered');
+    console.info('[Quiz][render-question][SUCCESS]', { questionId: q.id, index: currentIndex, mode: currentMode });
+    } catch (error) {
+        console.error('[Quiz][render-question][ERROR] Could not render current question.', { index: currentIndex, message: error && error.message });
+    }
 };
 
 
@@ -690,31 +700,36 @@ const startTimer = () => {
 };
 
 const togglePause = (state) => {
-    if (!state && isOfflineNormalTest() && navigator.onLine) {
-        console.warn('[Quiz][network-guard][ERROR] Resume blocked because internet is ON during Normal Test Mode.');
-        alert('Internet connection is ON. For a fair offline Test Mode, turn internet OFF before resuming. Your answers are saved locally.');
-        return;
-    }
-    if (isOfflineNormalTest() && offlineDeadlineAt) {
-        if (state && !isPaused) offlinePauseStartedAt = Date.now();
-        if (!state && isPaused && offlinePauseStartedAt) {
-            offlineDeadlineAt += Math.max(0, Date.now() - offlinePauseStartedAt);
-            offlinePauseStartedAt = null;
-            saveOfflineAttemptSnapshot('timer-resumed');
+    try {
+        if (!state && isOfflineNormalTest() && navigator.onLine) {
+            console.warn('[Quiz][network-guard][ERROR] Resume blocked because internet is ON during Normal Test Mode.');
+            alert('Internet connection is ON. For a fair offline Test Mode, turn internet OFF before resuming. Your answers are saved locally.');
+            return;
         }
-    }
-    isPaused = state;
-    if(isPaused) {
-        if (isOfflineNormalTest()) saveOfflineAttemptSnapshot('timer-paused');
-        clearInterval(timerInterval);
-        if(quizEls.pause) quizEls.pause.classList.add('hidden'); 
-        if(quizEls.resume) quizEls.resume.classList.remove('hidden');
-        if(quizEls.pausedOverlay) quizEls.pausedOverlay.classList.remove('hidden');
-    } else {
-        startTimer();
-        if(quizEls.pause) quizEls.pause.classList.remove('hidden'); 
-        if(quizEls.resume) quizEls.resume.classList.add('hidden');
-        if(quizEls.pausedOverlay) quizEls.pausedOverlay.classList.add('hidden');
+        if (isOfflineNormalTest() && offlineDeadlineAt) {
+            if (state && !isPaused) offlinePauseStartedAt = Date.now();
+            if (!state && isPaused && offlinePauseStartedAt) {
+                offlineDeadlineAt += Math.max(0, Date.now() - offlinePauseStartedAt);
+                offlinePauseStartedAt = null;
+                saveOfflineAttemptSnapshot('timer-resumed');
+            }
+        }
+        isPaused = state;
+        if (isPaused) {
+            if (isOfflineNormalTest()) saveOfflineAttemptSnapshot('timer-paused');
+            clearInterval(timerInterval);
+            if (quizEls.pause) quizEls.pause.classList.add('hidden');
+            if (quizEls.resume) quizEls.resume.classList.remove('hidden');
+            if (quizEls.pausedOverlay) quizEls.pausedOverlay.classList.remove('hidden');
+        } else {
+            startTimer();
+            if (quizEls.pause) quizEls.pause.classList.remove('hidden');
+            if (quizEls.resume) quizEls.resume.classList.add('hidden');
+            if (quizEls.pausedOverlay) quizEls.pausedOverlay.classList.add('hidden');
+        }
+        console.info('[Quiz][pause][SUCCESS]', { paused: isPaused, mode: currentMode });
+    } catch (error) {
+        console.error('[Quiz][pause][ERROR] Could not change quiz pause state.', { requestedPaused: state, message: error && error.message });
     }
 };
 
