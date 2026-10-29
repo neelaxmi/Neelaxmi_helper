@@ -24,6 +24,32 @@ const QUIZ_IMAGE_STORE = 'images';
 const quizImageMemoryCache = new Map();
 let quizImageDbPromise = null;
 
+// Admin saves the image URL in Firestore on each question as `imageUrl`.
+// Keep that remote URL as the source of truth; only cache its downloaded bytes
+// locally for offline use. Do not reinterpret relative paths as local images.
+function resolveFirebaseQuestionImageUrl(rawUrl, questionId) {
+    try {
+        const value = typeof rawUrl === 'string' ? rawUrl.trim() : '';
+        if (!value) return null;
+        const parsed = new URL(value);
+        if (parsed.protocol !== 'https:') {
+            throw new Error('Question image URL must be an absolute HTTPS URL from the saved question data.');
+        }
+        console.info('[Quiz][image-url][SUCCESS] Using the question imageUrl saved with the Firebase question.', {
+            questionId: questionId || null,
+            host: parsed.hostname
+        });
+        return parsed.href;
+    } catch (error) {
+        console.error('[Quiz][image-url][ERROR] Question imageUrl is missing or invalid; no local image path will be assumed.', {
+            questionId: questionId || null,
+            imageUrl: String(rawUrl || ''),
+            message: error && error.message
+        });
+        return null;
+    }
+}
+
 function openQuizImageCacheDb() {
     if (quizImageDbPromise) return quizImageDbPromise;
     quizImageDbPromise = new Promise((resolve, reject) => {
@@ -53,7 +79,8 @@ function openQuizImageCacheDb() {
 async function getCachedQuizImage(url) {
     try {
         if (!url) return null;
-        const absoluteUrl = new URL(String(url), location.href).href;
+        const absoluteUrl = resolveFirebaseQuestionImageUrl(url);
+        if (!absoluteUrl) return null;
         if (quizImageMemoryCache.has(absoluteUrl)) return quizImageMemoryCache.get(absoluteUrl);
         const db = await openQuizImageCacheDb();
         const record = await new Promise((resolve, reject) => {
@@ -96,7 +123,8 @@ async function fetchQuizImageResponse(absoluteUrl) {
 async function cacheQuizImage(url, questionId) {
     try {
         if (!url) return false;
-        const absoluteUrl = new URL(String(url), location.href).href;
+        const absoluteUrl = resolveFirebaseQuestionImageUrl(url, questionId);
+        if (!absoluteUrl) return false;
         if (quizImageMemoryCache.has(absoluteUrl)) return true;
         const existing = await getCachedQuizImage(absoluteUrl);
         if (existing) return true;
@@ -799,7 +827,8 @@ const renderQuestion = () => {
         quizEls.qText.parentNode.insertBefore(imgContainer, quizEls.qText.nextSibling);
 
         try {
-            const originalImageUrl = new URL(String(q.imageUrl), location.href).href;
+            const originalImageUrl = resolveFirebaseQuestionImageUrl(q.imageUrl, q.id);
+            if (!originalImageUrl) throw new Error('The question has no valid HTTPS imageUrl saved in Firebase.');
             getCachedQuizImage(originalImageUrl).then(cachedImageUrl => {
                 if (!questionImage.isConnected) return;
                 questionImage.src = cachedImageUrl || originalImageUrl;
