@@ -444,6 +444,21 @@ let currentLanguage = (() => {
         return 'en';
     }
 })();
+let quizAttemptLanguageLocked = false;
+window.setQuizAttemptLanguageLock = (locked) => {
+    try {
+        quizAttemptLanguageLocked = !!locked;
+        if (langEls.select) {
+            langEls.select.disabled = quizAttemptLanguageLocked;
+            langEls.select.setAttribute('aria-disabled', String(quizAttemptLanguageLocked));
+        }
+        console.info('[Quiz][translate-mode][SUCCESS] Language selector lock updated.', { locked: quizAttemptLanguageLocked });
+        return true;
+    } catch (error) {
+        console.error('[Quiz][translate-mode][ERROR] Could not update language selector lock.', { message: error && error.message });
+        return false;
+    }
+};
 const TRANSLATION_CACHE_STORAGE_KEY = 'neelaxmi_translation_cache_v1';
 const translationCache = new Map(); // `${lang}::${text}` -> translated text, persisted for offline reuse
 const langEls = { select: document.getElementById('language-select') };
@@ -642,6 +657,12 @@ async function applyLanguage(lang) {
 
 if (langEls.select) {
     langEls.select.onchange = () => {
+        if (quizAttemptLanguageLocked) {
+            langEls.select.value = currentLanguage;
+            console.warn('[Quiz][translate-mode][INFO] Language change blocked during an active attempt; choose language before the next attempt.');
+            alert('Language cannot be changed during an active quiz. Finish this attempt first, then choose a language before starting the next one.');
+            return;
+        }
         console.info('[Quiz][translate-mode][SUCCESS] Language selector changed.', { language: langEls.select.value });
         applyLanguage(langEls.select.value);
     };
@@ -1360,16 +1381,20 @@ const beginSelectedQuiz = async () => {
     }
     const [start, end] = cfg.rangeVal.split('-').map(Number);
     const selectedQuestions = allQuestions.slice(start, end);
-    try {
-        await Promise.all([
-            prepareQuizImages(selectedQuestions),
-            currentLanguage !== 'en' && navigator.onLine
-                ? preCacheQuestionTranslations(currentLanguage, selectedQuestions)
-                : Promise.resolve({ cached: 0, failed: 0 })
-        ]);
-        await showQuizPreparationCountdown(10);
-    } catch (error) {
-        console.error('[Quiz][preparation][ERROR] Quiz preparation failed; attempting to continue with available assets.', { message: error && error.message });
+    if (!proctoringEnabled) {
+        try {
+            await Promise.all([
+                prepareQuizImages(selectedQuestions),
+                currentLanguage !== 'en' && navigator.onLine
+                    ? preCacheQuestionTranslations(currentLanguage, selectedQuestions)
+                    : Promise.resolve({ cached: 0, failed: 0 })
+            ]);
+            await showQuizPreparationCountdown(10);
+        } catch (error) {
+            console.error('[Quiz][preparation][ERROR] Quiz preparation failed; attempting to continue with available assets.', { message: error && error.message });
+        }
+    } else {
+        console.info('[Quiz][preparation][SUCCESS] Existing proctoring/CBT startup flow preserved; preparation overlay skipped.');
     }
     timeLeft = cfg.selectedTime * 60;
     quizStartDurationSeconds = timeLeft; // remember the real starting duration for result.js's Total Time calc
@@ -1407,6 +1432,8 @@ const beginSelectedQuiz = async () => {
     } else {
         console.info('[Quiz][start][SUCCESS] Online quiz attempt initialized.', { quizId: currentQuizId, mode: currentMode });
     }
+
+    if (typeof window.setQuizAttemptLanguageLock === 'function') window.setQuizAttemptLanguageLock(true);
 
     // Fresh violation state for this attempt
     violationCount = 0;
