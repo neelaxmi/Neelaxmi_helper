@@ -1248,19 +1248,28 @@ const loadQuiz = async (uid) => {
         console.info('[ChapterQuiz][START] Loading chapter questions from question_bank.', { quizId: uid, subject: data.subject, chapter: data.chapter });
         try {
             if (!data.chapter) throw new Error('Chapter metadata is missing from this chapter quiz.');
-            const bankSnap = await db.collection('question_bank').where('chapter', '==', data.chapter).get();
             const wantedSubject = String(data.subject || 'Unclassified').trim().toLowerCase();
-            data.questions = bankSnap.docs
-                .map(d => ({ id: d.id, ...d.data() }))
-                .filter(q => String(q.subject || 'Unclassified').trim().toLowerCase() === wantedSubject)
-                .map(q => {
-                    const normalized = { ...q };
-                    delete normalized.bankId;
-                    delete normalized.schemaVersion;
-                    delete normalized.createdAt;
-                    delete normalized.updatedAt;
-                    return normalized;
+            const chapterQuestions = [];
+            let lastQuestionDoc = null;
+            while (true) {
+                let bankQuery = db.collection('question_bank').where('chapter', '==', data.chapter)
+                    .orderBy(firebase.firestore.FieldPath.documentId()).limit(500);
+                if (lastQuestionDoc) bankQuery = bankQuery.startAfter(lastQuestionDoc);
+                const bankSnap = await bankQuery.get();
+                if (bankSnap.empty) break;
+                bankSnap.docs.forEach(d => {
+                    const q = { id: d.id, ...d.data() };
+                    if (String(q.subject || 'Unclassified').trim().toLowerCase() !== wantedSubject) return;
+                    delete q.bankId;
+                    delete q.schemaVersion;
+                    delete q.createdAt;
+                    delete q.updatedAt;
+                    chapterQuestions.push(q);
                 });
+                lastQuestionDoc = bankSnap.docs[bankSnap.docs.length - 1];
+                if (bankSnap.size < 500) break;
+            }
+            data.questions = chapterQuestions;
             if (!data.questions.length) throw new Error(`No questions found for ${data.subject || 'Unclassified'} / ${data.chapter}.`);
             data.questionCount = data.questions.length;
             data.durationMinutes = Math.max(1, data.questions.length);
