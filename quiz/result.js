@@ -329,6 +329,10 @@ const fetchExplanation = async (questionDetails, isRegenerate = false) => {
 
     // 1. Per-session cache — already fetched once this page load, zero cost.
     let cachedHtml = ans?.generatedExplanation || explanationCache[qId];
+    if (!cachedHtml && ans?.explanation) {
+        cachedHtml = markdownToHtml(String(ans.explanation));
+        console.info('[QuestionBankExplanation][SUCCESS] Using saved Question Bank explanation.', { quizId: currentQuizId, questionId: qId });
+    }
 
     // 2. Shared COMMUNITY cache in Firestore — the big win: if ANY other
     // student already generated this exact question's explanation, use it
@@ -713,7 +717,7 @@ const submitQuiz = async (isTimeout = false) => {
         if(isCorrect) score++;
         else if (u !== null && u !== undefined) wrongCount++; // answered but wrong (skipped = neither)
         const timeSpent = 20;
-        return { qId: q.id, qText: q.question, imageUrl: q.imageUrl || null, userAnswer: u||null, correctAnswer: q.answer, isCorrect, timeSpent };
+        return { qId: q.id, qText: q.question, imageUrl: q.imageUrl || null, userAnswer: u||null, correctAnswer: q.answer, explanation: q.explanation || '', isCorrect, timeSpent };
     });
     const skippedCount = Math.max(0, questions.length - score - wrongCount);
 
