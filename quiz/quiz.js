@@ -301,6 +301,7 @@ let currentLanguage = (() => {
 })();
 const TRANSLATION_CACHE_STORAGE_KEY = 'neelaxmi_translation_cache_v1';
 const translationCache = new Map(); // `${lang}::${text}` -> translated text, persisted for offline reuse
+let lastOfflineTranslationWarningLanguage = null;
 const langEls = { select: document.getElementById('language-select') };
 if (langEls.select) {
     langEls.select.value = currentLanguage;
@@ -316,7 +317,7 @@ if (langEls.select) {
         }
         const entries = JSON.parse(raw);
         if (!Array.isArray(entries)) throw new Error('Translation cache format is invalid.');
-        entries.slice(-600).forEach(entry => {
+        entries.slice(-1500).forEach(entry => {
             if (Array.isArray(entry) && typeof entry[0] === 'string' && typeof entry[1] === 'string') {
                 translationCache.set(entry[0], entry[1]);
             }
@@ -329,7 +330,7 @@ if (langEls.select) {
 
 function persistTranslationCache() {
     try {
-        const entries = Array.from(translationCache.entries()).slice(-600);
+        const entries = Array.from(translationCache.entries()).slice(-1500);
         localStorage.setItem(TRANSLATION_CACHE_STORAGE_KEY, JSON.stringify(entries));
         console.info('[Quiz][translation-cache][SUCCESS] Saved translation cache.', { entries: entries.length });
         return true;
@@ -366,7 +367,10 @@ async function translateText(text, targetLang) {
     }
 
     if (typeof navigator !== 'undefined' && !navigator.onLine) {
-        console.warn('[Quiz][translate][ERROR] Translation is not cached and internet is unavailable.', { language: targetLang });
+        if (lastOfflineTranslationWarningLanguage !== targetLang) {
+            lastOfflineTranslationWarningLanguage = targetLang;
+            console.error('[Quiz][translate][ERROR] Offline translation pack is missing entries for this language. Select the language while online and wait for pre-cache to finish before disconnecting.', { language: targetLang });
+        }
         return text;
     }
 
@@ -389,15 +393,17 @@ async function translateText(text, targetLang) {
     }
 }
 
-async function preCacheQuestionTranslations(lang, questionSet = questions) {
+async function preCacheQuestionTranslations(lang, questionSet = null) {
     try {
+        // Before the attempt starts, `questions` is empty while `allQuestions` already contains the loaded quiz bank.
+        const sourceQuestions = Array.isArray(questionSet) ? questionSet : (questions.length ? questions : allQuestions);
         if (!lang || lang === 'en') return { cached: 0, failed: 0 };
         if (!navigator.onLine) {
             console.warn('[Quiz][translation-precache][ERROR] Cannot prepare offline translations without internet.', { language: lang });
             return { cached: 0, failed: 0 };
         }
         const uniqueTexts = new Set();
-        (Array.isArray(questionSet) ? questionSet : []).forEach(question => {
+        (Array.isArray(sourceQuestions) ? sourceQuestions : []).forEach(question => {
             if (question && question.question) uniqueTexts.add(String(question.question));
             const options = question && question.options;
             if (options && typeof options === 'object') {
@@ -414,7 +420,7 @@ async function preCacheQuestionTranslations(lang, questionSet = questions) {
 
         // Keep background pre-caching bounded so a very large question bank
         // cannot accidentally generate thousands of translation requests.
-        const MAX_TRANSLATION_PRECACHE_STRINGS = 250;
+        const MAX_TRANSLATION_PRECACHE_STRINGS = 1200;
         const skipped = Math.max(0, missing.length - MAX_TRANSLATION_PRECACHE_STRINGS);
         const workList = missing.slice(0, MAX_TRANSLATION_PRECACHE_STRINGS);
         if (skipped) {
