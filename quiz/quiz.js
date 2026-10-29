@@ -16,6 +16,172 @@ let currentQuizIsTest = false;
 let lockedTestDurationMinutes = null; 
 const DEFAULT_TEST_MODE_MINUTES_FALLBACK = 20; 
 
+
+// Question-image offline cache. IndexedDB is used instead of localStorage so
+// image bytes do not consume the small localStorage quota.
+const QUIZ_IMAGE_DB_NAME = 'neelaxmi_quiz_image_cache_v1';
+const QUIZ_IMAGE_STORE = 'images';
+const quizImageMemoryCache = new Map();
+let quizImageDbPromise = null;
+
+function openQuizImageCacheDb() {
+    if (quizImageDbPromise) return quizImageDbPromise;
+    quizImageDbPromise = new Promise((resolve, reject) => {
+        try {
+            const request = indexedDB.open(QUIZ_IMAGE_DB_NAME, 1);
+            request.onupgradeneeded = () => {
+                if (!request.result.objectStoreNames.contains(QUIZ_IMAGE_STORE)) {
+                    request.result.createObjectStore(QUIZ_IMAGE_STORE, { keyPath: 'url' });
+                }
+            };
+            request.onsuccess = () => {
+                console.info('[Quiz][image-cache][SUCCESS] Image cache database opened.');
+                resolve(request.result);
+            };
+            request.onerror = () => reject(request.error || new Error('IndexedDB open failed.'));
+        } catch (error) {
+            reject(error);
+        }
+    }).catch(error => {
+        quizImageDbPromise = null;
+        console.error('[Quiz][image-cache][ERROR] Could not open image cache database.', { message: error && error.message });
+        throw error;
+    });
+    return quizImageDbPromise;
+}
+
+async function getCachedQuizImage(url) {
+    try {
+        if (!url) return null;
+        const absoluteUrl = new URL(String(url), location.href).href;
+        if (quizImageMemoryCache.has(absoluteUrl)) return quizImageMemoryCache.get(absoluteUrl);
+        const db = await openQuizImageCacheDb();
+        const record = await new Promise((resolve, reject) => {
+            const request = db.transaction(QUIZ_IMAGE_STORE, 'readonly').objectStore(QUIZ_IMAGE_STORE).get(absoluteUrl);
+            request.onsuccess = () => resolve(request.result || null);
+            request.onerror = () => reject(request.error || new Error('Image cache read failed.'));
+        });
+        if (record && record.dataUrl) {
+            quizImageMemoryCache.set(absoluteUrl, record.dataUrl);
+            return record.dataUrl;
+        }
+        return null;
+    } catch (error) {
+        console.error('[Quiz][image-cache][ERROR] Could not read cached question image.', { url: String(url || ''), message: error && error.message });
+        return null;
+    }
+}
+
+async function fetchQuizImageResponse(absoluteUrl) {
+    let directError = null;
+    try {
+        const direct = await fetch(absoluteUrl, { mode: 'cors', cache: 'force-cache' });
+        if (direct.ok && String(direct.headers.get('content-type') || '').toLowerCase().startsWith('image/')) return direct;
+        directError = new Error('Direct image request returned HTTP ' + direct.status);
+    } catch (error) {
+        directError = error;
+    }
+    const host = new URL(absoluteUrl).hostname.toLowerCase();
+    const isImgBB = ['i.ibb.co', 'ibb.co', 'imgbb.com', 'www.imgbb.com'].includes(host);
+    if (!isImgBB || !navigator.onLine) throw directError || new Error('Direct image download failed.');
+    const proxyUrl = '/api/quiz-image-cache?url=' + encodeURIComponent(absoluteUrl);
+    const proxied = await fetch(proxyUrl, { cache: 'force-cache' });
+    if (!proxied.ok || !String(proxied.headers.get('content-type') || '').toLowerCase().startsWith('image/')) {
+        throw new Error('Direct download failed (' + (directError && directError.message || 'unknown') + '); ImgBB download fallback returned HTTP ' + proxied.status);
+    }
+    console.info('[Quiz][image-cache][SUCCESS] Same-origin ImgBB download fallback used.', { hostname: host });
+    return proxied;
+}
+
+async function cacheQuizImage(url, questionId) {
+    try {
+        if (!url) return false;
+        const absoluteUrl = new URL(String(url), location.href).href;
+        if (quizImageMemoryCache.has(absoluteUrl)) return true;
+        const existing = await getCachedQuizImage(absoluteUrl);
+        if (existing) return true;
+        const response = await fetchQuizImageResponse(absoluteUrl);
+        if (!response.ok) throw new Error('Image download returned HTTP ' + response.status);
+        const blob = await response.blob();
+        if (!blob.type.startsWith('image/')) throw new Error('URL did not return an image.');
+        const dataUrl = await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(String(reader.result));
+            reader.onerror = () => reject(reader.error || new Error('Image conversion failed.'));
+            reader.readAsDataURL(blob);
+        });
+        const db = await openQuizImageCacheDb();
+        await new Promise((resolve, reject) => {
+            const tx = db.transaction(QUIZ_IMAGE_STORE, 'readwrite');
+            tx.objectStore(QUIZ_IMAGE_STORE).put({ url: absoluteUrl, dataUrl, cachedAt: Date.now(), questionId: String(questionId || '') });
+            tx.oncomplete = resolve;
+            tx.onerror = () => reject(tx.error || new Error('Image cache write failed.'));
+            tx.onabort = () => reject(tx.error || new Error('Image cache write aborted.'));
+        });
+        quizImageMemoryCache.set(absoluteUrl, dataUrl);
+        console.info('[Quiz][image-cache][SUCCESS] Question image downloaded for offline use.', { questionId, bytes: blob.size });
+        return true;
+    } catch (error) {
+        console.error('[Quiz][image-cache][ERROR] Could not download/cache question image; direct URL will remain as fallback.', {
+            questionId, imageUrl: String(url || ''), pageUrl: location.href, message: error && error.message
+        });
+        return false;
+    }
+}
+
+async function prepareQuizImages(questionSet) {
+    try {
+        const imageQuestions = (Array.isArray(questionSet) ? questionSet : []).filter(q => q && q.imageUrl);
+        if (!imageQuestions.length) {
+            console.info('[Quiz][image-precache][SUCCESS] No question images need preparation.');
+            return { total: 0, cached: 0, failed: 0 };
+        }
+        let cached = 0;
+        let failed = 0;
+        for (const q of imageQuestions) {
+            if (await cacheQuizImage(q.imageUrl, q.id)) cached++;
+            else failed++;
+        }
+        console.info('[Quiz][image-precache][SUCCESS] Question image preparation finished.', { total: imageQuestions.length, cached, failed });
+        if (failed) console.warn('[Quiz][image-precache][INFO] Some images will use their original remote URL and may not be available offline.', { failed });
+        return { total: imageQuestions.length, cached, failed };
+    } catch (error) {
+        console.error('[Quiz][image-precache][ERROR] Image preparation failed.', { message: error && error.message });
+        return { total: 0, cached: 0, failed: 1 };
+    }
+}
+
+function showQuizPreparationCountdown(seconds = 10) {
+    return new Promise(resolve => {
+        let overlay = document.getElementById('quiz-preparation-overlay');
+        if (!overlay) {
+            overlay = document.createElement('div');
+            overlay.id = 'quiz-preparation-overlay';
+            overlay.className = 'fixed inset-0 z-[9999] flex items-center justify-center bg-slate-950/90 p-6 text-white';
+            overlay.innerHTML = '<div class="w-full max-w-md text-center"><div class="mx-auto mb-5 h-14 w-14 rounded-full border-4 border-white/25 border-t-white animate-spin"></div><h2 class="text-2xl font-extrabold">We are getting things ready for your quiz</h2><p id="quiz-preparation-status" class="mt-3 text-slate-200">Preparing your questions and images…</p><p id="quiz-preparation-countdown" class="mt-5 text-4xl font-black tabular-nums"></p></div>';
+            document.body.appendChild(overlay);
+        }
+        const status = overlay.querySelector('#quiz-preparation-status');
+        const countdown = overlay.querySelector('#quiz-preparation-countdown');
+        let remaining = Math.max(1, Number(seconds) || 10);
+        if (status) status.textContent = 'Preparing your questions and images…';
+        if (countdown) countdown.textContent = remaining + 's';
+        console.info('[Quiz][preparation][SUCCESS] Quiz preparation countdown started.', { seconds: remaining });
+        const tick = () => {
+            remaining--;
+            if (remaining <= 0) {
+                overlay.remove();
+                console.info('[Quiz][preparation][SUCCESS] Quiz preparation countdown completed.');
+                resolve(true);
+                return;
+            }
+            if (countdown) countdown.textContent = remaining + 's';
+            window.setTimeout(tick, 1000);
+        };
+        window.setTimeout(tick, 1000);
+    });
+}
+
 const OFFLINE_ATTEMPT_PREFIX = 'neelaxmi_offline_test_v1:';
 let offlineAttemptId = null;
 let offlineAttemptStorageKey = null;
@@ -299,8 +465,24 @@ let currentLanguage = (() => {
         return 'en';
     }
 })();
+let quizAttemptLanguageLocked = false;
+window.setQuizAttemptLanguageLock = (locked) => {
+    try {
+        quizAttemptLanguageLocked = !!locked;
+        if (langEls.select) {
+            langEls.select.disabled = quizAttemptLanguageLocked;
+            langEls.select.setAttribute('aria-disabled', String(quizAttemptLanguageLocked));
+        }
+        console.info('[Quiz][translate-mode][SUCCESS] Language selector lock updated.', { locked: quizAttemptLanguageLocked });
+        return true;
+    } catch (error) {
+        console.error('[Quiz][translate-mode][ERROR] Could not update language selector lock.', { message: error && error.message });
+        return false;
+    }
+};
 const TRANSLATION_CACHE_STORAGE_KEY = 'neelaxmi_translation_cache_v1';
 const translationCache = new Map(); // `${lang}::${text}` -> translated text, persisted for offline reuse
+let lastOfflineTranslationWarningLanguage = null;
 const langEls = { select: document.getElementById('language-select') };
 if (langEls.select) {
     langEls.select.value = currentLanguage;
@@ -316,7 +498,7 @@ if (langEls.select) {
         }
         const entries = JSON.parse(raw);
         if (!Array.isArray(entries)) throw new Error('Translation cache format is invalid.');
-        entries.slice(-600).forEach(entry => {
+        entries.slice(-2500).forEach(entry => {
             if (Array.isArray(entry) && typeof entry[0] === 'string' && typeof entry[1] === 'string') {
                 translationCache.set(entry[0], entry[1]);
             }
@@ -329,7 +511,7 @@ if (langEls.select) {
 
 function persistTranslationCache() {
     try {
-        const entries = Array.from(translationCache.entries()).slice(-600);
+        const entries = Array.from(translationCache.entries()).slice(-2500);
         localStorage.setItem(TRANSLATION_CACHE_STORAGE_KEY, JSON.stringify(entries));
         console.info('[Quiz][translation-cache][SUCCESS] Saved translation cache.', { entries: entries.length });
         return true;
@@ -366,7 +548,10 @@ async function translateText(text, targetLang) {
     }
 
     if (typeof navigator !== 'undefined' && !navigator.onLine) {
-        console.warn('[Quiz][translate][ERROR] Translation is not cached and internet is unavailable.', { language: targetLang });
+        if (lastOfflineTranslationWarningLanguage !== targetLang) {
+            lastOfflineTranslationWarningLanguage = targetLang;
+            console.error('[Quiz][translate][ERROR] Offline translation pack is missing entries for this language. Select the language while online and wait for pre-cache to finish before disconnecting.', { language: targetLang });
+        }
         return text;
     }
 
@@ -389,15 +574,17 @@ async function translateText(text, targetLang) {
     }
 }
 
-async function preCacheQuestionTranslations(lang, questionSet = questions) {
+async function preCacheQuestionTranslations(lang, questionSet = null) {
     try {
+        // Before the attempt starts, `questions` is empty while `allQuestions` already contains the loaded quiz bank.
+        const sourceQuestions = Array.isArray(questionSet) ? questionSet : (questions.length ? questions : allQuestions);
         if (!lang || lang === 'en') return { cached: 0, failed: 0 };
         if (!navigator.onLine) {
             console.warn('[Quiz][translation-precache][ERROR] Cannot prepare offline translations without internet.', { language: lang });
             return { cached: 0, failed: 0 };
         }
         const uniqueTexts = new Set();
-        (Array.isArray(questionSet) ? questionSet : []).forEach(question => {
+        (Array.isArray(sourceQuestions) ? sourceQuestions : []).forEach(question => {
             if (question && question.question) uniqueTexts.add(String(question.question));
             const options = question && question.options;
             if (options && typeof options === 'object') {
@@ -414,7 +601,7 @@ async function preCacheQuestionTranslations(lang, questionSet = questions) {
 
         // Keep background pre-caching bounded so a very large question bank
         // cannot accidentally generate thousands of translation requests.
-        const MAX_TRANSLATION_PRECACHE_STRINGS = 250;
+        const MAX_TRANSLATION_PRECACHE_STRINGS = 1500;
         const skipped = Math.max(0, missing.length - MAX_TRANSLATION_PRECACHE_STRINGS);
         const workList = missing.slice(0, MAX_TRANSLATION_PRECACHE_STRINGS);
         if (skipped) {
@@ -497,6 +684,12 @@ async function applyLanguage(lang) {
 
 if (langEls.select) {
     langEls.select.onchange = () => {
+        if (quizAttemptLanguageLocked) {
+            langEls.select.value = currentLanguage;
+            console.warn('[Quiz][translate-mode][INFO] Language change blocked during an active attempt; choose language before the next attempt.');
+            alert('Language cannot be changed during an active quiz. Finish this attempt first, then choose a language before starting the next one.');
+            return;
+        }
         console.info('[Quiz][translate-mode][SUCCESS] Language selector changed.', { language: langEls.select.value });
         applyLanguage(langEls.select.value);
     };
@@ -585,7 +778,10 @@ const renderQuestion = () => {
             imageFrame.classList.add('cursor-zoom-in');
         }, { once: true });
         questionImage.addEventListener('error', () => {
-            console.error('[Quiz][image][ERROR] Third-party question image failed to load.', { questionId: q.id, imageHost: (() => { try { return new URL(q.imageUrl, location.href).host; } catch (_) { return 'invalid-url'; } })() });
+            console.error('[Quiz][image][ERROR] Question image failed to load.', {
+                questionId: q.id, imageUrl: String(q.imageUrl || ''), pageUrl: location.href,
+                imageHost: (() => { try { return new URL(q.imageUrl, location.href).host; } catch (_) { return 'invalid-url'; } })()
+            });
             imageFrame.classList.remove('cursor-zoom-in');
             imageFrame.innerHTML = '';
             const fallback = document.createElement('div');
@@ -603,7 +799,20 @@ const renderQuestion = () => {
         quizEls.qText.parentNode.insertBefore(imgContainer, quizEls.qText.nextSibling);
 
         try {
-            questionImage.src = new URL(String(q.imageUrl), location.href).href;
+            const originalImageUrl = new URL(String(q.imageUrl), location.href).href;
+            getCachedQuizImage(originalImageUrl).then(cachedImageUrl => {
+                if (!questionImage.isConnected) return;
+                questionImage.src = cachedImageUrl || originalImageUrl;
+                console.info('[Quiz][image][SUCCESS] Question image source selected.', {
+                    questionId: q.id, source: cachedImageUrl ? 'local-cache' : 'remote-url',
+                    imageUrl: originalImageUrl, pageUrl: location.href
+                });
+            }).catch(error => {
+                console.error('[Quiz][image][ERROR] Cached image lookup failed; using remote URL.', {
+                    questionId: q.id, imageUrl: originalImageUrl, pageUrl: location.href, message: error && error.message
+                });
+                if (questionImage.isConnected) questionImage.src = originalImageUrl;
+            });
             imageFrame.addEventListener('click', () => {
                 if (questionImage.complete && questionImage.naturalWidth > 0 && typeof window.openImageZoom === 'function') {
                     window.openImageZoom(questionImage.src);
@@ -1168,7 +1377,7 @@ const loadQuiz = async (uid) => {
     };
 };
 
-const beginSelectedQuiz = () => {
+const beginSelectedQuiz = async () => {
     const cfg = pendingStartConfig;
     if (!cfg) {
         console.error('[Quiz][start][ERROR] Missing selected quiz configuration.');
@@ -1176,8 +1385,19 @@ const beginSelectedQuiz = () => {
     }
     currentMode = cfg.mode;
     if (currentMode === 'test' && !proctoringEnabled && navigator.onLine) {
+        try {
+            const [prepStart, prepEnd] = String(cfg.rangeVal || '0-20').split('-').map(Number);
+            const prepQuestions = allQuestions.slice(prepStart, prepEnd);
+            console.info('[Quiz][preparation][SUCCESS] Online preparation started before offline Test Mode.', { questionCount: prepQuestions.length, language: currentLanguage });
+            await Promise.all([
+                prepareQuizImages(prepQuestions),
+                currentLanguage !== 'en' ? preCacheQuestionTranslations(currentLanguage, prepQuestions) : Promise.resolve({ cached: 0, failed: 0 })
+            ]);
+        } catch (error) {
+            console.error('[Quiz][preparation][ERROR] Online pre-test preparation encountered an error; continuing to offline reminder.', { message: error && error.message });
+        }
         console.warn('[Quiz][start][INFO] Test Mode requires disconnecting the internet before starting.');
-        alert('Test Mode is designed for offline use. Questions are already loaded. Please disconnect your internet, then press Start Test again.');
+        alert('Preparation finished. Now disconnect your internet, then press Start Test again to begin.');
         return;
     }
     if (currentMode === 'quiz' && !navigator.onLine) {
@@ -1185,11 +1405,27 @@ const beginSelectedQuiz = () => {
         alert('Quiz Mode needs internet because it shows the correct answer immediately. Please reconnect and try again.');
         return;
     }
+    const [start, end] = cfg.rangeVal.split('-').map(Number);
+    const selectedQuestions = allQuestions.slice(start, end);
+    if (!proctoringEnabled) {
+        try {
+            await Promise.all([
+                prepareQuizImages(selectedQuestions),
+                currentLanguage !== 'en' && navigator.onLine
+                    ? preCacheQuestionTranslations(currentLanguage, selectedQuestions)
+                    : Promise.resolve({ cached: 0, failed: 0 })
+            ]);
+            await showQuizPreparationCountdown(10);
+        } catch (error) {
+            console.error('[Quiz][preparation][ERROR] Quiz preparation failed; attempting to continue with available assets.', { message: error && error.message });
+        }
+    } else {
+        console.info('[Quiz][preparation][SUCCESS] Existing proctoring/CBT startup flow preserved; preparation overlay skipped.');
+    }
     timeLeft = cfg.selectedTime * 60;
     quizStartDurationSeconds = timeLeft; // remember the real starting duration for result.js's Total Time calc
-    const [start, end] = cfg.rangeVal.split('-').map(Number);
 
-    questions = allQuestions.slice(start, end);
+    questions = selectedQuestions;
     currentIndex = 0;
     userAnswers = {};
     visitedQuestions = {};
@@ -1222,6 +1458,8 @@ const beginSelectedQuiz = () => {
     } else {
         console.info('[Quiz][start][SUCCESS] Online quiz attempt initialized.', { quizId: currentQuizId, mode: currentMode });
     }
+
+    if (typeof window.setQuizAttemptLanguageLock === 'function') window.setQuizAttemptLanguageLock(true);
 
     // Fresh violation state for this attempt
     violationCount = 0;
