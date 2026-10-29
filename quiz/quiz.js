@@ -497,7 +497,7 @@ if (langEls.select) {
         }
         const entries = JSON.parse(raw);
         if (!Array.isArray(entries)) throw new Error('Translation cache format is invalid.');
-        entries.slice(-600).forEach(entry => {
+        entries.slice(-2500).forEach(entry => {
             if (Array.isArray(entry) && typeof entry[0] === 'string' && typeof entry[1] === 'string') {
                 translationCache.set(entry[0], entry[1]);
             }
@@ -510,7 +510,7 @@ if (langEls.select) {
 
 function persistTranslationCache() {
     try {
-        const entries = Array.from(translationCache.entries()).slice(-600);
+        const entries = Array.from(translationCache.entries()).slice(-2500);
         localStorage.setItem(TRANSLATION_CACHE_STORAGE_KEY, JSON.stringify(entries));
         console.info('[Quiz][translation-cache][SUCCESS] Saved translation cache.', { entries: entries.length });
         return true;
@@ -595,7 +595,7 @@ async function preCacheQuestionTranslations(lang, questionSet = questions) {
 
         // Keep background pre-caching bounded so a very large question bank
         // cannot accidentally generate thousands of translation requests.
-        const MAX_TRANSLATION_PRECACHE_STRINGS = 250;
+        const MAX_TRANSLATION_PRECACHE_STRINGS = 1500;
         const skipped = Math.max(0, missing.length - MAX_TRANSLATION_PRECACHE_STRINGS);
         const workList = missing.slice(0, MAX_TRANSLATION_PRECACHE_STRINGS);
         if (skipped) {
