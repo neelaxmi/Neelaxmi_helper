@@ -16,6 +16,151 @@ let currentQuizIsTest = false;
 let lockedTestDurationMinutes = null; 
 const DEFAULT_TEST_MODE_MINUTES_FALLBACK = 20; 
 
+
+// Question-image offline cache. IndexedDB is used instead of localStorage so
+// image bytes do not consume the small localStorage quota.
+const QUIZ_IMAGE_DB_NAME = 'neelaxmi_quiz_image_cache_v1';
+const QUIZ_IMAGE_STORE = 'images';
+const quizImageMemoryCache = new Map();
+let quizImageDbPromise = null;
+
+function openQuizImageCacheDb() {
+    if (quizImageDbPromise) return quizImageDbPromise;
+    quizImageDbPromise = new Promise((resolve, reject) => {
+        try {
+            const request = indexedDB.open(QUIZ_IMAGE_DB_NAME, 1);
+            request.onupgradeneeded = () => {
+                if (!request.result.objectStoreNames.contains(QUIZ_IMAGE_STORE)) {
+                    request.result.createObjectStore(QUIZ_IMAGE_STORE, { keyPath: 'url' });
+                }
+            };
+            request.onsuccess = () => {
+                console.info('[Quiz][image-cache][SUCCESS] Image cache database opened.');
+                resolve(request.result);
+            };
+            request.onerror = () => reject(request.error || new Error('IndexedDB open failed.'));
+        } catch (error) {
+            reject(error);
+        }
+    }).catch(error => {
+        quizImageDbPromise = null;
+        console.error('[Quiz][image-cache][ERROR] Could not open image cache database.', { message: error && error.message });
+        throw error;
+    });
+    return quizImageDbPromise;
+}
+
+async function getCachedQuizImage(url) {
+    try {
+        if (!url) return null;
+        const absoluteUrl = new URL(String(url), location.href).href;
+        if (quizImageMemoryCache.has(absoluteUrl)) return quizImageMemoryCache.get(absoluteUrl);
+        const db = await openQuizImageCacheDb();
+        const record = await new Promise((resolve, reject) => {
+            const request = db.transaction(QUIZ_IMAGE_STORE, 'readonly').objectStore(QUIZ_IMAGE_STORE).get(absoluteUrl);
+            request.onsuccess = () => resolve(request.result || null);
+            request.onerror = () => reject(request.error || new Error('Image cache read failed.'));
+        });
+        if (record && record.dataUrl) {
+            quizImageMemoryCache.set(absoluteUrl, record.dataUrl);
+            return record.dataUrl;
+        }
+        return null;
+    } catch (error) {
+        console.error('[Quiz][image-cache][ERROR] Could not read cached question image.', { url: String(url || ''), message: error && error.message });
+        return null;
+    }
+}
+
+async function cacheQuizImage(url, questionId) {
+    try {
+        if (!url) return false;
+        const absoluteUrl = new URL(String(url), location.href).href;
+        if (quizImageMemoryCache.has(absoluteUrl)) return true;
+        const existing = await getCachedQuizImage(absoluteUrl);
+        if (existing) return true;
+        const response = await fetch(absoluteUrl, { mode: 'cors', cache: 'force-cache' });
+        if (!response.ok) throw new Error('Image download returned HTTP ' + response.status);
+        const blob = await response.blob();
+        if (!blob.type.startsWith('image/')) throw new Error('URL did not return an image.');
+        const dataUrl = await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(String(reader.result));
+            reader.onerror = () => reject(reader.error || new Error('Image conversion failed.'));
+            reader.readAsDataURL(blob);
+        });
+        const db = await openQuizImageCacheDb();
+        await new Promise((resolve, reject) => {
+            const tx = db.transaction(QUIZ_IMAGE_STORE, 'readwrite');
+            tx.objectStore(QUIZ_IMAGE_STORE).put({ url: absoluteUrl, dataUrl, cachedAt: Date.now(), questionId: String(questionId || '') });
+            tx.oncomplete = resolve;
+            tx.onerror = () => reject(tx.error || new Error('Image cache write failed.'));
+            tx.onabort = () => reject(tx.error || new Error('Image cache write aborted.'));
+        });
+        quizImageMemoryCache.set(absoluteUrl, dataUrl);
+        console.info('[Quiz][image-cache][SUCCESS] Question image downloaded for offline use.', { questionId, bytes: blob.size });
+        return true;
+    } catch (error) {
+        console.error('[Quiz][image-cache][ERROR] Could not download/cache question image; direct URL will remain as fallback.', {
+            questionId, imageUrl: String(url || ''), pageUrl: location.href, message: error && error.message
+        });
+        return false;
+    }
+}
+
+async function prepareQuizImages(questionSet) {
+    try {
+        const imageQuestions = (Array.isArray(questionSet) ? questionSet : []).filter(q => q && q.imageUrl);
+        if (!imageQuestions.length) {
+            console.info('[Quiz][image-precache][SUCCESS] No question images need preparation.');
+            return { total: 0, cached: 0, failed: 0 };
+        }
+        let cached = 0;
+        let failed = 0;
+        for (const q of imageQuestions) {
+            if (await cacheQuizImage(q.imageUrl, q.id)) cached++;
+            else failed++;
+        }
+        console.info('[Quiz][image-precache][SUCCESS] Question image preparation finished.', { total: imageQuestions.length, cached, failed });
+        if (failed) console.warn('[Quiz][image-precache][INFO] Some images will use their original remote URL and may not be available offline.', { failed });
+        return { total: imageQuestions.length, cached, failed };
+    } catch (error) {
+        console.error('[Quiz][image-precache][ERROR] Image preparation failed.', { message: error && error.message });
+        return { total: 0, cached: 0, failed: 1 };
+    }
+}
+
+function showQuizPreparationCountdown(seconds = 10) {
+    return new Promise(resolve => {
+        let overlay = document.getElementById('quiz-preparation-overlay');
+        if (!overlay) {
+            overlay = document.createElement('div');
+            overlay.id = 'quiz-preparation-overlay';
+            overlay.className = 'fixed inset-0 z-[9999] flex items-center justify-center bg-slate-950/90 p-6 text-white';
+            overlay.innerHTML = '<div class="w-full max-w-md text-center"><div class="mx-auto mb-5 h-14 w-14 rounded-full border-4 border-white/25 border-t-white animate-spin"></div><h2 class="text-2xl font-extrabold">We are getting things ready for your quiz</h2><p id="quiz-preparation-status" class="mt-3 text-slate-200">Preparing your questions and images…</p><p id="quiz-preparation-countdown" class="mt-5 text-4xl font-black tabular-nums"></p></div>';
+            document.body.appendChild(overlay);
+        }
+        const status = overlay.querySelector('#quiz-preparation-status');
+        const countdown = overlay.querySelector('#quiz-preparation-countdown');
+        let remaining = Math.max(1, Number(seconds) || 10);
+        if (status) status.textContent = 'Preparing your questions and images…';
+        if (countdown) countdown.textContent = remaining + 's';
+        console.info('[Quiz][preparation][SUCCESS] Quiz preparation countdown started.', { seconds: remaining });
+        const tick = () => {
+            remaining--;
+            if (remaining <= 0) {
+                overlay.remove();
+                console.info('[Quiz][preparation][SUCCESS] Quiz preparation countdown completed.');
+                resolve(true);
+                return;
+            }
+            if (countdown) countdown.textContent = remaining + 's';
+            window.setTimeout(tick, 1000);
+        };
+        window.setTimeout(tick, 1000);
+    });
+}
+
 const OFFLINE_ATTEMPT_PREFIX = 'neelaxmi_offline_test_v1:';
 let offlineAttemptId = null;
 let offlineAttemptStorageKey = null;
