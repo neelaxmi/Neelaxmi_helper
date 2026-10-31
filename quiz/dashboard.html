@@ -1,3 +1,6 @@
+
+
+
 <!DOCTYPE html>
 <html lang="en" class="transition-colors duration-300">
 <head>
@@ -687,51 +690,69 @@
         }
 
         const GEMINI_KEY_REGEX = /^AIza[0-9A-Za-z-_]{35}$/;
+        const ANSWER_LOOKUP_CAP = 1000;
 
-        async function updateGeminiKey() {
-            const keyInput = document.getElementById('input-gemini-key');
-            const key = keyInput.value.trim();
-            const btn = document.getElementById('btn-update-gemini-key');
-            const originalBtnHTML = btn.innerHTML;
+        
+async function updateGeminiKey() {
+    const keyInput = document.getElementById('input-gemini-key');
+    const key = keyInput.value.trim();
+    const btn = document.getElementById('btn-update-gemini-key');
+    const originalBtnHTML = btn.innerHTML;
 
-            if (!key) return alert("Please enter a key.");
+    if (!key) {
+        alert("Please enter a key.");
+        return;
+    }
 
-            if (!GEMINI_KEY_REGEX.test(key)) {
-                alert("That doesn't look like a valid Gemini API key. Keys start with 'AIza' and are 39 characters long.");
-                return;
-            }
+    if (!GEMINI_KEY_REGEX.test(key)) {
+        alert("Invalid Gemini API key.");
+        return;
+    }
 
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+
+    try {
+        const testUrl =
+            `https://generativelanguage.googleapis.com/v1beta/models?key=${encodeURIComponent(key)}`;
+
+        const res = await fetch(testUrl);
+
+        if (!res.ok) {
+            let message = `Key rejected by Google (HTTP ${res.status})`;
 
             try {
-                const testUrl = `https://generativelanguage.googleapis.com/v1beta/models?key=${encodeURIComponent(key)}`;
-                const res = await fetch(testUrl);
-
-                if (!res.ok) {
-                    let message = `Key rejected by Google (HTTP ${res.status})`;
-                    try {
-                        const errBody = await res.json();
-                        if (errBody?.error?.message) message = errBody.error.message;
-                    } catch (parseErr) { 
-                    throw new Error(message);
+                const errBody = await res.json();
+                if (errBody?.error?.message) {
+                    message = errBody.error.message;
                 }
-
-
-                await db.collection('users').doc(currentUser.uid).update({ geminiApiKey: key });
-                document.getElementById('gemini-modal').classList.add('hidden');
-                keyInput.value = '';
-                loadUserProfile(currentUser.uid);
-
-            } catch (e) {
-                console.error("Gemini key validation failed:", e);
-                alert("Could not verify this key: " + e.message);
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = originalBtnHTML;
+            } catch (parseErr) {
+                // Keep original error.
             }
+
+            throw new Error(message);
         }
 
+        await db.collection('users')
+            .doc(currentUser.uid)
+            .update({ geminiApiKey: key });
+
+        document.getElementById('gemini-modal').classList.add('hidden');
+        keyInput.value = '';
+
+        await loadUserProfile(currentUser.uid);
+
+        alert("Gemini API key updated successfully!");
+
+    } catch (e) {
+        console.error("Gemini key validation failed:", e);
+        alert("Could not verify this key: " + e.message);
+
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalBtnHTML;
+    }
+}
 
         let cachedLabels = [], cachedScores = [];
 
