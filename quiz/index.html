@@ -1,0 +1,1347 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NEELAXMI — THE UNION | Connected Learning Ecosystem &amp; 200,000+ Question Collection</title>
+  <meta name="description" content="NEELAXMI — THE UNION is a connected educational ecosystem bringing questions, quizzes, learning resources and innovative academic experiences together in one destination.">
+  <meta name="theme-color" content="#060b1f">
+  <link rel="icon" href="data:image/svg+xml;charset=utf-8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%0A  %3Cdefs%3E%3ClinearGradient id=%22g%22 x1=%220%22 y1=%220%22 x2=%221%22 y2=%221%22%3E%3Cstop offset=%220%22 stop-color=%22%232f5bff%22/%3E%3Cstop offset=%221%22 stop-color=%22%237a4dff%22/%3E%3C/linearGradient%3E%3C/defs%3E%0A  %3Crect width=%2264%22 height=%2264%22 rx=%2216%22 fill=%22url%28%23g%29%22/%3E%0A  %3Ccircle cx=%2225%22 cy=%2232%22 r=%2212%22 fill=%22none%22 stroke=%22%23fff%22 stroke-width=%224%22/%3E%0A  %3Ccircle cx=%2239%22 cy=%2232%22 r=%2212%22 fill=%22none%22 stroke=%22%231fe0b0%22 stroke-width=%224%22/%3E%0A%3C/svg%3E" type="image/svg+xml">
+
+  <!-- Open Graph / social preview. Replace og:url and og:image with absolute URLs once the site is live. -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="NEELAXMI">
+  <meta property="og:title" content="NEELAXMI — THE UNION">
+  <meta property="og:description" content="One Platform. Countless Possibilities. Limitless Learning.">
+  <meta property="og:image" content="OG_IMAGE_URL">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="NEELAXMI — THE UNION">
+  <meta name="twitter:description" content="A connected educational ecosystem: questions, quizzes and learning resources in one destination.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Sora:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+/* ==========================================================================
+   NEELAXMI — THE UNION | style.css
+   Design tokens first, then base, layout, components, sections, responsive.
+   ========================================================================== */
+
+/* ---------- 1. Design tokens ---------- */
+:root {
+  --blue: #2f5bff;
+  --violet: #7a4dff;
+  --cyan: #12c8e8;
+  --mint: #1fe0b0;
+  --grad: linear-gradient(135deg, var(--blue), var(--violet));
+  --grad-wide: linear-gradient(120deg, var(--blue), var(--violet) 55%, var(--cyan));
+
+  --font-body: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-head: "Sora", "Plus Jakarta Sans", system-ui, sans-serif;
+
+  --radius: 20px;
+  --radius-sm: 12px;
+  --ease: cubic-bezier(.2, .7, .2, 1);
+  --container: 1180px;
+  --header-h: 72px;
+}
+
+html[data-theme="dark"] {
+  --bg: #060b1f;
+  --bg-2: #0a1230;
+  --surface: #0d1634;
+  --surface-2: #131f48;
+  --text: #eef2ff;
+  --muted: #9aa7d6;
+  --line: rgba(255, 255, 255, .09);
+  --shadow: 0 24px 60px -24px rgba(0, 0, 0, .7);
+  --card-glow: rgba(122, 77, 255, .18);
+  color-scheme: dark;
+}
+html[data-theme="light"] {
+  --bg: #f6f8ff;
+  --bg-2: #eaefff;
+  --surface: #ffffff;
+  --surface-2: #eef2ff;
+  --text: #0b1230;
+  --muted: #505b85;
+  --line: rgba(11, 18, 48, .1);
+  --shadow: 0 24px 60px -28px rgba(47, 91, 255, .35);
+  --card-glow: rgba(47, 91, 255, .12);
+  color-scheme: light;
+}
+
+/* ---------- 2. Base ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: calc(var(--header-h) + 12px); -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; font-family: var(--font-body); font-size: 1.0625rem; line-height: 1.65;
+  color: var(--text); background: var(--bg);
+  transition: background .35s var(--ease), color .35s var(--ease);
+  overflow-x: hidden;
+}
+body.menu-open { overflow: hidden; }
+img, svg { max-width: 100%; display: block; }
+a { color: inherit; text-decoration: none; }
+p { margin: 0 0 1em; }
+h1, h2, h3, h4 { font-family: var(--font-head); line-height: 1.12; margin: 0 0 .5em; letter-spacing: -.02em; }
+h1 { font-size: clamp(2.5rem, 6vw, 4.6rem); font-weight: 800; }
+h2 { font-size: clamp(2rem, 4.2vw, 3.2rem); font-weight: 700; }
+h3 { font-size: 1.25rem; font-weight: 600; }
+:focus-visible { outline: 3px solid var(--cyan); outline-offset: 3px; border-radius: 8px; }
+::selection { background: var(--violet); color: #fff; }
+
+.container { width: min(100% - 40px, var(--container)); margin-inline: auto; }
+.section { padding: clamp(72px, 10vw, 128px) 0; position: relative; }
+.center { text-align: center; }
+.section-head { max-width: 720px; margin: 0 auto 56px; }
+.eyebrow { font-family: var(--font-head); font-size: .78rem; font-weight: 700; letter-spacing: .22em; text-transform: uppercase; color: var(--cyan); margin-bottom: 14px; }
+.lead { font-size: clamp(1.05rem, 1.6vw, 1.25rem); color: var(--muted); max-width: 60ch; }
+.center .lead { margin-inline: auto; }
+.grad-text { background: var(--grad-wide); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.ico { width: 1.25em; height: 1.25em; flex: none; }
+.skip-link { position: absolute; left: -999px; top: 8px; background: var(--blue); color: #fff; padding: 10px 16px; border-radius: 10px; z-index: 200; }
+.skip-link:focus { left: 12px; }
+
+/* ---------- 3. Buttons ---------- */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  font-family: var(--font-head); font-weight: 600; font-size: .98rem;
+  padding: 13px 24px; border-radius: 999px; border: 1px solid transparent; cursor: pointer;
+  transition: transform .25s var(--ease), box-shadow .25s var(--ease), background .25s, border-color .25s, color .25s;
+}
+.btn .ico { transition: transform .25s var(--ease); }
+.btn:hover .ico { transform: translateX(4px); }
+.btn-primary { background: var(--grad); color: #fff; box-shadow: 0 10px 30px -10px rgba(79, 70, 255, .75); }
+.btn-primary:hover { transform: translateY(-3px); box-shadow: 0 18px 40px -12px rgba(79, 70, 255, .9); }
+.btn-ghost { border-color: var(--line); background: color-mix(in srgb, var(--surface) 70%, transparent); color: var(--text); backdrop-filter: blur(8px); }
+.btn-ghost:hover { border-color: var(--cyan); transform: translateY(-3px); }
+.btn-link { color: var(--text); padding-inline: 8px; }
+.btn-link:hover { color: var(--cyan); }
+.btn-sm { padding: 9px 18px; font-size: .9rem; }
+.btn-lg { padding: 15px 28px; }
+.btn-xl { padding: 18px 36px; font-size: 1.08rem; }
+
+/* ---------- 4. Header ---------- */
+.site-header { position: fixed; inset: 0 0 auto 0; z-index: 100; height: var(--header-h); display: flex; align-items: center; transition: background .3s, backdrop-filter .3s, border-color .3s, box-shadow .3s; border-bottom: 1px solid transparent; }
+.site-header.scrolled { background: color-mix(in srgb, var(--bg) 82%, transparent); backdrop-filter: blur(16px) saturate(1.4); border-bottom-color: var(--line); }
+.header-inner { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+.brand { display: inline-flex; align-items: center; gap: 12px; }
+.brand-logo { width: 40px; height: 40px; object-fit: contain; border-radius: 10px; }
+.brand-text { display: flex; flex-direction: column; line-height: 1.1; }
+.brand-name { font-family: var(--font-head); font-weight: 800; letter-spacing: .08em; font-size: 1.05rem; }
+.brand-sub { font-size: .62rem; letter-spacing: .32em; color: var(--cyan); font-weight: 700; }
+.nav { display: flex; align-items: center; gap: 4px; }
+.nav-link { padding: 8px 13px; font-size: .93rem; font-weight: 500; color: var(--muted); border-radius: 999px; transition: color .2s, background .2s; }
+.nav-link:hover, .nav-link.active { color: var(--text); background: var(--surface-2); }
+.nav-cta { margin-left: 10px; }
+.header-actions { display: flex; gap: 8px; }
+.icon-btn { width: 42px; height: 42px; display: grid; place-items: center; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); color: var(--text); cursor: pointer; transition: transform .2s, border-color .2s; }
+.icon-btn:hover { border-color: var(--cyan); transform: translateY(-2px); }
+.icon-btn .ico { width: 20px; height: 20px; }
+html[data-theme="dark"] .ico-moon, html[data-theme="light"] .ico-sun { display: none; }
+.menu-btn { display: none; }
+.menu-btn .ico-close { display: none; }
+.menu-btn[aria-expanded="true"] .ico-open { display: none; }
+.menu-btn[aria-expanded="true"] .ico-close { display: block; }
+
+/* ---------- 5. Hero ---------- */
+.hero { position: relative; min-height: 100svh; display: flex; align-items: center; padding: calc(var(--header-h) + 40px) 0 80px; overflow: hidden; }
+.hero-bg { position: absolute; inset: 0; z-index: 0; }
+.glow { position: absolute; border-radius: 50%; filter: blur(90px); opacity: .55; animation: drift 16s ease-in-out infinite alternate; }
+.glow-a { width: 520px; height: 520px; background: var(--blue); top: -160px; left: -120px; }
+.glow-b { width: 460px; height: 460px; background: var(--violet); right: -120px; top: 10%; animation-delay: -5s; }
+.glow-c { width: 360px; height: 360px; background: var(--cyan); bottom: -140px; left: 35%; opacity: .3; animation-delay: -9s; }
+html[data-theme="light"] .glow { opacity: .28; }
+.grid-lines { position: absolute; inset: 0; background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px); background-size: 56px 56px; mask-image: radial-gradient(ellipse at 50% 40%, #000 20%, transparent 72%); -webkit-mask-image: radial-gradient(ellipse at 50% 40%, #000 20%, transparent 72%); }
+@keyframes drift { to { transform: translate(60px, 40px) scale(1.12); } }
+
+.hero-inner { position: relative; z-index: 1; display: grid; grid-template-columns: 1.1fr .9fr; gap: 48px; align-items: center; }
+.hero-brand { display: flex; align-items: center; gap: 16px; margin-bottom: 28px; }
+.hero-logo { width: 56px; height: 56px; object-fit: contain; border-radius: 14px; }
+.hero-brand-name { font-family: var(--font-head); font-weight: 800; font-size: 1.5rem; letter-spacing: .1em; margin: 0; line-height: 1; }
+.hero-brand .eyebrow { margin: 6px 0 0; letter-spacing: .38em; }
+.hero h1 { margin-bottom: .45em; }
+.hero .lead { margin-bottom: 32px; }
+.cta-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-bottom: 28px; }
+.hero-tag { font-size: .9rem; color: var(--muted); letter-spacing: .04em; margin: 0; padding-left: 14px; border-left: 3px solid var(--mint); }
+
+/* Hero visual */
+.hero-visual { position: relative; aspect-ratio: 1; width: min(100%, 520px); margin-inline: auto; }
+.orbit { position: absolute; border: 1px dashed color-mix(in srgb, var(--cyan) 45%, transparent); border-radius: 50%; inset: 0; animation: spin 40s linear infinite; }
+.orbit-2 { inset: 13%; border-style: solid; border-color: var(--line); animation-duration: 60s; animation-direction: reverse; }
+.orbit-3 { inset: 27%; border-color: color-mix(in srgb, var(--violet) 55%, transparent); animation-duration: 28s; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.core { position: absolute; inset: 38%; border-radius: 50%; background: var(--grad); box-shadow: 0 0 80px 10px rgba(122, 77, 255, .55), inset 0 0 30px rgba(255, 255, 255, .25); display: grid; place-items: center; animation: pulse 5s ease-in-out infinite; }
+.ring { position: absolute; width: 56%; aspect-ratio: 1; border-radius: 50%; border: 5px solid #fff; }
+.ring-a { transform: translateX(-26%); }
+.ring-b { transform: translateX(26%); border-color: var(--mint); }
+@keyframes pulse { 50% { transform: scale(1.06); } }
+.chip { position: absolute; display: inline-flex; align-items: center; gap: 8px; padding: 9px 16px; font-size: .85rem; font-weight: 600; border-radius: 999px; background: color-mix(in srgb, var(--surface) 82%, transparent); border: 1px solid var(--line); backdrop-filter: blur(10px); box-shadow: var(--shadow); animation: float 6s ease-in-out infinite; }
+.chip .ico { color: var(--cyan); width: 1.1em; height: 1.1em; }
+.chip-1 { top: 8%; left: 4%; }
+.chip-2 { top: 18%; right: -2%; animation-delay: -1.5s; }
+.chip-3 { bottom: 22%; left: -4%; animation-delay: -3s; }
+.chip-4 { bottom: 6%; right: 8%; animation-delay: -4.5s; }
+.chip-5 { top: 48%; right: -6%; animation-delay: -2s; }
+@keyframes float { 50% { transform: translateY(-12px); } }
+.dot { position: absolute; width: 10px; height: 10px; border-radius: 50%; background: var(--mint); box-shadow: 0 0 16px var(--mint); animation: float 5s ease-in-out infinite; }
+.dot-1 { top: 30%; left: 18%; } .dot-2 { top: 70%; right: 24%; background: var(--cyan); box-shadow: 0 0 16px var(--cyan); animation-delay: -2s; }
+.dot-3 { top: 12%; right: 30%; background: var(--violet); box-shadow: 0 0 16px var(--violet); animation-delay: -1s; } .dot-4 { bottom: 18%; left: 30%; animation-delay: -3s; }
+.scroll-cue { position: absolute; bottom: 26px; left: 50%; translate: -50% 0; width: 26px; height: 42px; border: 2px solid var(--line); border-radius: 999px; z-index: 1; }
+.scroll-cue span { position: absolute; left: 50%; top: 8px; width: 4px; height: 8px; margin-left: -2px; border-radius: 4px; background: var(--cyan); animation: cue 1.8s ease-in-out infinite; }
+@keyframes cue { 60% { transform: translateY(14px); opacity: 0; } }
+
+/* ---------- 6. Question bank ---------- */
+.qb { background: linear-gradient(180deg, var(--bg), var(--bg-2)); }
+.qb-panel { display: grid; grid-template-columns: .85fr 1.15fr; gap: 48px; align-items: center; padding: clamp(28px, 5vw, 64px); border-radius: 32px; border: 1px solid var(--line); background:
+  radial-gradient(600px 300px at 0% 0%, var(--card-glow), transparent 70%),
+  radial-gradient(500px 300px at 100% 100%, rgba(18, 200, 232, .12), transparent 70%), var(--surface);
+  box-shadow: var(--shadow); }
+.qb-stat { text-align: center; padding: 28px 12px; border-radius: 24px; background: var(--grad); color: #fff; position: relative; overflow: hidden; }
+.qb-stat::after { content: ""; position: absolute; inset: -40% -20% auto auto; width: 280px; height: 280px; border-radius: 50%; background: rgba(255, 255, 255, .14); }
+.qb-eyebrow { font-size: .72rem; letter-spacing: .3em; text-transform: uppercase; font-weight: 700; opacity: .85; margin: 0; }
+.qb-number { font-family: var(--font-head); font-weight: 800; font-size: clamp(4.5rem, 11vw, 8rem); line-height: 1; letter-spacing: -.04em; margin: 12px 0 4px; font-variant-numeric: tabular-nums; }
+.qb-suffix { color: var(--mint); }
+.qb-label { font-family: var(--font-head); font-weight: 700; letter-spacing: .5em; margin: 0; padding-left: .5em; }
+.qb-copy h2 { margin-bottom: .4em; }
+.pill-list { list-style: none; padding: 0; margin: 28px 0 0; display: flex; flex-wrap: wrap; gap: 10px; }
+.pill-list li { display: inline-flex; align-items: center; gap: 8px; padding: 9px 16px; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--line); font-size: .92rem; font-weight: 500; }
+.pill-list .ico { color: var(--mint); width: 1em; height: 1em; }
+
+.subjects { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; margin: 28px 0 48px; }
+.subject { --c1: var(--blue); --c2: var(--violet); position: relative; overflow: hidden; display: flex; flex-direction: column; min-height: 280px; padding: 26px; border-radius: var(--radius); color: #fff; background: linear-gradient(150deg, var(--c1), var(--c2)); transition: transform .35s var(--ease), box-shadow .35s var(--ease); isolation: isolate; }
+.subject::before { content: ""; position: absolute; inset: 0; background: radial-gradient(300px 200px at 100% 0%, rgba(255, 255, 255, .22), transparent 70%); z-index: -1; }
+.subject:hover { transform: translateY(-8px) rotate(-.4deg); box-shadow: 0 30px 60px -24px var(--c1); }
+.subject-art { position: absolute; right: 0; top: 0; width: 70%; color: #fff; z-index: -1; }
+.subject-icon { width: 54px; height: 54px; display: grid; place-items: center; border-radius: 16px; background: rgba(255, 255, 255, .18); backdrop-filter: blur(6px); margin-bottom: auto; }
+.subject-icon .ico { width: 28px; height: 28px; }
+.subject h3 { font-size: 1.55rem; margin: 34px 0 6px; }
+.subject p { font-size: .93rem; opacity: .88; margin: 0 0 18px; }
+.subject-go { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; font-size: .92rem; }
+.subject-go .ico { transition: transform .25s var(--ease); } .subject:hover .subject-go .ico { transform: translateX(6px); }
+.subject-physics { --c1: #2f5bff; --c2: #5b3dff; }
+.subject-chem { --c1: #7a4dff; --c2: #c14dff; }
+.subject-bio { --c1: #0fb88f; --c2: #12c8e8; }
+.subject-math { --c1: #12a5e8; --c2: #2f5bff; }
+
+/* ---------- 7. About ---------- */
+.about-grid { display: grid; grid-template-columns: 1.05fr .95fr; gap: 56px; align-items: start; }
+.about-main p { color: var(--muted); }
+.about-main .lead { color: var(--text); }
+.story-card { margin-top: 30px; padding: 28px; border-radius: var(--radius); background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--mint); }
+.story-card h3 { margin-bottom: 8px; } .story-card p { margin: 0; }
+.about-cards { display: grid; gap: 18px; position: sticky; top: calc(var(--header-h) + 24px); }
+.vm-card { padding: 28px; border-radius: var(--radius); background: var(--surface); border: 1px solid var(--line); transition: transform .3s var(--ease), border-color .3s, box-shadow .3s; }
+.vm-card:nth-child(2) { margin-left: 28px; } .vm-card:nth-child(3) { margin-left: 56px; }
+.vm-card:hover { transform: translateX(-6px); border-color: var(--violet); box-shadow: var(--shadow); }
+.vm-icon { display: inline-grid; place-items: center; width: 46px; height: 46px; border-radius: 14px; background: var(--grad); color: #fff; margin-bottom: 14px; }
+.vm-card h3 { margin-bottom: 6px; } .vm-card p { margin: 0; color: var(--muted); }
+
+/* ---------- 8. Ecosystem (bento) ---------- */
+.ecosystem { background: linear-gradient(180deg, var(--bg-2), var(--bg)); }
+.bento { display: grid; grid-template-columns: repeat(6, 1fr); gap: 18px; }
+.bento-card { position: relative; overflow: hidden; display: flex; flex-direction: column; padding: 30px; border-radius: 24px; background: var(--surface); border: 1px solid var(--line); transition: transform .35s var(--ease), box-shadow .35s var(--ease), border-color .35s; }
+.bento-card::before { content: ""; position: absolute; inset: auto -20% -50% auto; width: 320px; height: 320px; border-radius: 50%; background: var(--card-glow); filter: blur(40px); transition: transform .5s var(--ease); }
+.bento-card:hover { transform: translateY(-6px); border-color: color-mix(in srgb, var(--cyan) 55%, var(--line)); box-shadow: var(--shadow); }
+.bento-card:hover::before { transform: scale(1.4) translate(-20px, -20px); }
+.bento-card > * { position: relative; }
+.bento-card p { color: var(--muted); }
+.b-icon { width: 52px; height: 52px; display: grid; place-items: center; border-radius: 16px; background: var(--surface-2); color: var(--cyan); margin-bottom: 20px; border: 1px solid var(--line); }
+.b-icon .ico { width: 26px; height: 26px; }
+.card-cta { margin-top: auto; display: inline-flex; align-items: center; gap: 8px; font-weight: 600; font-size: .93rem; color: var(--cyan); }
+.card-cta .ico { width: 1.1em; transition: transform .25s var(--ease); } .card-cta:hover .ico { transform: translateX(5px); }
+.b-qu { grid-column: span 4; min-height: 300px; background: var(--grad); color: #fff; border: 0; }
+.b-qu p, .b-qu .card-cta { color: rgba(255, 255, 255, .9); } .b-qu .b-icon { background: rgba(255, 255, 255, .18); color: #fff; border: 0; }
+.b-qu::before { background: rgba(255, 255, 255, .18); }
+.b-qu h3 { font-size: 1.9rem; } .b-qu p { max-width: 40ch; font-size: 1.1rem; }
+.b-qa { grid-column: span 2; }
+.b-lr, .b-sd, .b-mm { grid-column: span 2; }
+.b-cu { grid-column: span 6; flex-direction: row; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
+.b-cu-copy { max-width: 560px; } .b-cu-copy p { margin: 0; }
+
+/* ---------- 9. Why ---------- */
+.why-grid { display: grid; grid-template-columns: .8fr 1.2fr; gap: 64px; align-items: start; }
+.why-head { position: sticky; top: calc(var(--header-h) + 32px); }
+.why-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 18px; counter-reset: why; }
+.why-item { position: relative; display: grid; grid-template-columns: auto 1fr; gap: 6px 16px; padding: 26px; border-radius: var(--radius); background: var(--surface); border: 1px solid var(--line); overflow: hidden; transition: transform .3s var(--ease), border-color .3s; }
+.why-item:nth-child(even) { transform: translateY(28px); }
+.why-item:hover { border-color: var(--mint); transform: translateY(-5px); }
+.why-item:nth-child(even):hover { transform: translateY(22px); }
+.why-num { position: absolute; right: 18px; top: 10px; font-family: var(--font-head); font-weight: 800; font-size: 2.6rem; color: var(--line); line-height: 1; }
+.why-ico { grid-row: span 2; width: 48px; height: 48px; display: grid; place-items: center; border-radius: 14px; background: color-mix(in srgb, var(--mint) 16%, transparent); color: var(--mint); animation: bob 5s ease-in-out infinite; }
+.why-item:nth-child(2n) .why-ico { animation-delay: -2s; } .why-item:nth-child(3n) .why-ico { animation-delay: -3.5s; }
+@keyframes bob { 50% { transform: translateY(-5px) rotate(-4deg); } }
+.why-item h3 { font-size: 1.08rem; margin: 0 0 4px; } .why-item p { margin: 0; font-size: .93rem; color: var(--muted); }
+
+/* ---------- 10. Team ---------- */
+.team { background: var(--bg-2); }
+.team-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 22px; max-width: 980px; margin-inline: auto; }
+.team-card { text-align: center; padding: 32px 26px; border-radius: 24px; background: var(--surface); border: 1px solid var(--line); transition: transform .3s var(--ease), box-shadow .3s; }
+.team-card:hover { transform: translateY(-8px); box-shadow: var(--shadow); }
+.team-photo { width: 120px; height: 120px; margin: 0 auto 18px; border-radius: 50%; overflow: hidden; display: grid; place-items: center; background: var(--surface-2); color: var(--muted); border: 3px solid transparent; background-clip: padding-box; box-shadow: 0 0 0 3px var(--violet); }
+.team-photo img { width: 100%; height: 100%; object-fit: cover; }
+.team-photo .ico { width: 52px; height: 52px; }
+.team-role { color: var(--cyan); font-weight: 600; font-size: .9rem; margin-bottom: 10px; }
+.team-bio { color: var(--muted); font-size: .94rem; }
+.team-socials { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
+.team-socials a { padding: 6px 14px; border-radius: 999px; font-size: .82rem; font-weight: 600; background: var(--surface-2); border: 1px solid var(--line); transition: border-color .2s, color .2s; }
+.team-socials a:hover { border-color: var(--cyan); color: var(--cyan); }
+
+/* ---------- 11. Contact ---------- */
+.contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: start; }
+.info-list { list-style: none; padding: 0; margin: 32px 0; display: grid; gap: 20px; }
+.info-list li { display: flex; gap: 16px; }
+.info-ico { width: 46px; height: 46px; flex: none; display: grid; place-items: center; border-radius: 14px; background: var(--surface-2); border: 1px solid var(--line); color: var(--cyan); }
+.info-list h3 { font-size: 1.02rem; margin: 0 0 2px; } .info-list p { margin: 0; color: var(--muted); font-size: .95rem; }
+.info-list a { color: var(--cyan); font-weight: 600; word-break: break-all; }
+.socials { display: flex; gap: 10px; flex-wrap: wrap; }
+.social { width: 44px; height: 44px; display: grid; place-items: center; border-radius: 12px; background: var(--surface); border: 1px solid var(--line); transition: transform .25s var(--ease), background .25s, color .25s, border-color .25s; }
+.social:hover { background: var(--grad); color: #fff; transform: translateY(-4px); border-color: transparent; }
+.contact-form { padding: clamp(24px, 4vw, 40px); border-radius: 28px; background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow); }
+.contact-form h3 { font-size: 1.5rem; margin-bottom: 20px; }
+.field { margin-bottom: 18px; display: flex; flex-direction: column; gap: 6px; }
+.field label { font-weight: 600; font-size: .9rem; }
+.field input, .field select, .field textarea { width: 100%; font: inherit; color: var(--text); background: var(--bg); border: 1.5px solid var(--line); border-radius: var(--radius-sm); padding: 13px 15px; transition: border-color .2s, box-shadow .2s; }
+.field textarea { resize: vertical; min-height: 120px; }
+.field input:focus, .field select:focus, .field textarea:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 4px color-mix(in srgb, var(--blue) 22%, transparent); }
+.field .invalid { border-color: #ff5c7a; }
+.field-err { min-height: 1.1em; font-size: .82rem; color: #ff7a93; }
+.form-status { margin: 16px 0 0; font-size: .92rem; font-weight: 500; }
+.form-status:empty { display: none; }
+.form-status.err { color: #ff7a93; } .form-status.ok { color: var(--mint); } .form-status.info { color: var(--cyan); }
+.form-note { margin: 12px 0 0; font-size: .8rem; color: var(--muted); }
+
+/* ---------- 12. FAQ ---------- */
+.faq-wrap { max-width: 860px; }
+.faq-list { display: grid; gap: 12px; }
+.faq-item { border-radius: var(--radius-sm); background: var(--surface); border: 1px solid var(--line); transition: border-color .25s, box-shadow .25s; }
+.faq-item.open { border-color: color-mix(in srgb, var(--violet) 60%, var(--line)); box-shadow: var(--shadow); }
+.faq-item h3 { margin: 0; font-size: 1rem; }
+.faq-q { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 16px; text-align: left; padding: 20px 24px; background: none; border: 0; color: inherit; font: inherit; font-family: var(--font-head); font-weight: 600; font-size: 1.05rem; cursor: pointer; border-radius: var(--radius-sm); }
+.faq-q .ico { color: var(--cyan); transition: transform .3s var(--ease); }
+.faq-item.open .faq-q .ico { transform: rotate(135deg); }
+.faq-a { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .35s var(--ease); }
+.faq-item.open .faq-a { grid-template-rows: 1fr; }
+.faq-a > div { overflow: hidden; }
+.faq-a p { padding: 0 24px 22px; margin: 0; color: var(--muted); }
+.faq-a a { color: var(--cyan); text-decoration: underline; }
+
+/* ---------- 13. CTA band + footer ---------- */
+.cta-band { padding: 0 0 clamp(72px, 9vw, 112px); }
+.cta-inner { text-align: center; padding: clamp(40px, 7vw, 80px) 24px; border-radius: 36px; border: 1px solid var(--line); background: radial-gradient(500px 260px at 20% 0%, rgba(47, 91, 255, .3), transparent 70%), radial-gradient(500px 260px at 90% 100%, rgba(122, 77, 255, .3), transparent 70%), var(--surface); }
+.cta-inner h2 { max-width: 20ch; margin: 0 auto 28px; }
+.site-footer { border-top: 1px solid var(--line); background: var(--bg-2); padding-top: 64px; }
+.footer-grid { display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr; gap: 40px; padding-bottom: 48px; }
+.footer-brand p { color: var(--muted); max-width: 36ch; margin: 18px 0; font-size: .95rem; }
+.footer-col { display: flex; flex-direction: column; gap: 10px; }
+.footer-col h4 { font-size: .8rem; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+.footer-col a { color: var(--text); font-size: .95rem; width: fit-content; transition: color .2s, transform .2s; }
+.footer-col a:hover { color: var(--cyan); transform: translateX(4px); }
+.footer-bottom { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 22px 0 30px; border-top: 1px solid var(--line); font-size: .88rem; color: var(--muted); }
+.footer-bottom p { margin: 0; }
+
+/* ---------- 14. Toast ---------- */
+.toast { position: fixed; left: 50%; bottom: 28px; translate: -50% 30px; max-width: min(92vw, 520px); padding: 14px 22px; border-radius: 14px; background: var(--surface-2); color: var(--text); border: 1px solid var(--cyan); box-shadow: var(--shadow); font-size: .92rem; opacity: 0; pointer-events: none; transition: opacity .3s, translate .3s var(--ease); z-index: 300; }
+.toast.show { opacity: 1; translate: -50% 0; }
+
+/* ---------- 15. Scroll reveal ---------- */
+.reveal { opacity: 0; transform: translateY(28px); transition: opacity .8s var(--ease) var(--d, 0ms), transform .8s var(--ease) var(--d, 0ms); }
+.reveal.in { opacity: 1; transform: none; }
+.why-item.reveal.in:nth-child(even) { transform: translateY(28px); }
+.why-item.reveal.in:nth-child(even):hover { transform: translateY(22px); }
+.no-js .reveal { opacity: 1; transform: none; }
+
+/* ---------- 16. Responsive ---------- */
+@media (max-width: 1040px) {
+  .subjects { grid-template-columns: repeat(2, 1fr); }
+  .footer-grid { grid-template-columns: 1fr 1fr; }
+  .why-grid, .about-grid, .contact-grid { grid-template-columns: 1fr; gap: 40px; }
+  .why-head, .about-cards { position: static; }
+  .vm-card:nth-child(2), .vm-card:nth-child(3) { margin-left: 0; }
+}
+@media (max-width: 960px) {
+  .menu-btn { display: grid; }
+  .nav { position: fixed; inset: var(--header-h) 0 0 0; flex-direction: column; align-items: stretch; gap: 4px; padding: 24px 20px 40px; background: color-mix(in srgb, var(--bg) 96%, transparent); backdrop-filter: blur(18px); transform: translateY(-12px); opacity: 0; visibility: hidden; transition: opacity .25s, transform .3s var(--ease), visibility .25s; overflow-y: auto; }
+  .nav.open { opacity: 1; transform: none; visibility: visible; }
+  .nav-link { font-size: 1.15rem; padding: 14px 16px; border-radius: 14px; }
+  .nav-cta { margin: 16px 0 0; justify-content: center; padding: 14px; font-size: 1rem; }
+  .hero { min-height: auto; padding-bottom: 96px; }
+  .hero-inner { grid-template-columns: 1fr; gap: 56px; }
+  .hero-visual { width: min(86%, 440px); }
+  .qb-panel { grid-template-columns: 1fr; gap: 32px; }
+  .bento { grid-template-columns: repeat(2, 1fr); }
+  .b-qu, .b-cu { grid-column: span 2; } .b-qa, .b-lr, .b-sd, .b-mm { grid-column: span 1; }
+}
+@media (max-width: 640px) {
+  body { font-size: 1rem; }
+  .container { width: min(100% - 32px, var(--container)); }
+  .cta-row .btn { width: 100%; }
+  .subjects { grid-template-columns: 1fr; }
+  .subject { min-height: 220px; }
+  .bento { grid-template-columns: 1fr; }
+  .b-qu, .b-cu, .b-qa, .b-lr, .b-sd, .b-mm { grid-column: span 1; }
+  .why-list { grid-template-columns: 1fr; }
+  .why-item:nth-child(even), .why-item.reveal.in:nth-child(even) { transform: none; }
+  .why-item:nth-child(even):hover, .why-item.reveal.in:nth-child(even):hover { transform: translateY(-5px); }
+  .footer-grid { grid-template-columns: 1fr; }
+  .chip { font-size: .75rem; padding: 7px 12px; }
+  .brand-text .brand-sub { letter-spacing: .24em; }
+  .scroll-cue { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation: none !important; transition-duration: .01ms !important; }
+  .reveal { opacity: 1; transform: none; }
+}
+
+</style>
+  <noscript><style>.reveal{opacity:1!important;transform:none!important}</style></noscript>
+
+  <script>
+    /* Apply saved/system theme before first paint (prevents a flash). */
+    (function () {
+      try {
+        var saved = localStorage.getItem('neelaxmi-theme');
+        var theme = saved || (window.matchMedia && matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+        document.documentElement.setAttribute('data-theme', theme);
+        console.log('[NeelaxmiBrand][SUCCESS] early theme applied: ' + theme);
+      } catch (e) {
+        console.error('[NeelaxmiBrand][ERROR] early theme failed', e);
+      }
+    })();
+  </script>
+</head>
+<body>
+
+<!-- ============================ ICON SPRITE ============================ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="i-atom" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1.7" fill="currentColor"/><ellipse cx="12" cy="12" rx="10" ry="4"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(120 12 12)"/></symbol>
+    <symbol id="i-flask" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6M10 3v6L4.5 19a2 2 0 0 0 1.8 3h11.4a2 2 0 0 0 1.8-3L14 9V3"/><path d="M7.5 15h9"/></symbol>
+    <symbol id="i-dna" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3c0 6 12 6 12 18"/><path d="M18 3c0 6-12 6-12 18"/><path d="M8.5 7.5h7M8.5 16.5h7"/></symbol>
+    <symbol id="i-sigma" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 5H6l7 7-7 7h12"/></symbol>
+    <symbol id="i-grid" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="2"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="2"/></symbol>
+    <symbol id="i-target" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.3" fill="currentColor"/></symbol>
+    <symbol id="i-book" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5a2 2 0 0 1 2-2h13v15H6a2 2 0 0 0-2 2z"/><path d="M4 20a2 2 0 0 0 2 2h13v-4"/></symbol>
+    <symbol id="i-dash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="10" rx="2"/><rect x="13" y="3" width="8" height="6" rx="2"/><rect x="13" y="11" width="8" height="10" rx="2"/><rect x="3" y="15" width="8" height="6" rx="2"/></symbol>
+    <symbol id="i-nodes" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="12" cy="18" r="2.5"/><path d="M8.3 7.2l2.6 8.4M15.7 7.2l-2.6 8.4M8.5 6h7"/></symbol>
+    <symbol id="i-bell" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 8-3 8h18s-3-1-3-8"/><path d="M10 21a2 2 0 0 0 4 0"/></symbol>
+    <symbol id="i-layers" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 2 8l10 5 10-5z"/><path d="M2 13l10 5 10-5"/></symbol>
+    <symbol id="i-spark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2 6 6 2-6 2-2 6-2-6-6-2 6-2z"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M8.5 12l2.5 2.5L16 9.5"/></symbol>
+    <symbol id="i-users" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6"/><circle cx="17" cy="9" r="2.5"/><path d="M17.5 14c2.5.3 4 2 4 5"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></symbol>
+    <symbol id="i-mail" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3.5 7l8.5 6 8.5-6"/></symbol>
+    <symbol id="i-chat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/></symbol>
+    <symbol id="i-handshake" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12l4-4 4 1 3-2 4 1 5 4"/><path d="M6 8v8l5 3 3-2 2 1 4-3v-3"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4 8.5 8.5 0 1 0 20 14.5z"/></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+    <symbol id="i-code" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 8l-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 0 0-14-4L4 9"/><path d="M4 4v5h5"/><path d="M4 13a8 8 0 0 0 14 4l2-2"/><path d="M20 20v-5h-5"/></symbol>
+    <symbol id="i-instagram" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.3" cy="6.7" r=".8" fill="currentColor"/></symbol>
+    <symbol id="i-youtube" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5.5" width="19" height="13" rx="4"/><path d="M10 9.5v5l4.5-2.5z" fill="currentColor"/></symbol>
+    <symbol id="i-telegram" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 4L3 11l6 2.5L11 20l3-4 4.5 3.5z"/><path d="M9 13.5L21 4"/></symbol>
+    <symbol id="i-linkedin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M8 11v6M8 7.5v.01M12 17v-6M12 13c0-3 5-3.5 5 0v4"/></symbol>
+  </defs>
+</svg>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<!-- ============================== HEADER ============================== -->
+<header class="site-header" id="siteHeader">
+  <div class="container header-inner">
+    <a href="#top" class="brand" aria-label="NEELAXMI — THE UNION, home">
+      <img class="brand-logo" data-logo src="data:image/svg+xml;charset=utf-8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22 width=%2264%22 height=%2264%22 role=%22img%22 aria-label=%22NEELAXMI temporary logo%22%3E%0A  %3Cdefs%3E%0A    %3ClinearGradient id=%22g%22 x1=%220%22 y1=%220%22 x2=%221%22 y2=%221%22%3E%0A      %3Cstop offset=%220%22 stop-color=%22%232f5bff%22/%3E%0A      %3Cstop offset=%221%22 stop-color=%22%237a4dff%22/%3E%0A    %3C/linearGradient%3E%0A  %3C/defs%3E%0A  %3Crect width=%2264%22 height=%2264%22 rx=%2216%22 fill=%22url%28%23g%29%22/%3E%0A  %3Ccircle cx=%2225%22 cy=%2232%22 r=%2212%22 fill=%22none%22 stroke=%22%23fff%22 stroke-width=%223.5%22 opacity=%22.95%22/%3E%0A  %3Ccircle cx=%2239%22 cy=%2232%22 r=%2212%22 fill=%22none%22 stroke=%22%231fe0b0%22 stroke-width=%223.5%22 opacity=%22.95%22/%3E%0A%3C/svg%3E" alt="NEELAXMI logo" width="40" height="40">
+      <span class="brand-text">
+        <span class="brand-name" data-brand-name>NEELAXMI</span>
+        <span class="brand-sub" data-identity>THE UNION</span>
+      </span>
+    </a>
+
+    <nav class="nav" id="primaryNav" aria-label="Primary">
+      <a href="#question-bank" class="nav-link">Question Bank</a>
+      <a href="#about" class="nav-link">About</a>
+      <a href="#ecosystem" class="nav-link">Ecosystem</a>
+      <a href="#why" class="nav-link">Why NEELAXMI</a>
+      <a href="#team" class="nav-link">Team</a>
+      <a href="#faq" class="nav-link">FAQ</a>
+      <a href="#contact" class="nav-link">Contact</a>
+      <a href="#" data-link="questionBank" class="btn btn-primary btn-sm nav-cta">Explore Questions</a>
+    </nav>
+
+    <div class="header-actions">
+      <button class="icon-btn" id="themeToggle" type="button" aria-label="Switch colour theme" aria-pressed="false">
+        <svg class="ico ico-moon" aria-hidden="true"><use href="#i-moon"/></svg>
+        <svg class="ico ico-sun" aria-hidden="true"><use href="#i-sun"/></svg>
+      </button>
+      <button class="icon-btn menu-btn" id="menuToggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="primaryNav">
+        <svg class="ico ico-open" aria-hidden="true"><use href="#i-menu"/></svg>
+        <svg class="ico ico-close" aria-hidden="true"><use href="#i-x"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+
+<!-- ================================ HERO ================================ -->
+<section class="hero" id="top">
+  <div class="hero-bg" aria-hidden="true">
+    <span class="glow glow-a"></span><span class="glow glow-b"></span><span class="glow glow-c"></span>
+    <span class="grid-lines"></span>
+  </div>
+  <div class="container hero-inner">
+    <div class="hero-copy reveal">
+      <div class="hero-brand">
+        <img class="hero-logo" data-logo src="data:image/svg+xml;charset=utf-8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22 width=%2264%22 height=%2264%22 role=%22img%22 aria-label=%22NEELAXMI temporary logo%22%3E%0A  %3Cdefs%3E%0A    %3ClinearGradient id=%22g%22 x1=%220%22 y1=%220%22 x2=%221%22 y2=%221%22%3E%0A      %3Cstop offset=%220%22 stop-color=%22%232f5bff%22/%3E%0A      %3Cstop offset=%221%22 stop-color=%22%237a4dff%22/%3E%0A    %3C/linearGradient%3E%0A  %3C/defs%3E%0A  %3Crect width=%2264%22 height=%2264%22 rx=%2216%22 fill=%22url%28%23g%29%22/%3E%0A  %3Ccircle cx=%2225%22 cy=%2232%22 r=%2212%22 fill=%22none%22 stroke=%22%23fff%22 stroke-width=%223.5%22 opacity=%22.95%22/%3E%0A  %3Ccircle cx=%2239%22 cy=%2232%22 r=%2212%22 fill=%22none%22 stroke=%22%231fe0b0%22 stroke-width=%223.5%22 opacity=%22.95%22/%3E%0A%3C/svg%3E" alt="NEELAXMI logo" width="56" height="56">
+        <div>
+          <p class="hero-brand-name" data-brand-name>NEELAXMI</p>
+          <p class="eyebrow" data-identity>THE UNION</p>
+        </div>
+      </div>
+      <h1>Redefining The Way <span class="grad-text">Students Learn.</span></h1>
+      <p class="lead">Welcome to NEELAXMI — a connected educational ecosystem bringing questions, quizzes, learning resources and innovative academic experiences together in one destination.</p>
+      <div class="cta-row">
+        <a href="#" data-link="questionBank" class="btn btn-primary btn-lg">Explore Question Bank <svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+        <a href="#about" data-link="about" class="btn btn-ghost btn-lg">Discover NEELAXMI</a>
+        <a href="#ecosystem" data-link="learningResources" class="btn btn-link btn-lg">Explore Learning Resources</a>
+      </div>
+      <p class="hero-tag">One Platform. Countless Possibilities. Limitless Learning.</p>
+    </div>
+
+    <!-- Abstract "union" visual: ecosystem orbiting a single core -->
+    <div class="hero-visual reveal" aria-hidden="true">
+      <div class="orbit orbit-1"></div>
+      <div class="orbit orbit-2"></div>
+      <div class="orbit orbit-3"></div>
+      <div class="core">
+        <span class="ring ring-a"></span><span class="ring ring-b"></span>
+      </div>
+      <div class="chip chip-1"><svg class="ico"><use href="#i-grid"/></svg>Questions</div>
+      <div class="chip chip-2"><svg class="ico"><use href="#i-target"/></svg>Quizzes</div>
+      <div class="chip chip-3"><svg class="ico"><use href="#i-nodes"/></svg>Mindmaps</div>
+      <div class="chip chip-4"><svg class="ico"><use href="#i-book"/></svg>Resources</div>
+      <div class="chip chip-5"><svg class="ico"><use href="#i-dash"/></svg>Dashboard</div>
+      <span class="dot dot-1"></span><span class="dot dot-2"></span><span class="dot dot-3"></span><span class="dot dot-4"></span>
+    </div>
+  </div>
+  <a href="#question-bank" class="scroll-cue" aria-label="Scroll to Question Bank"><span></span></a>
+</section>
+
+<!-- ============================ QUESTION BANK ============================ -->
+<section class="section qb" id="question-bank">
+  <div class="container">
+    <div class="qb-panel reveal">
+      <div class="qb-stat">
+        <p class="qb-eyebrow">Question Universe</p>
+        <div class="qb-number" id="qbNumber" aria-label="200K plus questions"><span data-count-to="200">200</span><span class="qb-suffix">K+</span></div>
+        <p class="qb-label">QUESTIONS</p>
+      </div>
+      <div class="qb-copy">
+        <h2>200,000+ Questions.<br><span class="grad-text">Endless Opportunities.</span></h2>
+        <p class="lead">Explore a growing collection of educational questions designed to support practice, revision and deeper understanding.</p>
+        <ul class="pill-list">
+          <li><svg class="ico"><use href="#i-check"/></svg>Subject-wise learning</li>
+          <li><svg class="ico"><use href="#i-check"/></svg>Chapter-wise discovery</li>
+          <li><svg class="ico"><use href="#i-check"/></svg>Topic-based practice</li>
+          <li><svg class="ico"><use href="#i-check"/></svg>Exam-oriented preparation</li>
+          <li><svg class="ico"><use href="#i-check"/></svg>Continuous learning opportunities</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="subjects">
+      <a href="#" data-link="questionBank" class="subject subject-physics reveal" aria-label="Physics — open Question Universe">
+        <svg class="subject-art" viewBox="0 0 200 120" aria-hidden="true"><circle cx="150" cy="60" r="46" fill="none" stroke="currentColor" stroke-opacity=".25"/><circle cx="150" cy="60" r="28" fill="none" stroke="currentColor" stroke-opacity=".35"/><circle cx="196" cy="60" r="5" fill="currentColor"/><circle cx="150" cy="32" r="4" fill="currentColor" fill-opacity=".7"/></svg>
+        <span class="subject-icon"><svg class="ico"><use href="#i-atom"/></svg></span>
+        <h3>Physics</h3><p>Forces, fields, waves and the laws behind them.</p>
+        <span class="subject-go">Explore <svg class="ico"><use href="#i-arrow"/></svg></span>
+      </a>
+      <a href="#" data-link="questionBank" class="subject subject-chem reveal" aria-label="Chemistry — open Question Universe">
+        <svg class="subject-art" viewBox="0 0 200 120" aria-hidden="true"><circle cx="140" cy="70" r="14" fill="currentColor" fill-opacity=".25"/><circle cx="172" cy="46" r="9" fill="currentColor" fill-opacity=".35"/><circle cx="168" cy="92" r="7" fill="currentColor" fill-opacity=".3"/><path d="M140 70l32-24M140 70l28 22" stroke="currentColor" stroke-opacity=".4" stroke-width="3"/></svg>
+        <span class="subject-icon"><svg class="ico"><use href="#i-flask"/></svg></span>
+        <h3>Chemistry</h3><p>Matter, reactions and the structure of everything.</p>
+        <span class="subject-go">Explore <svg class="ico"><use href="#i-arrow"/></svg></span>
+      </a>
+      <a href="#" data-link="questionBank" class="subject subject-bio reveal" aria-label="Biology — open Question Universe">
+        <svg class="subject-art" viewBox="0 0 200 120" aria-hidden="true"><path d="M130 10c0 40 60 30 60 100" fill="none" stroke="currentColor" stroke-opacity=".35" stroke-width="4"/><path d="M190 10c0 40-60 30-60 100" fill="none" stroke="currentColor" stroke-opacity=".25" stroke-width="4"/><path d="M142 36h36M142 84h36" stroke="currentColor" stroke-opacity=".3" stroke-width="3"/></svg>
+        <span class="subject-icon"><svg class="ico"><use href="#i-dna"/></svg></span>
+        <h3>Biology</h3><p>Life, systems and the science of living things.</p>
+        <span class="subject-go">Explore <svg class="ico"><use href="#i-arrow"/></svg></span>
+      </a>
+      <a href="#" data-link="questionBank" class="subject subject-math reveal" aria-label="Mathematics — open Question Universe">
+        <svg class="subject-art" viewBox="0 0 200 120" aria-hidden="true"><path d="M20 100Q80 -10 140 70T200 20" fill="none" stroke="currentColor" stroke-opacity=".35" stroke-width="4"/><path d="M0 100h200M20 0v120" stroke="currentColor" stroke-opacity=".15"/></svg>
+        <span class="subject-icon"><svg class="ico"><use href="#i-sigma"/></svg></span>
+        <h3>Mathematics</h3><p>Patterns, proofs and problem-solving practice.</p>
+        <span class="subject-go">Explore <svg class="ico"><use href="#i-arrow"/></svg></span>
+      </a>
+    </div>
+
+    <div class="center reveal">
+      <a href="#" data-link="questionBank" class="btn btn-primary btn-xl">Explore Question Universe <svg class="ico"><use href="#i-arrow"/></svg></a>
+    </div>
+  </div>
+</section>
+
+<!-- ================================ ABOUT ================================ -->
+<section class="section about" id="about">
+  <div class="container about-grid">
+    <div class="about-main reveal">
+      <p class="eyebrow">About NEELAXMI</p>
+      <h2>More Than A <span class="grad-text">Learning Platform.</span></h2>
+      <p class="lead">NEELAXMI is an educational initiative built around the idea of connected learning.</p>
+      <p>Our goal is to bring educational resources, practice opportunities and digital learning experiences together in one unified ecosystem.</p>
+      <p>We believe that students should have access to organised, accessible and useful learning resources that help them move forward with confidence.</p>
+      <div class="story-card">
+        <h3>Our Story</h3>
+        <p>NEELAXMI began with a simple idea: learning works best when everything a student needs is connected. Questions, quizzes, notes and updates shouldn't live in scattered places — they belong together. That idea is what <strong>THE UNION</strong> stands for.</p>
+      </div>
+    </div>
+    <div class="about-cards">
+      <article class="vm-card reveal">
+        <span class="vm-icon"><svg class="ico"><use href="#i-spark"/></svg></span>
+        <h3>Our Vision</h3>
+        <p>To build a connected educational ecosystem that empowers students through technology and accessible learning experiences.</p>
+      </article>
+      <article class="vm-card reveal">
+        <span class="vm-icon"><svg class="ico"><use href="#i-target"/></svg></span>
+        <h3>Our Mission</h3>
+        <p>To make digital learning resources more organised, accessible and useful for students.</p>
+      </article>
+      <article class="vm-card reveal">
+        <span class="vm-icon"><svg class="ico"><use href="#i-users"/></svg></span>
+        <h3>Our Philosophy</h3>
+        <p>Learning should be continuous, accessible and collaborative.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== ECOSYSTEM ============================== -->
+<section class="section ecosystem" id="ecosystem">
+  <div class="container">
+    <header class="section-head center reveal">
+      <p class="eyebrow">Our Ecosystem</p>
+      <h2>Six Parts. <span class="grad-text">One Union.</span></h2>
+      <p class="lead">Everything in NEELAXMI is designed to connect — so learning feels like one journey, not many tabs.</p>
+    </header>
+
+    <div class="bento">
+      <article class="bento-card b-qu reveal">
+        <span class="b-icon"><svg class="ico"><use href="#i-grid"/></svg></span>
+        <h3>Question Universe</h3>
+        <p>A large educational question collection with subject and chapter-based discovery.</p>
+        <a href="#" data-link="questionBank" class="card-cta">Open Question Universe <svg class="ico"><use href="#i-arrow"/></svg></a>
+      </article>
+      <article class="bento-card b-qa reveal">
+        <span class="b-icon"><svg class="ico"><use href="#i-target"/></svg></span>
+        <h3>Quiz Arena</h3>
+        <p>Curated quizzes for exam-oriented practice and student performance improvement.</p>
+        <a href="#" data-link="quiz" class="card-cta">Enter Quiz Arena <svg class="ico"><use href="#i-arrow"/></svg></a>
+      </article>
+      <article class="bento-card b-lr reveal">
+        <span class="b-icon"><svg class="ico"><use href="#i-book"/></svg></span>
+        <h3>Learning Resources</h3>
+        <p>Educational materials, study resources and academic support.</p>
+        <a href="#" data-link="learningResources" class="card-cta">Browse resources <svg class="ico"><use href="#i-arrow"/></svg></a>
+      </article>
+      <article class="bento-card b-sd reveal">
+        <span class="b-icon"><svg class="ico"><use href="#i-dash"/></svg></span>
+        <h3>Student Dashboard</h3>
+        <p>A personal learning experience with progress and learning activities.</p>
+        <a href="#" data-link="studentDashboard" class="card-cta">Open dashboard <svg class="ico"><use href="#i-arrow"/></svg></a>
+      </article>
+      <article class="bento-card b-mm reveal">
+        <span class="b-icon"><svg class="ico"><use href="#i-nodes"/></svg></span>
+        <h3>Mindmaps &amp; Notes</h3>
+        <p>Organised learning material and visual revision resources.</p>
+        <a href="#" data-link="mindmaps" class="card-cta">View mindmaps <svg class="ico"><use href="#i-arrow"/></svg></a>
+      </article>
+      <article class="bento-card b-cu reveal">
+        <div class="b-cu-copy">
+          <span class="b-icon"><svg class="ico"><use href="#i-bell"/></svg></span>
+          <h3>Class Updates</h3>
+          <p>Educational announcements and important student updates, kept in one place.</p>
+        </div>
+        <a href="#" data-link="classUpdates" class="btn btn-ghost">See class updates <svg class="ico"><use href="#i-arrow"/></svg></a>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ================================ WHY ================================ -->
+<section class="section why" id="why">
+  <div class="container why-grid">
+    <header class="why-head reveal">
+      <p class="eyebrow">Why NEELAXMI?</p>
+      <h2>Built around <span class="grad-text">how students actually learn.</span></h2>
+      <p class="lead">Six principles guide everything we build.</p>
+    </header>
+    <ol class="why-list">
+      <li class="why-item reveal"><span class="why-num">01</span><span class="why-ico"><svg class="ico"><use href="#i-layers"/></svg></span><div><h3>Unified Learning Ecosystem</h3><p>Questions, quizzes and resources that work together.</p></div></li>
+      <li class="why-item reveal"><span class="why-num">02</span><span class="why-ico"><svg class="ico"><use href="#i-book"/></svg></span><div><h3>Organised Educational Resources</h3><p>Material arranged so students find what they need.</p></div></li>
+      <li class="why-item reveal"><span class="why-num">03</span><span class="why-ico"><svg class="ico"><use href="#i-grid"/></svg></span><div><h3>Large Question Collection</h3><p>A growing bank of 200,000+ questions to practise with.</p></div></li>
+      <li class="why-item reveal"><span class="why-num">04</span><span class="why-ico"><svg class="ico"><use href="#i-user"/></svg></span><div><h3>Student-Centred Experience</h3><p>Designed from the learner's point of view first.</p></div></li>
+      <li class="why-item reveal"><span class="why-num">05</span><span class="why-ico"><svg class="ico"><use href="#i-code"/></svg></span><div><h3>Technology-Driven Learning</h3><p>Modern tools that make study smoother and clearer.</p></div></li>
+      <li class="why-item reveal"><span class="why-num">06</span><span class="why-ico"><svg class="ico"><use href="#i-refresh"/></svg></span><div><h3>Continuous Improvement</h3><p>Always refining, always adding, always listening.</p></div></li>
+    </ol>
+  </div>
+</section>
+
+<!-- ================================ TEAM ================================ -->
+<section class="section team" id="team">
+  <div class="container">
+    <header class="section-head center reveal">
+      <p class="eyebrow">Our Team</p>
+      <h2>The People Behind <span class="grad-text">The Vision.</span></h2>
+    </header>
+    <div class="team-grid" id="teamGrid" aria-live="polite"></div>
+    <noscript><p class="center">Team profiles load with JavaScript. Edit them in the NEELAXMI_CONFIG block of this file.</p></noscript>
+  </div>
+</section>
+
+<!-- =============================== CONTACT =============================== -->
+<section class="section contact" id="contact">
+  <div class="container contact-grid">
+    <div class="contact-info reveal">
+      <p class="eyebrow">Contact Us</p>
+      <h2>Let's <span class="grad-text">connect.</span></h2>
+      <p class="lead">Questions, ideas or a collaboration in mind? We'd love to hear from you.</p>
+
+      <ul class="info-list">
+        <li><span class="info-ico"><svg class="ico"><use href="#i-mail"/></svg></span><div><h3>Email</h3><p><a id="contactEmailLink" href="#" data-email>Contact email — add yours in config.js</a></p></div></li>
+        <li><span class="info-ico"><svg class="ico"><use href="#i-chat"/></svg></span><div><h3>General enquiries</h3><p>Anything about NEELAXMI, its tools or its resources.</p></div></li>
+        <li><span class="info-ico"><svg class="ico"><use href="#i-handshake"/></svg></span><div><h3>Collaboration</h3><p>Partnerships and educational collaborations are welcome.</p></div></li>
+        <li><span class="info-ico"><svg class="ico"><use href="#i-spark"/></svg></span><div><h3>Feedback &amp; suggestions</h3><p>Tell us what to improve. Every idea helps.</p></div></li>
+      </ul>
+      <div class="socials" data-socials aria-label="Social media"></div>
+    </div>
+
+    <form class="contact-form reveal" id="contactForm" novalidate>
+      <h3>Send a message</h3>
+      <div class="field">
+        <label for="cfName">Your name</label>
+        <input id="cfName" name="name" type="text" autocomplete="name" required minlength="2" aria-describedby="cfNameErr">
+        <span class="field-err" id="cfNameErr" role="alert"></span>
+      </div>
+      <div class="field">
+        <label for="cfEmail">Email address</label>
+        <input id="cfEmail" name="email" type="email" autocomplete="email" required aria-describedby="cfEmailErr">
+        <span class="field-err" id="cfEmailErr" role="alert"></span>
+      </div>
+      <div class="field">
+        <label for="cfTopic">Topic</label>
+        <select id="cfTopic" name="topic" required aria-describedby="cfTopicErr">
+          <option value="">Choose a topic…</option>
+          <option>General enquiry</option>
+          <option>Collaboration</option>
+          <option>Feedback or suggestion</option>
+        </select>
+        <span class="field-err" id="cfTopicErr" role="alert"></span>
+      </div>
+      <div class="field">
+        <label for="cfMessage">Message</label>
+        <textarea id="cfMessage" name="message" rows="5" required minlength="10" aria-describedby="cfMessageErr"></textarea>
+        <span class="field-err" id="cfMessageErr" role="alert"></span>
+      </div>
+      <button class="btn btn-primary btn-lg" type="submit">Send message <svg class="ico"><use href="#i-arrow"/></svg></button>
+      <p class="form-status" id="formStatus" role="status" aria-live="polite"></p>
+      <p class="form-note">Frontend preview: this form validates your input but is not connected to a backend yet.</p>
+    </form>
+  </div>
+</section>
+
+<!-- ================================= FAQ ================================= -->
+<section class="section faq" id="faq">
+  <div class="container faq-wrap">
+    <header class="section-head center reveal">
+      <p class="eyebrow">FAQ</p>
+      <h2>Frequently asked <span class="grad-text">questions.</span></h2>
+    </header>
+    <div class="faq-list reveal" id="faqList">
+      <div class="faq-item">
+        <h3><button class="faq-q" type="button" aria-expanded="false" aria-controls="fa1" id="fq1">What is NEELAXMI?<svg class="ico"><use href="#i-plus"/></svg></button></h3>
+        <div class="faq-a" id="fa1" role="region" aria-labelledby="fq1"><div><p>NEELAXMI — THE UNION is a connected educational ecosystem that brings questions, quizzes, learning resources and student-focused tools together in one destination.</p></div></div>
+      </div>
+      <div class="faq-item">
+        <h3><button class="faq-q" type="button" aria-expanded="false" aria-controls="fa2" id="fq2">What is the Question Universe?<svg class="ico"><use href="#i-plus"/></svg></button></h3>
+        <div class="faq-a" id="fa2" role="region" aria-labelledby="fq2"><div><p>The Question Universe is NEELAXMI's large collection of educational questions, organised for subject-wise, chapter-wise and topic-based practice and revision.</p></div></div>
+      </div>
+      <div class="faq-item">
+        <h3><button class="faq-q" type="button" aria-expanded="false" aria-controls="fa3" id="fq3">How many questions are available?<svg class="ico"><use href="#i-plus"/></svg></button></h3>
+        <div class="faq-a" id="fa3" role="region" aria-labelledby="fq3"><div><p>The collection currently stands at 200,000+ questions, and it continues to grow.</p></div></div>
+      </div>
+      <div class="faq-item">
+        <h3><button class="faq-q" type="button" aria-expanded="false" aria-controls="fa4" id="fq4">Which subjects are covered?<svg class="ico"><use href="#i-plus"/></svg></button></h3>
+        <div class="faq-a" id="fa4" role="region" aria-labelledby="fq4"><div><p>The Question Universe covers Physics, Chemistry, Biology and Mathematics.</p></div></div>
+      </div>
+      <div class="faq-item">
+        <h3><button class="faq-q" type="button" aria-expanded="false" aria-controls="fa5" id="fq5">Who can use NEELAXMI?<svg class="ico"><use href="#i-plus"/></svg></button></h3>
+        <div class="faq-a" id="fa5" role="region" aria-labelledby="fq5"><div><p>NEELAXMI is built for students who want to practise, revise and improve their knowledge with organised, accessible resources.</p></div></div>
+      </div>
+      <div class="faq-item">
+        <h3><button class="faq-q" type="button" aria-expanded="false" aria-controls="fa6" id="fq6">What learning resources does the platform provide?<svg class="ico"><use href="#i-plus"/></svg></button></h3>
+        <div class="faq-a" id="fa6" role="region" aria-labelledby="fq6"><div><p>The ecosystem includes the Question Universe, Quiz Arena, learning resources and study materials, a Student Dashboard, Mindmaps &amp; Notes, and Class Updates.</p></div></div>
+      </div>
+      <div class="faq-item">
+        <h3><button class="faq-q" type="button" aria-expanded="false" aria-controls="fa7" id="fq7">How can I contact the team?<svg class="ico"><use href="#i-plus"/></svg></button></h3>
+        <div class="faq-a" id="fa7" role="region" aria-labelledby="fq7"><div><p>Use the contact form or the email and social links in the <a href="#contact">Contact section</a>. We welcome enquiries, collaborations and feedback.</p></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ FINAL CTA BAND ============================ -->
+<section class="cta-band">
+  <div class="container cta-inner reveal">
+    <h2>Learn Together. Grow Together. <span class="grad-text">Achieve Together.</span></h2>
+    <a href="#" data-link="questionBank" class="btn btn-primary btn-xl">Explore Question Universe <svg class="ico"><use href="#i-arrow"/></svg></a>
+  </div>
+</section>
+
+</main>
+
+<!-- =============================== FOOTER =============================== -->
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div class="footer-brand">
+      <a href="#top" class="brand" aria-label="NEELAXMI home">
+        <img class="brand-logo" data-logo src="data:image/svg+xml;charset=utf-8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22 width=%2264%22 height=%2264%22 role=%22img%22 aria-label=%22NEELAXMI temporary logo%22%3E%0A  %3Cdefs%3E%0A    %3ClinearGradient id=%22g%22 x1=%220%22 y1=%220%22 x2=%221%22 y2=%221%22%3E%0A      %3Cstop offset=%220%22 stop-color=%22%232f5bff%22/%3E%0A      %3Cstop offset=%221%22 stop-color=%22%237a4dff%22/%3E%0A    %3C/linearGradient%3E%0A  %3C/defs%3E%0A  %3Crect width=%2264%22 height=%2264%22 rx=%2216%22 fill=%22url%28%23g%29%22/%3E%0A  %3Ccircle cx=%2225%22 cy=%2232%22 r=%2212%22 fill=%22none%22 stroke=%22%23fff%22 stroke-width=%223.5%22 opacity=%22.95%22/%3E%0A  %3Ccircle cx=%2239%22 cy=%2232%22 r=%2212%22 fill=%22none%22 stroke=%22%231fe0b0%22 stroke-width=%223.5%22 opacity=%22.95%22/%3E%0A%3C/svg%3E" alt="" width="40" height="40" loading="lazy">
+        <span class="brand-text"><span class="brand-name" data-brand-name>NEELAXMI</span><span class="brand-sub" data-identity>THE UNION</span></span>
+      </a>
+      <p>A connected educational ecosystem bringing questions, quizzes and learning resources together for students.</p>
+      <div class="socials" data-socials aria-label="Social media"></div>
+    </div>
+    <nav class="footer-col" aria-label="Footer: explore">
+      <h4>Explore</h4>
+      <a href="#about">About</a>
+      <a href="#ecosystem">Our Ecosystem</a>
+      <a href="#" data-link="questionBank">Question Universe</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <nav class="footer-col" aria-label="Footer: ecosystem">
+      <h4>Ecosystem</h4>
+      <a href="#" data-link="quiz">Quiz Arena</a>
+      <a href="#" data-link="studentDashboard">Student Dashboard</a>
+      <a href="#" data-link="mindmaps">Mindmaps &amp; Notes</a>
+      <a href="#" data-link="classUpdates">Class Updates</a>
+    </nav>
+    <nav class="footer-col" aria-label="Footer: legal">
+      <h4>Legal</h4>
+      <a href="#" data-link="privacy">Privacy Policy</a>
+      <a href="#" data-link="terms">Terms &amp; Conditions</a>
+    </nav>
+  </div>
+  <div class="container footer-bottom">
+    <p>NEELAXMI — THE UNION. Learn Together. Grow Together.</p>
+    <p>&copy; <span id="year">2026</span> NEELAXMI. All rights reserved.</p>
+  </div>
+</footer>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* ==========================================================================
+   NEELAXMI — THE UNION  |  CENTRAL CONFIGURATION
+   Edit ONLY this file to update logo, links, contact details, socials, team.
+   Any value left as an ALL_CAPS placeholder (e.g. QUESTION_BANK_URL) is
+   treated as "not configured yet": the button stays on the page and shows
+   a small notice instead of navigating anywhere.
+   ========================================================================== */
+window.NEELAXMI_CONFIG = {
+  brandName: "NEELAXMI",
+  identity: "THE UNION",
+
+  /* 1. LOGO — set your official logo file path or URL below.
+        The logo is displayed as-is (never stretched or recoloured). */
+  logoPath: "/pictures/neelaxmi.png", // Official Neelaxmi logo
+
+  /* 2. DESTINATIONS — replace the placeholders with real URLs
+        (full https://… address or a relative path like "quiz/index.html"). */
+  links: {
+    questionBank:     "/quiz/quizzes.html",      // main "Question Universe" destination
+    quiz:             "/quiz/quizzes.html",               // Quiz Arena
+    about:            "#about",                 // About destination (on-page by default)
+    learningResources:"#ecosystem",             // hero CTA 3 (on-page by default)
+    studentDashboard: "/quiz/dashboard.html",
+    mindmaps:         "/mindmap/mindmap.html",
+    classUpdates:     "/teachers/classupdates.html",
+    privacy:          "PRIVACY_POLICY_PATH",
+    terms:            "TERMS_PATH"
+  },
+
+  /* 3. CONTACT */
+  contactEmail: "CONTACT_EMAIL",   // e.g. "hello@yourdomain.com"
+
+  /* Optional: paste a form-handling endpoint (Formspree, Netlify Forms proxy,
+     your own API …). While empty, the contact form validates but does NOT send
+     anything, and says so honestly to the visitor. */
+  contactFormEndpoint: "",
+
+  /* 4. SOCIAL LINKS — add or remove entries freely. */
+  socials: [
+    { label: "Instagram", icon: "i-instagram", url: "SOCIAL_INSTAGRAM_URL" },
+    { label: "YouTube",   icon: "i-youtube",   url: "SOCIAL_YOUTUBE_URL" },
+    { label: "Telegram",  icon: "i-telegram",  url: "SOCIAL_TELEGRAM_URL" },
+    { label: "LinkedIn",  icon: "i-linkedin",  url: "SOCIAL_LINKEDIN_URL" }
+  ],
+
+  /* 5. TEAM — placeholders until you provide real details.
+        photo: path to an image (e.g. "team/name.jpg"); empty = neutral avatar.
+        socials: any of { label, url }. Add as many members as you need. */
+  team: [
+    { name: "Team Member Name", role: "Designation", bio: "Short biography goes here. Replace this text with a few lines about this person.", photo: "",
+      socials: [ { label: "LinkedIn", url: "TEAM_1_LINKEDIN_URL" }, { label: "Instagram", url: "TEAM_1_INSTAGRAM_URL" } ] },
+    { name: "Team Member Name", role: "Designation", bio: "Short biography goes here. Replace this text with a few lines about this person.", photo: "",
+      socials: [ { label: "LinkedIn", url: "TEAM_2_LINKEDIN_URL" }, { label: "Instagram", url: "TEAM_2_INSTAGRAM_URL" } ] },
+    { name: "Team Member Name", role: "Designation", bio: "Short biography goes here. Replace this text with a few lines about this person.", photo: "",
+      socials: [ { label: "LinkedIn", url: "TEAM_3_LINKEDIN_URL" }, { label: "Instagram", url: "TEAM_3_INSTAGRAM_URL" } ] }
+  ]
+};
+
+</script>
+<script>
+/* ==========================================================================
+   NEELAXMI — THE UNION | main.js
+   Every function reports to the console:
+     [NeelaxmiBrand][SUCCESS] ...   when it completes
+     [NeelaxmiBrand][ERROR] ...     when it fails (errors are never swallowed)
+   ========================================================================== */
+(function () {
+  'use strict';
+
+  var PREFIX = '[NeelaxmiBrand]';
+  function ok(msg) { console.log(PREFIX + '[SUCCESS] ' + msg); }
+  function fail(msg, err) { console.error(PREFIX + '[ERROR] ' + msg, err || ''); }
+
+  /* run(): executes fn, logs success or error, never hides a failure. */
+  function run(name, fn) {
+    try {
+      var result = fn();
+      ok(name + ' completed');
+      return result;
+    } catch (err) {
+      fail(name + ' failed', err);
+    }
+  }
+
+  var CFG = window.NEELAXMI_CONFIG;
+  var $ = function (sel, root) { return (root || document).querySelector(sel); };
+  var $$ = function (sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); };
+  var reduceMotion = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+
+  /* A value is a "placeholder" when it is empty, ALL_CAPS_UNDERSCORES, or an example domain. */
+  function isPlaceholder(v) {
+    if (!v || typeof v !== 'string') return true;
+    return /^[A-Z0-9_]+$/.test(v.trim()) || /yourdomain\.com|your-domain\.com/i.test(v);
+  }
+
+  /* ---------- Toast ---------- */
+  var toastTimer;
+  function showToast(message) {
+    run('showToast', function () {
+      var t = $('#toast');
+      if (!t) throw new Error('#toast element not found');
+      t.textContent = message;
+      t.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(function () { t.classList.remove('show'); }, 3800);
+    });
+  }
+
+  /* ---------- Brand + logo ---------- */
+  function applyBrand() {
+    run('applyBrand', function () {
+      $$('[data-brand-name]').forEach(function (el) { el.textContent = CFG.brandName; });
+      $$('[data-identity]').forEach(function (el) { el.textContent = CFG.identity; });
+      $$('img[data-logo]').forEach(function (img) {
+        img.addEventListener('error', function () {
+          fail('Logo failed to load: "' + CFG.logoPath + '". Using text identity instead.');
+          img.style.display = 'none';
+        }, { once: true });
+        img.addEventListener('load', function () { ok('Logo loaded: ' + CFG.logoPath); }, { once: true });
+        img.src = CFG.logoPath;
+      });
+    });
+  }
+
+  /* ---------- Links ---------- */
+  function resolveLinks() {
+    run('resolveLinks', function () {
+      $$('[data-link]').forEach(function (a) {
+        var key = a.getAttribute('data-link');
+        var url = CFG.links && CFG.links[key];
+        if (isPlaceholder(url) && !(typeof url === 'string' && url.charAt(0) === '#')) {
+          a.setAttribute('href', '#');
+          a.setAttribute('data-placeholder', url || key.toUpperCase());
+        } else {
+          a.setAttribute('href', url);
+          a.removeAttribute('data-placeholder');
+          if (/^https?:\/\//i.test(url) && url.indexOf(location.origin) !== 0) {
+            a.setAttribute('target', '_blank');
+            a.setAttribute('rel', 'noopener noreferrer');
+          }
+        }
+      });
+      document.addEventListener('click', function (e) {
+        run('placeholderClick', function () {
+          var a = e.target.closest('a[data-placeholder], a[data-social-placeholder]');
+          if (!a) return;
+          e.preventDefault();
+          var name = a.getAttribute('data-placeholder') || a.getAttribute('data-social-placeholder');
+          showToast('Link not set yet — replace ' + name + ' in NEELAXMI_CONFIG (top of the script)');
+        });
+      });
+    });
+  }
+
+  /* ---------- Contact email ---------- */
+  function applyEmail() {
+    run('applyEmail', function () {
+      var el = $('#contactEmailLink');
+      if (!el) throw new Error('#contactEmailLink not found');
+      if (isPlaceholder(CFG.contactEmail)) {
+        el.textContent = 'Contact email coming soon';
+        el.setAttribute('href', '#');
+        el.setAttribute('data-social-placeholder', 'contactEmail');
+      } else {
+        el.textContent = CFG.contactEmail;
+        el.setAttribute('href', 'mailto:' + CFG.contactEmail);
+      }
+    });
+  }
+
+  /* ---------- Socials ---------- */
+  function renderSocials() {
+    run('renderSocials', function () {
+      $$('[data-socials]').forEach(function (box) {
+        box.innerHTML = '';
+        (CFG.socials || []).forEach(function (s) {
+          var a = document.createElement('a');
+          a.className = 'social';
+          a.setAttribute('aria-label', s.label);
+          a.title = s.label;
+          if (isPlaceholder(s.url)) {
+            a.href = '#';
+            a.setAttribute('data-social-placeholder', s.url || s.label);
+          } else {
+            a.href = s.url;
+            a.target = '_blank';
+            a.rel = 'noopener noreferrer';
+          }
+          a.innerHTML = '<svg class="ico" aria-hidden="true"><use href="#' + s.icon + '"/></svg>';
+          box.appendChild(a);
+        });
+      });
+    });
+  }
+
+  /* ---------- Team ---------- */
+  function renderTeam() {
+    run('renderTeam', function () {
+      var grid = $('#teamGrid');
+      if (!grid) throw new Error('#teamGrid not found');
+      grid.innerHTML = '';
+      (CFG.team || []).forEach(function (m, i) {
+        var card = document.createElement('article');
+        card.className = 'team-card reveal';
+        card.style.setProperty('--d', (i * 90) + 'ms');
+
+        var photo = document.createElement('div');
+        photo.className = 'team-photo';
+        if (m.photo) {
+          var img = document.createElement('img');
+          img.src = m.photo; img.alt = m.name + ' — profile photograph';
+          img.loading = 'lazy'; img.width = 320; img.height = 320;
+          img.addEventListener('error', function () {
+            fail('Team photo failed to load: ' + m.photo);
+            img.remove();
+            photo.innerHTML = '<svg class="ico" aria-hidden="true"><use href="#i-user"/></svg>';
+          }, { once: true });
+          photo.appendChild(img);
+        } else {
+          photo.innerHTML = '<svg class="ico" aria-hidden="true"><use href="#i-user"/></svg>';
+        }
+        card.appendChild(photo);
+
+        var h = document.createElement('h3'); h.textContent = m.name; card.appendChild(h);
+        var r = document.createElement('p'); r.className = 'team-role'; r.textContent = m.role; card.appendChild(r);
+        var b = document.createElement('p'); b.className = 'team-bio'; b.textContent = m.bio; card.appendChild(b);
+
+        var soc = document.createElement('div'); soc.className = 'team-socials';
+        (m.socials || []).forEach(function (s) {
+          var a = document.createElement('a');
+          a.textContent = s.label;
+          if (isPlaceholder(s.url)) { a.href = '#'; a.setAttribute('data-social-placeholder', s.url || s.label); }
+          else { a.href = s.url; a.target = '_blank'; a.rel = 'noopener noreferrer'; }
+          soc.appendChild(a);
+        });
+        card.appendChild(soc);
+        grid.appendChild(card);
+      });
+    });
+  }
+
+  /* ---------- Theme ---------- */
+  function initTheme() {
+    run('initTheme', function () {
+      var btn = $('#themeToggle');
+      if (!btn) throw new Error('#themeToggle not found');
+      var root = document.documentElement;
+      function sync() {
+        var t = root.getAttribute('data-theme');
+        btn.setAttribute('aria-pressed', String(t === 'dark'));
+        btn.setAttribute('aria-label', t === 'dark' ? 'Switch to light theme' : 'Switch to dark theme');
+        var meta = document.querySelector('meta[name="theme-color"]');
+        if (meta) meta.setAttribute('content', t === 'dark' ? '#060b1f' : '#f6f8ff');
+      }
+      sync();
+      btn.addEventListener('click', function () {
+        run('toggleTheme', function () {
+          var next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+          root.setAttribute('data-theme', next);
+          try { localStorage.setItem('neelaxmi-theme', next); }
+          catch (e) { fail('Could not save theme preference', e); }
+          sync();
+        });
+      });
+    });
+  }
+
+  /* ---------- Mobile menu ---------- */
+  function initMobileMenu() {
+    run('initMobileMenu', function () {
+      var btn = $('#menuToggle'), nav = $('#primaryNav');
+      if (!btn || !nav) throw new Error('menu elements not found');
+      function setOpen(open) {
+        run('setMenuOpen(' + open + ')', function () {
+          nav.classList.toggle('open', open);
+          document.body.classList.toggle('menu-open', open);
+          btn.setAttribute('aria-expanded', String(open));
+          btn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+        });
+      }
+      btn.addEventListener('click', function () { setOpen(btn.getAttribute('aria-expanded') !== 'true'); });
+      nav.addEventListener('click', function (e) { if (e.target.closest('a')) setOpen(false); });
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && btn.getAttribute('aria-expanded') === 'true') { setOpen(false); btn.focus(); }
+      });
+      window.addEventListener('resize', function () { if (window.innerWidth > 960) setOpen(false); });
+    });
+  }
+
+  /* ---------- Header state + active nav ---------- */
+  function initHeader() {
+    run('initHeader', function () {
+      var header = $('#siteHeader');
+      if (!header) throw new Error('#siteHeader not found');
+      function onScroll() { header.classList.toggle('scrolled', window.scrollY > 12); }
+      onScroll();
+      window.addEventListener('scroll', onScroll, { passive: true });
+    });
+  }
+
+  function initActiveNav() {
+    run('initActiveNav', function () {
+      if (!('IntersectionObserver' in window)) throw new Error('IntersectionObserver unsupported');
+      var links = $$('.nav-link');
+      var map = {};
+      links.forEach(function (l) { map[l.getAttribute('href').slice(1)] = l; });
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) {
+          if (en.isIntersecting) {
+            links.forEach(function (l) { l.classList.remove('active'); l.removeAttribute('aria-current'); });
+            var l = map[en.target.id];
+            if (l) { l.classList.add('active'); l.setAttribute('aria-current', 'true'); }
+          }
+        });
+      }, { rootMargin: '-45% 0px -50% 0px' });
+      Object.keys(map).forEach(function (id) { var s = document.getElementById(id); if (s) io.observe(s); });
+    });
+  }
+
+  /* ---------- Scroll reveal ---------- */
+  function initReveal() {
+    run('initReveal', function () {
+      var els = $$('.reveal');
+      if (reduceMotion || !('IntersectionObserver' in window)) {
+        els.forEach(function (el) { el.classList.add('in'); });
+        if (!('IntersectionObserver' in window)) throw new Error('IntersectionObserver unsupported — showing content without animation');
+        return;
+      }
+      var io = new IntersectionObserver(function (entries, obs) {
+        entries.forEach(function (en) {
+          if (en.isIntersecting) {
+            var t = en.target;
+            t.classList.add('in');
+            obs.unobserve(t);
+            /* Once revealed, hand the element back to its own hover transitions. */
+            t.addEventListener('transitionend', function done(ev) {
+              if (ev.target !== t || ev.propertyName !== 'opacity') return;
+              t.classList.remove('reveal', 'in');
+              t.style.removeProperty('--d');
+              t.removeEventListener('transitionend', done);
+            });
+          }
+        });
+      }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+      els.forEach(function (el, i) { el.style.setProperty('--d', (el.style.getPropertyValue('--d') || ((i % 4) * 70) + 'ms')); io.observe(el); });
+    });
+  }
+
+  /* ---------- 200K+ counter (counts to the supplied figure only) ---------- */
+  function initCounter() {
+    run('initCounter', function () {
+      var el = $('[data-count-to]');
+      if (!el) throw new Error('counter element not found');
+      var target = parseInt(el.getAttribute('data-count-to'), 10);
+      if (reduceMotion || !('IntersectionObserver' in window)) { el.textContent = target; return; }
+      el.textContent = '0';
+      var io = new IntersectionObserver(function (entries, obs) {
+        entries.forEach(function (en) {
+          if (!en.isIntersecting) return;
+          obs.disconnect();
+          var start = performance.now(), dur = 1600;
+          (function tick(now) {
+            var p = Math.min((now - start) / dur, 1);
+            el.textContent = Math.round(target * (1 - Math.pow(1 - p, 3)));
+            if (p < 1) requestAnimationFrame(tick);
+            else ok('counter animation finished at ' + target + 'K+');
+          })(start);
+        });
+      }, { threshold: 0.5 });
+      io.observe(el);
+    });
+  }
+
+  /* ---------- FAQ accordion ---------- */
+  function initFaq() {
+    run('initFaq', function () {
+      var list = $('#faqList');
+      if (!list) throw new Error('#faqList not found');
+      list.addEventListener('click', function (e) {
+        run('toggleFaq', function () {
+          var btn = e.target.closest('.faq-q');
+          if (!btn) return;
+          var open = btn.getAttribute('aria-expanded') === 'true';
+          $$('.faq-q', list).forEach(function (b) {
+            b.setAttribute('aria-expanded', 'false');
+            b.closest('.faq-item').classList.remove('open');
+          });
+          if (!open) {
+            btn.setAttribute('aria-expanded', 'true');
+            btn.closest('.faq-item').classList.add('open');
+          }
+        });
+      });
+    });
+  }
+
+  /* ---------- Contact form (validation only; no sending unless an endpoint is set) ---------- */
+  function initContactForm() {
+    run('initContactForm', function () {
+      var form = $('#contactForm');
+      if (!form) throw new Error('#contactForm not found');
+      var status = $('#formStatus');
+
+      function setErr(input, msg) {
+        var err = document.getElementById(input.getAttribute('aria-describedby'));
+        if (err) err.textContent = msg || '';
+        input.classList.toggle('invalid', !!msg);
+        input.setAttribute('aria-invalid', msg ? 'true' : 'false');
+      }
+      function validateField(input) {
+        var v = input.value.trim(), msg = '';
+        if (input.name === 'name' && v.length < 2) msg = 'Please enter your name.';
+        if (input.name === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)) msg = 'Please enter a valid email address.';
+        if (input.name === 'topic' && !v) msg = 'Please choose a topic.';
+        if (input.name === 'message' && v.length < 10) msg = 'Please write at least 10 characters.';
+        setErr(input, msg);
+        return !msg;
+      }
+      var fields = $$('input, select, textarea', form);
+      fields.forEach(function (f) {
+        f.addEventListener('blur', function () { run('validate(' + f.name + ')', function () { validateField(f); }); });
+        f.addEventListener('input', function () { if (f.classList.contains('invalid')) validateField(f); });
+      });
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        run('submitContactForm', function () {
+          status.className = 'form-status';
+          var allOk = fields.map(validateField).every(Boolean);
+          if (!allOk) {
+            status.textContent = 'Please fix the highlighted fields.';
+            status.classList.add('err');
+            var first = $('.invalid', form); if (first) first.focus();
+            ok('form validation caught invalid fields; submission blocked');
+            return;
+          }
+          var data = {};
+          fields.forEach(function (f) { data[f.name] = f.value.trim(); });
+
+          if (!CFG.contactFormEndpoint) {
+            status.textContent = 'Thanks! Your details look good — but this preview is not connected to a backend yet, so nothing was sent. Please use the email above.';
+            status.classList.add('info');
+            return;
+          }
+          status.textContent = 'Sending…';
+          fetch(CFG.contactFormEndpoint, {
+            method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify(data)
+          }).then(function (res) {
+            if (!res.ok) throw new Error('Server responded ' + res.status);
+            status.textContent = 'Message sent. Thank you!';
+            status.classList.add('ok');
+            form.reset();
+            ok('contact form delivered to endpoint');
+          }).catch(function (err) {
+            fail('contact form delivery failed', err);
+            status.textContent = 'Sorry, the message could not be sent. Please try again later.';
+            status.classList.add('err');
+          });
+        });
+      });
+    });
+  }
+
+  function initYear() {
+    run('initYear', function () {
+      var y = $('#year'); if (!y) throw new Error('#year not found');
+      y.textContent = new Date().getFullYear();
+    });
+  }
+
+  /* ---------- Boot ---------- */
+  function boot() {
+    if (!CFG) { fail('NEELAXMI_CONFIG missing — is the config script above main script?'); return; }
+    applyBrand();
+    resolveLinks();
+    applyEmail();
+    renderSocials();
+    renderTeam();     // before initReveal so team cards animate in
+    initTheme();
+    initMobileMenu();
+    initHeader();
+    initActiveNav();
+    initReveal();
+    initCounter();
+    initFaq();
+    initContactForm();
+    initYear();
+    ok('NEELAXMI brand site ready');
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { run('boot', boot); });
+  else run('boot', boot);
+})();
+
+</script>
+</body>
+</html>
