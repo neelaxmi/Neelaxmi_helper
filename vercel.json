@@ -4,36 +4,34 @@
       "main": false
     }
   },
-  "redirects": [
-    {
-      "source": "/ncertpyq",
-      "destination": "/ncertpyq/public/index.html",
-      "permanent": false
-    },
-    {
-      "source": "/ncertpyq/",
-      "destination": "/ncertpyq/public/index.html",
-      "permanent": false
-    },
+  "rewrites": [
     {
       "source": "/pyqncert",
-      "destination": "/ncertpyq/public/index.html",
-      "permanent": false
+      "destination": "/ncertpyq/public/index.html"
     },
     {
       "source": "/pyqncert/",
-      "destination": "/ncertpyq/public/index.html",
-      "permanent": false
+      "destination": "/ncertpyq/public/index.html"
     },
     {
       "source": "/pyqncert/neet.html",
-      "destination": "/ncertpyq/public/index.html",
-      "permanent": false
+      "destination": "/ncertpyq/public/index.html"
     },
     {
       "source": "/pyqncert/jee.html",
-      "destination": "/ncertpyq/public/index.html",
-      "permanent": false
+      "destination": "/ncertpyq/public/index.html"
+    },
+    {
+      "source": "/pyqncert/:path*",
+      "destination": "/ncertpyq/public/:path*"
+    },
+    {
+      "source": "/ncertpyq",
+      "destination": "/ncertpyq/public/index.html"
+    },
+    {
+      "source": "/ncertpyq/",
+      "destination": "/ncertpyq/public/index.html"
     }
   ]
 }

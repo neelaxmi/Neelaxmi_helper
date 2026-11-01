@@ -1,29 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://neelaxmi.site/ncertpyq/</loc>
-    <lastmod>2026-10-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>1.0</priority>
-  </url>
-  <url>
-    <loc>https://neelaxmi.site/ncertpyq/public/about.html</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://neelaxmi.site/ncertpyq/public/contact.html</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://neelaxmi.site/ncertpyq/public/privacy-policy.html</loc>
-    <changefreq>yearly</changefreq>
-    <priority>0.4</priority>
-  </url>
-  <url>
-    <loc>https://neelaxmi.site/ncertpyq/public/terms.html</loc>
-    <changefreq>yearly</changefreq>
-    <priority>0.4</priority>
-  </url>
+  <url><loc>https://neelaxmi.site/pyqncert/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://neelaxmi.site/pyqncert/about.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://neelaxmi.site/pyqncert/contact.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://neelaxmi.site/pyqncert/privacy-policy.html</loc><changefreq>yearly</changefreq><priority>0.4</priority></url>
+  <url><loc>https://neelaxmi.site/pyqncert/terms.html</loc><changefreq>yearly</changefreq><priority>0.4</priority></url>
 </urlset>
