@@ -55,11 +55,11 @@ export async function chapterFileId(chapterId) {
     }
 
     const links = await linksPromise;
-    const digits = String(chapterId || "").match(/\\d+/);
+    const digits = String(chapterId || "").match(/\d+/);
     if (!digits) throw new Error(`Invalid chapter ID: ${chapterId}`);
     const wanted = digits[0];
     for (const [key, value] of Object.entries(links)) {
-      const match = String(key).match(/\\d+/);
+      const match = String(key).match(/\d+/);
       if (match && match[0] === wanted) {
         const fileId = idFromLink(value);
         if (!fileId) throw new Error(`Chapter ${chapterId} has an invalid or empty Drive link in chapters.json (key: ${key}).`);
