@@ -30,16 +30,52 @@ const idFromLink = (v) => {
   return m ? m[1] : /^[\w-]{15,}$/.test(s) ? s : null;      // full link or bare file ID
 };
 let linksPromise = null;
-/** Returns the Drive file ID for a chapter ("ch2"), reading public/chapters.json. Keys may be ch2 / chap2 / 2. */
+/** Returns the Drive file ID for a chapter ("ch2"), reading chapters.json beside this module. */
 export async function chapterFileId(chapterId) {
-  if (!linksPromise) linksPromise = fetch("/chapters.json", { cache: "no-cache" }).then((r) => r.json());
-  const links = await linksPromise;
-  const want = String(chapterId).match(/\d+/)[0];
-  for (const [k, v] of Object.entries(links)) {
-    const m = String(k).match(/\d+/);
-    if (m && m[0] === want) return idFromLink(v);
+  try {
+    if (!linksPromise) {
+      const chaptersUrl = new URL("./chapters.json", import.meta.url);
+      linksPromise = fetch(chaptersUrl, { cache: "no-cache" }).then(async (response) => {
+        if (!response.ok) {
+          throw new Error(`chapters.json request failed: HTTP ${response.status} (${chaptersUrl.pathname})`);
+        }
+        const links = await response.json();
+        if (!links || typeof links !== "object" || Array.isArray(links)) {
+          throw new Error("chapters.json must contain a JSON object of chapter IDs and Drive links.");
+        }
+        console.info("[NCERT PYQ][chapters][SUCCESS] chapters.json loaded", {
+          path: chaptersUrl.pathname,
+          entries: Object.keys(links).length,
+        });
+        return links;
+      }).catch((error) => {
+        linksPromise = null;
+        throw error;
+      });
+    }
+
+    const links = await linksPromise;
+    const digits = String(chapterId || "").match(/\\d+/);
+    if (!digits) throw new Error(`Invalid chapter ID: ${chapterId}`);
+    const wanted = digits[0];
+    for (const [key, value] of Object.entries(links)) {
+      const match = String(key).match(/\\d+/);
+      if (match && match[0] === wanted) {
+        const fileId = idFromLink(value);
+        if (!fileId) throw new Error(`Chapter ${chapterId} has an invalid or empty Drive link in chapters.json (key: ${key}).`);
+        console.info("[NCERT PYQ][chapters][SUCCESS] chapter link resolved", { chapterId, key });
+        return fileId;
+      }
+    }
+    console.error("[NCERT PYQ][chapters][ERROR] chapter link missing", { chapterId });
+    return null;
+  } catch (error) {
+    console.error("[NCERT PYQ][chapters][ERROR] unable to resolve chapter link", {
+      chapterId,
+      message: error?.message || String(error),
+    });
+    throw error;
   }
-  return null;
 }
 // 1st try: straight from Drive (works if Google allows it for the visitor's browser). 2nd: our tiny CORS pass-through.
 export const driveDirectUrl = (id) => `https://drive.usercontent.google.com/download?id=${id}&export=download&confirm=t`;
