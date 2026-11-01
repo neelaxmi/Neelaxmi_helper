@@ -1,35 +1,24 @@
-
-
-
 <!DOCTYPE html>
 <html lang="en" class="transition-colors duration-300">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <!-- SEO & Metadata -->
     <title>Student Dashboard | Neelaxmi Quiz Center</title>
     <meta name="description" content="Access your personalized Student Dashboard at Neelaxmi Quiz Center. Track your NEET UG & JEE Main progress, analyze performance, and master your subjects with detailed analytics.">
     <link rel="canonical" href="https://classupdates.netlify.app/dashboard">
     
-    <!-- Open Graph (Social Sharing) -->
     <meta property="og:title" content="Student Dashboard | Neelaxmi Quiz Center">
     <meta property="og:description" content="Your personal hub for NEET/JEE preparation. View analytics, track quizzes, and improve your score.">
     <meta property="og:image" content="/pictures/neelaxmi.png">
     <meta property="og:url" content="https://classupdates.netlify.app/dashboard">
     <meta property="og:type" content="website">
-    
-    <!-- Icons & Manifest -->
     <link rel="icon" type="image/jpeg" href="/pictures/neelaxmi.png">
     <link rel="apple-touch-icon" href="/pictures/neelaxmi.png">
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#0b1120">
-    
-    <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
-    <!-- Scripts: Tailwind & Libraries -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -569,6 +558,10 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
+        // Keep Topic Analytics Firestore lookups bounded to avoid excessive reads.
+        const ANSWER_LOOKUP_CAP = 500;
+        console.info('[Dashboard][TopicAnalytics][CONFIG][SUCCESS] ANSWER_LOOKUP_CAP set to', ANSWER_LOOKUP_CAP);
+
         let currentUser = null;
         let userStats = { totalTests: 0, totalQuestions: 0, totalCorrect: 0, totalIncorrect: 0, totalTime: 0 };
         
@@ -690,69 +683,52 @@
         }
 
         const GEMINI_KEY_REGEX = /^AIza[0-9A-Za-z-_]{35}$/;
-        const ANSWER_LOOKUP_CAP = 1000;
 
-        
-async function updateGeminiKey() {
-    const keyInput = document.getElementById('input-gemini-key');
-    const key = keyInput.value.trim();
-    const btn = document.getElementById('btn-update-gemini-key');
-    const originalBtnHTML = btn.innerHTML;
+        async function updateGeminiKey() {
+            const keyInput = document.getElementById('input-gemini-key');
+            const key = keyInput.value.trim();
+            const btn = document.getElementById('btn-update-gemini-key');
+            const originalBtnHTML = btn.innerHTML;
 
-    if (!key) {
-        alert("Please enter a key.");
-        return;
-    }
+            if (!key) return alert("Please enter a key.");
 
-    if (!GEMINI_KEY_REGEX.test(key)) {
-        alert("Invalid Gemini API key.");
-        return;
-    }
-
-    btn.disabled = true;
-    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
-
-    try {
-        const testUrl =
-            `https://generativelanguage.googleapis.com/v1beta/models?key=${encodeURIComponent(key)}`;
-
-        const res = await fetch(testUrl);
-
-        if (!res.ok) {
-            let message = `Key rejected by Google (HTTP ${res.status})`;
-
-            try {
-                const errBody = await res.json();
-                if (errBody?.error?.message) {
-                    message = errBody.error.message;
-                }
-            } catch (parseErr) {
-                // Keep original error.
+            if (!GEMINI_KEY_REGEX.test(key)) {
+                alert("That doesn't look like a valid Gemini API key. Keys start with 'AIza' and are 39 characters long.");
+                return;
             }
 
-            throw new Error(message);
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+
+            try {
+                const testUrl = `https://generativelanguage.googleapis.com/v1beta/models?key=${encodeURIComponent(key)}`;
+                const res = await fetch(testUrl);
+
+                if (!res.ok) {
+                    let message = `Key rejected by Google (HTTP ${res.status})`;
+                    try {
+                        const errBody = await res.json();
+                        if (errBody?.error?.message) message = errBody.error.message;
+                    } catch (parseErr) {
+                        console.warn('[Dashboard][GeminiKey][WARN] Could not parse Google error response:', parseErr);
+                    }
+                    throw new Error(message);
+                }
+
+                await db.collection('users').doc(currentUser.uid).update({ geminiApiKey: key });
+                document.getElementById('gemini-modal').classList.add('hidden');
+                keyInput.value = '';
+                loadUserProfile(currentUser.uid);
+
+            } catch (e) {
+                console.error("Gemini key validation failed:", e);
+                alert("Could not verify this key: " + e.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalBtnHTML;
+            }
         }
 
-        await db.collection('users')
-            .doc(currentUser.uid)
-            .update({ geminiApiKey: key });
-
-        document.getElementById('gemini-modal').classList.add('hidden');
-        keyInput.value = '';
-
-        await loadUserProfile(currentUser.uid);
-
-        alert("Gemini API key updated successfully!");
-
-    } catch (e) {
-        console.error("Gemini key validation failed:", e);
-        alert("Could not verify this key: " + e.message);
-
-    } finally {
-        btn.disabled = false;
-        btn.innerHTML = originalBtnHTML;
-    }
-}
 
         let cachedLabels = [], cachedScores = [];
 
@@ -860,9 +836,6 @@ async function updateGeminiKey() {
             difficultyStats = {};
             subjectStats = {};
             topicMistakes = {};
-
-            // Flatten every (attempt, answer) pair with a quizId + qId we can
-            // actually look up, most recent attempts first.
             const attempts = Object.values(historyMap)
                 .filter(a => a.quizId && Array.isArray(a.answers))
                 .sort((a, b) => (b.timestamp?.toMillis?.() || 0) - (a.timestamp?.toMillis?.() || 0));
@@ -1010,8 +983,6 @@ async function updateGeminiKey() {
         }
 
         function prepareRadarData() {
-            // Top 6 topics by how many questions were answered in them —
-            // real AI-tagged topics now, not quiz titles like before.
             const topics = Object.keys(topicStats);
             const topTopics = topics.sort((a, b) => topicStats[b].total - topicStats[a].total).slice(0, 6);
 
@@ -1063,7 +1034,6 @@ async function updateGeminiKey() {
             });
         }
 
-        // --- Difficulty breakdown bar chart (added) ---
         function renderDifficultyChart() {
             const order = ['Easy', 'Medium', 'Hard', 'Unrated'];
             const colors = { Easy: '#22c55e', Medium: '#f59e0b', Hard: '#ef4444', Unrated: '#94a3b8' };
@@ -1098,7 +1068,6 @@ async function updateGeminiKey() {
             });
         }
 
-        // --- Subject mastery cards (added) ---
         function renderSubjectMasteryCards() {
             const wrap = document.getElementById('subject-mastery-cards');
             const subjects = Object.keys(subjectStats).filter(s => s !== 'Unclassified');
@@ -1131,7 +1100,6 @@ async function updateGeminiKey() {
                 }).join('');
         }
 
-        // --- Weak topics list + detail modal (added) ---
         const WEAK_TOPIC_THRESHOLD = 60; // accuracy % below which a topic is flagged
         const WEAK_TOPIC_MIN_QUESTIONS = 2; // ignore topics with too few data points to be meaningful
 
@@ -1169,10 +1137,6 @@ async function updateGeminiKey() {
             if (!mistakes.length) {
                 listEl.innerHTML = `<p class="text-sm text-slate-400 text-center py-4">No individual mistakes on record for this topic.</p>`;
             } else {
-                // Group by source quiz so "Practice" reuses the existing
-                // per-quiz retry-incorrect mechanism (quiz.js filters by
-                // question IDs within ONE quiz — there's no cross-quiz
-                // practice session yet).
                 const byQuiz = {};
                 mistakes.forEach(m => {
                     byQuiz[m.quizId] = byQuiz[m.quizId] || { quizTitle: m.quizTitle, questions: [] };
@@ -1201,9 +1165,6 @@ async function updateGeminiKey() {
             document.getElementById('weak-topic-modal').classList.add('hidden');
         }
 
-        // Same sessionStorage + URL-param handoff practiceIncorrect() already
-        // uses — just pre-filtered to this specific topic's wrong questions
-        // within one quiz, instead of every wrong question from one attempt.
         function practiceTopicMistakes(quizId, quizTitle, questionIds) {
             if (!questionIds.length) return;
             sessionStorage.setItem('retryQuizConfig', JSON.stringify({
@@ -1221,7 +1182,6 @@ async function updateGeminiKey() {
             return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
         }
 
-        // --- CHAPTER MODAL LOGIC ---
         function openChapterModal(title) {
             const attempts = groupedHistory[title];
             if (!attempts) return;
@@ -1289,7 +1249,6 @@ async function updateGeminiKey() {
             document.getElementById('chapter-history-modal').classList.add('hidden');
         }
 
-        // --- MODULE 1: ATTEMPT AGAIN ---
         function attemptAgain(evt, quizId, chapterName) {
             if (evt) evt.stopPropagation(); // don't trigger the row's openChapterModal()
             const params = new URLSearchParams();
@@ -1394,7 +1353,6 @@ async function updateGeminiKey() {
             }, 1000);
         }
 
-        // --- PDF GENERATION ---
         let currentPdfBase64 = null;
 
         async function generateCertificate() {
