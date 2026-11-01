@@ -15,18 +15,10 @@ let checkedQuestions = {};
 let currentQuizIsTest = false;
 let lockedTestDurationMinutes = null; 
 const DEFAULT_TEST_MODE_MINUTES_FALLBACK = 20; 
-
-
-// Question-image offline cache. IndexedDB is used instead of localStorage so
-// image bytes do not consume the small localStorage quota.
 const QUIZ_IMAGE_DB_NAME = 'neelaxmi_quiz_image_cache_v1';
 const QUIZ_IMAGE_STORE = 'images';
 const quizImageMemoryCache = new Map();
 let quizImageDbPromise = null;
-
-// Admin saves the image URL in Firestore on each question as `imageUrl`.
-// Keep that remote URL as the source of truth; only cache its downloaded bytes
-// locally for offline use. Do not reinterpret relative paths as local images.
 function resolveFirebaseQuestionImageUrl(rawUrl, questionId) {
     try {
         const value = typeof rawUrl === 'string' ? rawUrl.trim() : '';
@@ -217,7 +209,6 @@ let offlineDeadlineAt = null;
 let offlinePauseStartedAt = null;
 let offlineSaveFailureAlerted = false;
 let currentRequestedQuizId = null;
-
 const isOfflineNormalTest = () => currentMode === 'test' && !proctoringEnabled;
 function offlineAttemptKey(quizId) { return OFFLINE_ATTEMPT_PREFIX + String(quizId || ''); }
 function makeOfflineSafeQuestions(source) {
@@ -411,9 +402,7 @@ const quizEls = {
     warningText: document.getElementById('warning-text')
 };
 
-// ============================================================
-// PROCTORING STATE (100% client-side — nothing here ever leaves the browser)
-// ============================================================
+
 const proctorEls = {
     consentModal: document.getElementById('proctor-consent-modal'),
     enableBtn: document.getElementById('proctor-enable-btn'),
@@ -426,7 +415,6 @@ const proctorEls = {
     widget: document.getElementById('proctor-widget')
 };
 
-// ===== Pre-Quiz Initialization (Step 1): instructions + consent + CBT/Normal mode choice =====
 const preQuizEls = {
     modal: document.getElementById('pre-quiz-init-modal'),
     consentCheckbox: document.getElementById('pre-quiz-consent-checkbox'),
@@ -436,14 +424,13 @@ const preQuizEls = {
 };
 
 let modelWarmupStarted = false;
-let faceModel = null;              // true once face-api.js's tiny_face_detector net is loaded
-let proctorStream = null;          // MediaStream from getUserMedia (never transmitted anywhere)
-let proctorDetectionTimer = null;  // setInterval handle for the detection loop
-let noFaceSince = null;            // timestamp when face last went missing
-let pendingStartConfig = null;     // quiz-setup choices captured before proctoring consent
-let proctoringEnabled = false;     // true only when the user picked "CBT Mode" in the pre-quiz step
-let pendingResume = false;         // true when the camera-consent step was triggered by resuming a saved CBT attempt
-
+let faceModel = null;  
+let proctorStream = null;  
+let proctorDetectionTimer = null;  
+let noFaceSince = null;    
+let pendingStartConfig = null;
+let proctoringEnabled = false; 
+let pendingResume = false;  
 function warmUpProctoringAssets() {
     if (modelWarmupStarted) return;
     modelWarmupStarted = true;
@@ -462,7 +449,7 @@ async function loadWithRetry(loaderFn, maxAttempts, label) {
             console.warn(`${label} load attempt ${attempt}/${maxAttempts} failed:`, err.message);
         }
         if (attempt < maxAttempts) {
-            await new Promise((r) => setTimeout(r, 4000 * attempt)); // 4s, 8s, 12s...
+            await new Promise((r) => setTimeout(r, 4000 * attempt)); 
         }
     }
     console.warn(`${label} could not be loaded after ${maxAttempts} attempts — continuing without it.`);
@@ -478,10 +465,9 @@ const initiallyChecked = document.querySelector('input[name="proctor_selection_m
 if (initiallyChecked && initiallyChecked.value === 'cbt') warmUpProctoringAssets();
 
 let violationCount = 0;
-const MAX_VIOLATIONS = 3;          // exactly 3 warnings allowed; the 4th triggers auto-submit
+const MAX_VIOLATIONS = 3;        
 let violationLog = [];
 let violationModalOpen = false;
-
 const SAVED_LANGUAGE_STORAGE_KEY = 'neelaxmi_quiz_language_v1';
 let currentLanguage = (() => {
     try {
@@ -509,7 +495,7 @@ window.setQuizAttemptLanguageLock = (locked) => {
     }
 };
 const TRANSLATION_CACHE_STORAGE_KEY = 'neelaxmi_translation_cache_v1';
-const translationCache = new Map(); // `${lang}::${text}` -> translated text, persisted for offline reuse
+const translationCache = new Map(); 
 let lastOfflineTranslationWarningLanguage = null;
 const langEls = { select: document.getElementById('language-select') };
 if (langEls.select) {
@@ -598,13 +584,12 @@ async function translateText(text, targetLang) {
         return restored;
     } catch (err) {
         console.error('[Quiz][translate][ERROR] Translation failed; original text is retained.', { language: targetLang, message: err && err.message });
-        return text; // never block answering if translation service fails
+        return text; 
     }
 }
 
 async function preCacheQuestionTranslations(lang, questionSet = null) {
     try {
-        // Before the attempt starts, `questions` is empty while `allQuestions` already contains the loaded quiz bank.
         const sourceQuestions = Array.isArray(questionSet) ? questionSet : (questions.length ? questions : allQuestions);
         if (!lang || lang === 'en') return { cached: 0, failed: 0 };
         if (!navigator.onLine) {
@@ -627,15 +612,12 @@ async function preCacheQuestionTranslations(lang, questionSet = null) {
             return { cached: 0, failed: 0 };
         }
 
-        // Keep background pre-caching bounded so a very large question bank
-        // cannot accidentally generate thousands of translation requests.
         const MAX_TRANSLATION_PRECACHE_STRINGS = 1500;
         const skipped = Math.max(0, missing.length - MAX_TRANSLATION_PRECACHE_STRINGS);
         const workList = missing.slice(0, MAX_TRANSLATION_PRECACHE_STRINGS);
         if (skipped) {
             console.warn('[Quiz][translation-precache][INFO] Pre-cache batch capped; remaining text will translate on demand while online.', { language: lang, queued: workList.length, skipped });
         }
-
         let cursor = 0;
         let cached = 0;
         let failed = 0;
@@ -748,7 +730,7 @@ window.goToQuestion = (index) => {
 };
 
 const updateQuestionPalette = () => {
-    if (currentQuizIsTest) return; // Disable Navigation: no palette/grid to update in strict Test Mode
+    if (currentQuizIsTest) return; 
     if (typeof window.renderQuestionPalette === 'function') {
         const paletteItems = questions.map((q, idx) => {
             let status = 'not-visited';
@@ -778,23 +760,17 @@ const renderQuestion = () => {
     try {
     const q = questions[currentIndex];
     
-    // Mark as visited as soon as it renders
     visitedQuestions[q.id] = true;
-    
     quizEls.qText.innerHTML = q.question;
-
     const existingImg = document.getElementById('current-quiz-image');
     if (existingImg) existingImg.remove();
-
     if (q.imageUrl) {
         const imgContainer = document.createElement('div');
         imgContainer.id = 'current-quiz-image';
         imgContainer.className = 'w-full flex justify-center my-4';
-
         const imageFrame = document.createElement('div');
         imageFrame.id = 'trigger-zoom';
         imageFrame.className = 'relative group w-full max-w-lg mx-auto bg-gray-100 dark:bg-gray-800 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 transition-all hover:shadow-md';
-
         const questionImage = document.createElement('img');
         questionImage.alt = 'Question image';
         questionImage.loading = 'eager';
@@ -817,7 +793,6 @@ const renderQuestion = () => {
             fallback.textContent = 'Question image is unavailable right now. You can continue answering using the question text.';
             imageFrame.appendChild(fallback);
         }, { once: true });
-
         const zoomOverlay = document.createElement('div');
         zoomOverlay.className = 'absolute inset-0 flex items-center justify-center bg-black/10 group-hover:bg-black/20 transition-colors pointer-events-none';
         zoomOverlay.innerHTML = '<div class="bg-white/90 dark:bg-slate-800/90 text-primary px-4 py-2 rounded-full text-xs font-bold shadow-sm backdrop-blur-sm"><i class="fa-solid fa-expand mr-2"></i> Click to Zoom Image</div>';
@@ -825,7 +800,6 @@ const renderQuestion = () => {
         imageFrame.appendChild(zoomOverlay);
         imgContainer.appendChild(imageFrame);
         quizEls.qText.parentNode.insertBefore(imgContainer, quizEls.qText.nextSibling);
-
         try {
             const originalImageUrl = resolveFirebaseQuestionImageUrl(q.imageUrl, q.id);
             if (!originalImageUrl) throw new Error('The question has no valid HTTPS imageUrl saved in Firebase.');
@@ -865,9 +839,9 @@ const renderQuestion = () => {
     const userAnswer = userAnswers[q.id];
 
     ['A','B','C','D'].forEach(key => {
+        if (!q.options || !q.options[key]) return;
         const btn = document.createElement('button');
         const isSel = userAnswer === key;
-        
         let btnClass = "option-btn w-full text-left p-4 rounded-xl border transition-all flex items-start gap-3 ";
         let badgeClass = "w-8 h-8 rounded-full flex items-center justify-center ";
         
@@ -891,7 +865,6 @@ const renderQuestion = () => {
                 badgeClass += "bg-slate-100 dark:bg-slate-700";
             }
         }
-
         btn.className = btnClass;
         btn.disabled = (currentMode === 'quiz' && isChecked); 
         btn.innerHTML = `<span class="${badgeClass}">${key}</span><span class="text-lg ${isSel && !isChecked ? 'text-primary font-semibold' : 'dark:text-slate-300'}">${q.options[key]}</span>`;
@@ -925,8 +898,6 @@ const renderQuestion = () => {
         if(footerDiv) footerDiv.appendChild(checkBtn);
     } else {
         if(quizEls.prev) quizEls.prev.disabled = currentIndex === 0;
-        
-        // Final Question Logic
         if (currentIndex === questions.length - 1) {
             if(quizEls.next) quizEls.next.classList.add('hidden');
             if(quizEls.finalSubmit) quizEls.finalSubmit.classList.remove('hidden');
@@ -961,7 +932,7 @@ if(quizEls.clearBtn) {
 if(quizEls.markBtn) {
     quizEls.markBtn.onclick = () => {
         const qId = questions[currentIndex].id;
-        markedForReview[qId] = !markedForReview[qId]; // Toggle mark status
+        markedForReview[qId] = !markedForReview[qId]; 
         if (currentIndex < questions.length - 1) {
             currentIndex++;
         }
@@ -1052,9 +1023,6 @@ const togglePause = (state) => {
         console.error('[Quiz][pause][ERROR] Could not change quiz pause state.', { requestedPaused: state, message: error && error.message });
     }
 };
-
-// Guard Normal Test Mode if connectivity returns mid-attempt. The local snapshot
-// is saved before warning so the student's answers survive a refresh or retry.
 window.addEventListener('online', () => {
     try {
         if (!isOfflineNormalTest() || !quizEls.container || quizEls.container.classList.contains('hidden') || (typeof quizActive === 'function' && !quizActive())) return;
@@ -1120,13 +1088,13 @@ function isQuizUnlockedInSession(quizId) {
 }
 function markQuizUnlockedInSession(quizId) {
     try { sessionStorage.setItem(tokenUnlockSessionKey(quizId), '1'); }
-    catch (e) { /* sessionStorage unavailable — worst case the tab just asks again, not a hard failure */ }
+    catch (e) {
+    }
 }
 
 function showTokenUnlockModal(quizId, quizTitle, onUnlocked) {
     tokenGateQuizId = quizId;
     tokenGateOnUnlocked = onUnlocked;
-
     if (tokenUnlockEls.quizTitle) tokenUnlockEls.quizTitle.textContent = quizTitle || 'This quiz';
     if (tokenUnlockEls.input) tokenUnlockEls.input.value = '';
     if (tokenUnlockEls.error) tokenUnlockEls.error.classList.add('hidden');
@@ -1145,7 +1113,6 @@ async function verifyAndConsumeToken(quizId, rawCode) {
 
     const poolRef = db.collection('quiz_tokens').doc(quizId);
     const tokensCol = poolRef.collection('tokens');
-
     const candidateSnap = await tokensCol.where('code', '==', code).limit(1).get();
     if (candidateSnap.empty) {
         throw new Error('That token is invalid, already used, or not for this quiz.');
@@ -1192,7 +1159,6 @@ if (tokenUnlockEls.verifyBtn) {
 }
 
 if (tokenUnlockEls.input) {
-    // Digits only, 6 max — keeps stray characters from ever reaching the query.
     tokenUnlockEls.input.addEventListener('input', () => {
         tokenUnlockEls.input.value = tokenUnlockEls.input.value.replace(/\D/g, '').slice(0, 6);
     });
@@ -1211,12 +1177,11 @@ const loadQuiz = async (uid) => {
     }
 
     let doc = await db.collection('quizzes').doc(uid).get();
-
     if (!doc.exists) {
         try {
             const aliasDoc = await db.collection('quiz_aliases').doc(uid).get();
             if (aliasDoc.exists && aliasDoc.data().quizId) {
-                uid = aliasDoc.data().quizId; // switch to the real doc id for everything below
+                uid = aliasDoc.data().quizId; 
                 doc = await db.collection('quizzes').doc(uid).get();
             }
         } catch (e) {
@@ -1231,23 +1196,59 @@ const loadQuiz = async (uid) => {
     }
 
     currentQuizId = uid;
-
-    const data = doc.data();
-
+    let data = doc.data();
     if (data.isPaid === true && !isQuizUnlockedInSession(uid)) {
         quizEls.loader.classList.add('hidden');
         showTokenUnlockModal(uid, data.title, () => loadQuiz(uid));
         return;
     }
+    if (data.questionBankChapterQuiz === true && !(Array.isArray(data.questions) && data.questions.length)) {
+        try {
+            if (!data.chapter) throw new Error('Chapter metadata is missing from this chapter quiz.');
+            const wantedSubject = String(data.subject || 'Unclassified').trim().toLowerCase();
+            const chapterQuestions = [];
+            let lastDoc = null;
+            while (true) {
+                let qry = db.collection('question_bank').where('chapter', '==', data.chapter)
+                    .orderBy(firebase.firestore.FieldPath.documentId()).limit(500);
+                if (lastDoc) qry = qry.startAfter(lastDoc);
+                const snap = await qry.get();
+                if (snap.empty) break;
+                snap.docs.forEach(d => {
+                    const q = { ...d.data() };
+                    if (String(q.subject || 'Unclassified').trim().toLowerCase() !== wantedSubject) return;
+                    if (!q.question || !q.options || !q.answer || !q.options[q.answer]) return;
+                    ['schemaVersion', 'createdAt', 'updatedAt', 'sourceFile'].forEach(k => delete q[k]);
+                    chapterQuestions.push(q);
+                });
+                lastDoc = snap.docs[snap.docs.length - 1];
+                if (snap.size < 500) break;
+            }
+            if (!chapterQuestions.length) throw new Error(`No valid questions found for ${data.subject || 'Unclassified'} / ${data.chapter}.`);
+            data.questions = chapterQuestions;
+        } catch (e) {
+            console.error('[ChapterQuiz][ERROR]', e);
+            document.getElementById('error-text').textContent = `Could not load this chapter quiz: ${e.message}`;
+            document.getElementById('error-message-area').classList.remove('hidden');
+            quizEls.loader.classList.add('hidden');
+            return;
+        }
+    }
 
     quizEls.title.textContent = data.title;
     quizEls.setupTitle.textContent = data.title;
-    allQuestions = data.questions.map((q,i)=>({...q, id:`Q${i+1}`}));
+    allQuestions = (Array.isArray(data.questions) ? data.questions : []).map((q,i)=>({...q, id:`Q${i+1}`}));
+    if (!allQuestions.length) {
+        document.getElementById('error-text').textContent = 'This quiz has no questions yet.';
+        document.getElementById('error-message-area').classList.remove('hidden');
+        quizEls.loader.classList.add('hidden');
+        return;
+    }
 
     currentQuizIsTest = data.test_quiz === true;
 
     const urlParams = new URLSearchParams(window.location.search);
-    const retryModeParam = urlParams.get('mode'); // 'retry-incorrect' | 'retry-unattempted' | null
+    const retryModeParam = urlParams.get('mode'); 
     let retryIncorrectActive = false;
     let retryModeLabel = '';
     if (retryModeParam === 'retry-incorrect' || retryModeParam === 'retry-unattempted') {
@@ -1452,8 +1453,7 @@ const beginSelectedQuiz = async () => {
         console.info('[Quiz][preparation][SUCCESS] Existing proctoring/CBT startup flow preserved; preparation overlay skipped.');
     }
     timeLeft = cfg.selectedTime * 60;
-    quizStartDurationSeconds = timeLeft; // remember the real starting duration for result.js's Total Time calc
-
+    quizStartDurationSeconds = timeLeft; 
     questions = selectedQuestions;
     currentIndex = 0;
     userAnswers = {};
@@ -1490,14 +1490,10 @@ const beginSelectedQuiz = async () => {
 
     if (typeof window.setQuizAttemptLanguageLock === 'function') window.setQuizAttemptLanguageLock(true);
 
-    // Fresh violation state for this attempt
     violationCount = 0;
     violationLog = [];
     persistViolationState();
-
-    // Fresh proctoring-detection state for this attempt
     noFaceSince = null;
-
     startQuizSession();
 };
 
@@ -1635,7 +1631,7 @@ const saveProgress = async () => {
     await db.collection('user_progress').doc(CURRENT_USER_ID).collection('saved_quizzes').doc(currentQuizId).set({
         currentIndex, 
         timeLeft, 
-        quizStartDurationSeconds, // so a resumed attempt still knows its real total duration
+        quizStartDurationSeconds,
         userAnswers, 
         visitedQuestions,
         markedForReview,
@@ -1654,7 +1650,6 @@ if(quizEls.next) quizEls.next.onclick = () => {
 
 if(quizEls.pause) quizEls.pause.onclick = () => togglePause(true);
 if(quizEls.resume) quizEls.resume.onclick = () => togglePause(false);
-
 if(quizEls.saveBtn) {
     quizEls.saveBtn.onclick = () => {
          togglePause(true);
@@ -1723,7 +1718,6 @@ if(themeEls.themeToggle) {
 initTheme();
 
 const quizContainer = document.getElementById('quiz-container'); 
-
 function showAntiCheatAlert(message, isCritical = false) {
     console.warn(`Anti-Cheat Alert: ${message}`);
     
@@ -1736,9 +1730,7 @@ function showAntiCheatAlert(message, isCritical = false) {
     alertEl.className = `fixed top-0 left-0 right-0 p-4 text-center z-[1000] font-bold shadow-lg transition-transform duration-300 transform 
         ${isCritical ? 'bg-red-600 text-white' : 'bg-yellow-400 text-slate-800'}`;
     alertEl.textContent = message;
-    
     document.body.appendChild(alertEl);
-    
     if (!isCritical) {
         setTimeout(() => {
             if (document.getElementById(alertId)) {
@@ -1762,7 +1754,8 @@ function violationStorageKey() {
 function persistViolationState() {
     try {
         sessionStorage.setItem(violationStorageKey(), JSON.stringify({ violationCount, violationLog }));
-    } catch (e) { /* sessionStorage unavailable — fail silently, still works in-memory */ }
+    } catch (e) {
+        }
 }
 
 function restoreViolationState() {
@@ -1773,7 +1766,7 @@ function restoreViolationState() {
             violationCount = saved.violationCount || 0;
             violationLog = saved.violationLog || [];
         }
-    } catch (e) { /* ignore */ }
+    } catch (e) {  }
 }
 
 window.registerViolation = function (type, message) {
@@ -1938,11 +1931,7 @@ function stopProctoring() {
         proctorStream = null;
     }
 }
-window.stopProctoring = stopProctoring; // exposed for result.js to call on final submit
-
-// ============================================================
-// FULLSCREEN ENFORCEMENT
-// ============================================================
+window.stopProctoring = stopProctoring; 
 
 function requestFullscreenMode() {
     const el = document.documentElement;
@@ -2056,8 +2045,8 @@ if (quizEls.viewLastBtn) {
 
 let antiCheatMeasuresInstalled = false;
 function setupAntiCheatingMeasures() {
-    if (antiCheatMeasuresInstalled) return; // avoid stacking duplicate listeners across attempts
-    antiCheatMeasuresInstalled = true;
+    if (antiCheatMeasuresInstalled) return; 
+        antiCheatMeasuresInstalled = true;
 
     document.addEventListener('contextmenu', e => { if (quizActive()) e.preventDefault(); });
 
