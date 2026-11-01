@@ -1287,7 +1287,26 @@ img { display: block; max-width: 100%; }
 
     function renderCards(data) {
         container.innerHTML = data.map((teacher, index) => {
-            const profileSlug = 'teachers/' + teacher.name.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '.html';
+            // Profile files are siblings of classupdates.html. Keep exact filename casing.
+            const PROFILE_FILES = {
+                'ajay sir': 'ajay-sir.html',
+                'prateek jain': 'prateek-jain.html',
+                'seep mam': 'seep-mam.html',
+                'ramesh sharda': 'ramesh-sharda.html',
+                'amit gupta sir': 'amit-gupta-sir.html',
+                'pranav pundarik': 'Pranav-pundarik.html',
+                'test series': 'test-series.html',
+                'about owner': 'about-owner.html'
+            };
+            const teacherKey = teacher.name.trim().toLowerCase();
+            const profileFile = PROFILE_FILES[teacherKey];
+            const profileSlug = profileFile ? './' + profileFile : null;
+
+            if (profileSlug) {
+                console.info('[Teachers][profile-link][SUCCESS]', teacher.name, profileSlug);
+            } else {
+                console.error('[Teachers][profile-link][ERROR] No profile page mapped for:', teacher.name);
+            }
             return `
                 <article class="teacher-card" style="animation: slideDown 0.45s var(--ease-smooth) forwards; animation-delay: ${index * 0.08}s; opacity: 0;">
                     <span class="rank-badge">${teacher.rank}</span>
@@ -1304,9 +1323,13 @@ img { display: block; max-width: 100%; }
                     <h3 class="card-name">${teacher.name}</h3>
                     <p class="card-subject">${teacher.subject}</p>
                     <div class="card-body">${teacher.description}</div>
+                    ${profileSlug ? `
                     <a href="${profileSlug}" class="btn-profile">
                         View Profile <i class="fas fa-arrow-right" aria-hidden="true"></i>
-                    </a>
+                    </a>` : `
+                    <span class="btn-profile" aria-disabled="true" title="Profile page is not available">
+                        Profile unavailable
+                    </span>`}
                 </article>
             `;
         }).join('');
