@@ -1,9 +1,5 @@
 'use strict';
-
-// Vercel adapter for the existing server-side quiz scorer.
-// Keep the scorer in one place so Netlify rollback remains possible.
 const quizSubmit = require('../netlify/functions/quiz-submit');
-
 module.exports = async function handler(req, res) {
   const event = {
     httpMethod: req.method,
@@ -12,7 +8,6 @@ module.exports = async function handler(req, res) {
     path: req.url || '/api/quiz-submit',
     queryStringParameters: Object.fromEntries(new URL(req.url || '/', 'https://vercel.invalid').searchParams.entries())
   };
-
   try {
     const result = await quizSubmit.handler(event);
     const status = Number(result && result.statusCode) || 200;

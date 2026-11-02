@@ -1,7 +1,4 @@
 'use strict';
-
-// Route the NCERT PYQ app's named API calls to the existing business logic.
-// Static imports let Vercel trace each module and its shared library dependencies.
 const handlers = {
   'create-session': require('../../ncertpyq/netlify/functions/create-session'),
   'get-reviews': require('../../ncertpyq/netlify/functions/get-reviews'),

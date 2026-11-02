@@ -2,7 +2,6 @@
 
 module.exports = async function handler(req, res) {
   try {
-    // The existing proxy uses the Web Request/Response API; adapt it for Vercel's Node response.
     const { default: drivePdf } = await import('../../ncertpyq/netlify/functions/drive-pdf.mjs');
     const url = new URL(req.url || '/api/ncertpyq/drive-pdf', 'https://vercel.invalid');
     const request = new Request(url, {
