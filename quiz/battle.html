@@ -400,7 +400,7 @@ el('battle-auth-form').addEventListener('submit', async event => {
         authFeedback(error.message || 'Authentication failed.');
     } finally {
         button.disabled = false;
-        setBattleAuthMode(battleAuthMode);
+        button.innerHTML = battleAuthMode === 'signup' ? '<i class="fa-solid fa-user-plus mr-2"></i>Create account' : '<i class="fa-solid fa-arrow-right-to-bracket mr-2"></i>Sign In';
     }
 });
 el('btn-forgot-password').addEventListener('click', async () => {
