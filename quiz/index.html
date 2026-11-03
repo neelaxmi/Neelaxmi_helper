@@ -1,4 +1,3 @@
-<!doctype html>
 <html lang="en" data-theme="dark">
 <head>
   <meta charset="utf-8">
@@ -8,7 +7,6 @@
   <meta name="theme-color" content="#060b1f">
   <link rel="icon" href="data:image/svg+xml;charset=utf-8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%0A  %3Cdefs%3E%3ClinearGradient id=%22g%22 x1=%220%22 y1=%220%22 x2=%221%22 y2=%221%22%3E%3Cstop offset=%220%22 stop-color=%22%232f5bff%22/%3E%3Cstop offset=%221%22 stop-color=%22%237a4dff%22/%3E%3C/linearGradient%3E%3C/defs%3E%0A  %3Crect width=%2264%22 height=%2264%22 rx=%2216%22 fill=%22url%28%23g%29%22/%3E%0A  %3Ccircle cx=%2225%22 cy=%2232%22 r=%2212%22 fill=%22none%22 stroke=%22%23fff%22 stroke-width=%224%22/%3E%0A  %3Ccircle cx=%2239%22 cy=%2232%22 r=%2212%22 fill=%22none%22 stroke=%22%231fe0b0%22 stroke-width=%224%22/%3E%0A%3C/svg%3E" type="image/svg+xml">
 
-  <!-- Open Graph / social preview. Replace og:url and og:image with absolute URLs once the site is live. -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="NEELAXMI">
   <meta property="og:title" content="NEELAXMI — THE UNION">
@@ -22,12 +20,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Sora:wght@500;600;700;800&display=swap" rel="stylesheet">
   <style>
-/* ==========================================================================
-   NEELAXMI — THE UNION | style.css
-   Design tokens first, then base, layout, components, sections, responsive.
-   ========================================================================== */
 
-/* ---------- 1. Design tokens ---------- */
 :root {
   --blue: #2f5bff;
   --violet: #7a4dff;
@@ -71,7 +64,6 @@ html[data-theme="light"] {
   color-scheme: light;
 }
 
-/* ---------- 2. Base ---------- */
 *, *::before, *::after { box-sizing: border-box; }
 html { scroll-behavior: smooth; scroll-padding-top: calc(var(--header-h) + 12px); -webkit-text-size-adjust: 100%; }
 body {
@@ -103,7 +95,6 @@ h3 { font-size: 1.25rem; font-weight: 600; }
 .skip-link { position: absolute; left: -999px; top: 8px; background: var(--blue); color: #fff; padding: 10px 16px; border-radius: 10px; z-index: 200; }
 .skip-link:focus { left: 12px; }
 
-/* ---------- 3. Buttons ---------- */
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 10px;
   font-family: var(--font-head); font-weight: 600; font-size: .98rem;
@@ -122,7 +113,6 @@ h3 { font-size: 1.25rem; font-weight: 600; }
 .btn-lg { padding: 15px 28px; }
 .btn-xl { padding: 18px 36px; font-size: 1.08rem; }
 
-/* ---------- 4. Header ---------- */
 .site-header { position: fixed; inset: 0 0 auto 0; z-index: 100; height: var(--header-h); display: flex; align-items: center; transition: background .3s, backdrop-filter .3s, border-color .3s, box-shadow .3s; border-bottom: 1px solid transparent; }
 .site-header.scrolled { background: color-mix(in srgb, var(--bg) 82%, transparent); backdrop-filter: blur(16px) saturate(1.4); border-bottom-color: var(--line); }
 .header-inner { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
@@ -145,7 +135,6 @@ html[data-theme="dark"] .ico-moon, html[data-theme="light"] .ico-sun { display: 
 .menu-btn[aria-expanded="true"] .ico-open { display: none; }
 .menu-btn[aria-expanded="true"] .ico-close { display: block; }
 
-/* ---------- 5. Hero ---------- */
 .hero { position: relative; min-height: 100svh; display: flex; align-items: center; padding: calc(var(--header-h) + 40px) 0 80px; overflow: hidden; }
 .hero-bg { position: absolute; inset: 0; z-index: 0; }
 .glow { position: absolute; border-radius: 50%; filter: blur(90px); opacity: .55; animation: drift 16s ease-in-out infinite alternate; }
@@ -166,7 +155,6 @@ html[data-theme="light"] .glow { opacity: .28; }
 .cta-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-bottom: 28px; }
 .hero-tag { font-size: .9rem; color: var(--muted); letter-spacing: .04em; margin: 0; padding-left: 14px; border-left: 3px solid var(--mint); }
 
-/* Hero visual */
 .hero-visual { position: relative; aspect-ratio: 1; width: min(100%, 520px); margin-inline: auto; }
 .orbit { position: absolute; border: 1px dashed color-mix(in srgb, var(--cyan) 45%, transparent); border-radius: 50%; inset: 0; animation: spin 40s linear infinite; }
 .orbit-2 { inset: 13%; border-style: solid; border-color: var(--line); animation-duration: 60s; animation-direction: reverse; }
@@ -192,7 +180,6 @@ html[data-theme="light"] .glow { opacity: .28; }
 .scroll-cue span { position: absolute; left: 50%; top: 8px; width: 4px; height: 8px; margin-left: -2px; border-radius: 4px; background: var(--cyan); animation: cue 1.8s ease-in-out infinite; }
 @keyframes cue { 60% { transform: translateY(14px); opacity: 0; } }
 
-/* ---------- 6. Question bank ---------- */
 .qb { background: linear-gradient(180deg, var(--bg), var(--bg-2)); }
 .qb-panel { display: grid; grid-template-columns: .85fr 1.15fr; gap: 48px; align-items: center; padding: clamp(28px, 5vw, 64px); border-radius: 32px; border: 1px solid var(--line); background:
   radial-gradient(600px 300px at 0% 0%, var(--card-glow), transparent 70%),
@@ -225,7 +212,6 @@ html[data-theme="light"] .glow { opacity: .28; }
 .subject-bio { --c1: #0fb88f; --c2: #12c8e8; }
 .subject-math { --c1: #12a5e8; --c2: #2f5bff; }
 
-/* ---------- 7. About ---------- */
 .about-grid { display: grid; grid-template-columns: 1.05fr .95fr; gap: 56px; align-items: start; }
 .about-main p { color: var(--muted); }
 .about-main .lead { color: var(--text); }
@@ -238,7 +224,6 @@ html[data-theme="light"] .glow { opacity: .28; }
 .vm-icon { display: inline-grid; place-items: center; width: 46px; height: 46px; border-radius: 14px; background: var(--grad); color: #fff; margin-bottom: 14px; }
 .vm-card h3 { margin-bottom: 6px; } .vm-card p { margin: 0; color: var(--muted); }
 
-/* ---------- 8. Ecosystem (bento) ---------- */
 .ecosystem { background: linear-gradient(180deg, var(--bg-2), var(--bg)); }
 .bento { display: grid; grid-template-columns: repeat(6, 1fr); gap: 18px; }
 .bento-card { position: relative; overflow: hidden; display: flex; flex-direction: column; padding: 30px; border-radius: 24px; background: var(--surface); border: 1px solid var(--line); transition: transform .35s var(--ease), box-shadow .35s var(--ease), border-color .35s; }
@@ -260,7 +245,6 @@ html[data-theme="light"] .glow { opacity: .28; }
 .b-cu { grid-column: span 6; flex-direction: row; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
 .b-cu-copy { max-width: 560px; } .b-cu-copy p { margin: 0; }
 
-/* ---------- 9. Why ---------- */
 .why-grid { display: grid; grid-template-columns: .8fr 1.2fr; gap: 64px; align-items: start; }
 .why-head { position: sticky; top: calc(var(--header-h) + 32px); }
 .why-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 18px; counter-reset: why; }
@@ -274,7 +258,6 @@ html[data-theme="light"] .glow { opacity: .28; }
 @keyframes bob { 50% { transform: translateY(-5px) rotate(-4deg); } }
 .why-item h3 { font-size: 1.08rem; margin: 0 0 4px; } .why-item p { margin: 0; font-size: .93rem; color: var(--muted); }
 
-/* ---------- 10. Team ---------- */
 .team { background: var(--bg-2); }
 .team-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 22px; max-width: 980px; margin-inline: auto; }
 .team-card { text-align: center; padding: 32px 26px; border-radius: 24px; background: var(--surface); border: 1px solid var(--line); transition: transform .3s var(--ease), box-shadow .3s; }
@@ -288,7 +271,6 @@ html[data-theme="light"] .glow { opacity: .28; }
 .team-socials a { padding: 6px 14px; border-radius: 999px; font-size: .82rem; font-weight: 600; background: var(--surface-2); border: 1px solid var(--line); transition: border-color .2s, color .2s; }
 .team-socials a:hover { border-color: var(--cyan); color: var(--cyan); }
 
-/* ---------- 11. Contact ---------- */
 .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: start; }
 .info-list { list-style: none; padding: 0; margin: 32px 0; display: grid; gap: 20px; }
 .info-list li { display: flex; gap: 16px; }
@@ -312,7 +294,6 @@ html[data-theme="light"] .glow { opacity: .28; }
 .form-status.err { color: #ff7a93; } .form-status.ok { color: var(--mint); } .form-status.info { color: var(--cyan); }
 .form-note { margin: 12px 0 0; font-size: .8rem; color: var(--muted); }
 
-/* ---------- 12. FAQ ---------- */
 .faq-wrap { max-width: 860px; }
 .faq-list { display: grid; gap: 12px; }
 .faq-item { border-radius: var(--radius-sm); background: var(--surface); border: 1px solid var(--line); transition: border-color .25s, box-shadow .25s; }
@@ -327,7 +308,6 @@ html[data-theme="light"] .glow { opacity: .28; }
 .faq-a p { padding: 0 24px 22px; margin: 0; color: var(--muted); }
 .faq-a a { color: var(--cyan); text-decoration: underline; }
 
-/* ---------- 13. CTA band + footer ---------- */
 .cta-band { padding: 0 0 clamp(72px, 9vw, 112px); }
 .cta-inner { text-align: center; padding: clamp(40px, 7vw, 80px) 24px; border-radius: 36px; border: 1px solid var(--line); background: radial-gradient(500px 260px at 20% 0%, rgba(47, 91, 255, .3), transparent 70%), radial-gradient(500px 260px at 90% 100%, rgba(122, 77, 255, .3), transparent 70%), var(--surface); }
 .cta-inner h2 { max-width: 20ch; margin: 0 auto 28px; }
@@ -341,18 +321,15 @@ html[data-theme="light"] .glow { opacity: .28; }
 .footer-bottom { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 22px 0 30px; border-top: 1px solid var(--line); font-size: .88rem; color: var(--muted); }
 .footer-bottom p { margin: 0; }
 
-/* ---------- 14. Toast ---------- */
 .toast { position: fixed; left: 50%; bottom: 28px; translate: -50% 30px; max-width: min(92vw, 520px); padding: 14px 22px; border-radius: 14px; background: var(--surface-2); color: var(--text); border: 1px solid var(--cyan); box-shadow: var(--shadow); font-size: .92rem; opacity: 0; pointer-events: none; transition: opacity .3s, translate .3s var(--ease); z-index: 300; }
 .toast.show { opacity: 1; translate: -50% 0; }
 
-/* ---------- 15. Scroll reveal ---------- */
 .reveal { opacity: 0; transform: translateY(28px); transition: opacity .8s var(--ease) var(--d, 0ms), transform .8s var(--ease) var(--d, 0ms); }
 .reveal.in { opacity: 1; transform: none; }
 .why-item.reveal.in:nth-child(even) { transform: translateY(28px); }
 .why-item.reveal.in:nth-child(even):hover { transform: translateY(22px); }
 .no-js .reveal { opacity: 1; transform: none; }
 
-/* ---------- 16. Responsive ---------- */
 @media (max-width: 1040px) {
   .subjects { grid-template-columns: repeat(2, 1fr); }
   .footer-grid { grid-template-columns: 1fr 1fr; }
@@ -395,11 +372,25 @@ html[data-theme="light"] .glow { opacity: .28; }
   .reveal { opacity: 1; transform: none; }
 }
 
+
+.contact-auth-modal{position:fixed;inset:0;z-index:300;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(3,7,20,.78);backdrop-filter:blur(12px)}
+.contact-auth-modal.is-open{display:flex}
+.contact-auth-card{width:min(100%,480px);max-height:min(92vh,760px);overflow:auto;padding:28px;border:1px solid var(--line);border-radius:24px;background:var(--surface);box-shadow:var(--shadow);position:relative}
+.contact-auth-close{position:absolute;right:16px;top:14px;width:38px;height:38px;border:1px solid var(--line);border-radius:50%;background:var(--surface-2);color:var(--text);font-size:1.35rem;cursor:pointer}
+.contact-auth-card h3{padding-right:42px;margin-bottom:8px}.contact-auth-card .lead{font-size:.95rem;margin-bottom:20px}
+.contact-auth-tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:18px 0}
+.contact-auth-tabs button{padding:11px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2);color:var(--muted);font:600 .9rem var(--font-head);cursor:pointer}
+.contact-auth-tabs button[aria-selected="true"]{background:var(--grad);color:#fff;border-color:transparent}
+.contact-auth-fields{display:grid;gap:12px}.contact-auth-fields label{display:grid;gap:6px;font-size:.88rem;font-weight:600;color:var(--muted)}
+.contact-auth-fields input,.contact-auth-fields select{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--bg-2);color:var(--text);font:inherit}
+.contact-auth-error{min-height:1.3em;color:#ff7777;font-size:.88rem;margin:10px 0}.contact-auth-google{width:100%;margin-top:10px}
+body.auth-modal-open{overflow:hidden}
+
 </style>
   <noscript><style>.reveal{opacity:1!important;transform:none!important}</style></noscript>
 
   <script>
-    /* Apply saved/system theme before first paint (prevents a flash). */
+
     (function () {
       try {
         var saved = localStorage.getItem('neelaxmi-theme');
@@ -414,7 +405,6 @@ html[data-theme="light"] .glow { opacity: .28; }
 </head>
 <body>
 
-<!-- ============================ ICON SPRITE ============================ -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
   <defs>
     <symbol id="i-atom" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1.7" fill="currentColor"/><ellipse cx="12" cy="12" rx="10" ry="4"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(120 12 12)"/></symbol>
@@ -453,7 +443,6 @@ html[data-theme="light"] .glow { opacity: .28; }
 
 <a class="skip-link" href="#main">Skip to content</a>
 
-<!-- ============================== HEADER ============================== -->
 <header class="site-header" id="siteHeader">
   <div class="container header-inner">
     <a href="#top" class="brand" aria-label="NEELAXMI — THE UNION, home">
@@ -490,7 +479,6 @@ html[data-theme="light"] .glow { opacity: .28; }
 
 <main id="main">
 
-<!-- ================================ HERO ================================ -->
 <section class="hero" id="top">
   <div class="hero-bg" aria-hidden="true">
     <span class="glow glow-a"></span><span class="glow glow-b"></span><span class="glow glow-c"></span>
@@ -515,7 +503,6 @@ html[data-theme="light"] .glow { opacity: .28; }
       <p class="hero-tag">One Platform. Countless Possibilities. Limitless Learning.</p>
     </div>
 
-    <!-- Abstract "union" visual: ecosystem orbiting a single core -->
     <div class="hero-visual reveal" aria-hidden="true">
       <div class="orbit orbit-1"></div>
       <div class="orbit orbit-2"></div>
@@ -534,7 +521,6 @@ html[data-theme="light"] .glow { opacity: .28; }
   <a href="#question-bank" class="scroll-cue" aria-label="Scroll to Question Bank"><span></span></a>
 </section>
 
-<!-- ============================ QUESTION BANK ============================ -->
 <section class="section qb" id="question-bank">
   <div class="container">
     <div class="qb-panel reveal">
@@ -589,7 +575,6 @@ html[data-theme="light"] .glow { opacity: .28; }
   </div>
 </section>
 
-<!-- ================================ ABOUT ================================ -->
 <section class="section about" id="about">
   <div class="container about-grid">
     <div class="about-main reveal">
@@ -623,7 +608,6 @@ html[data-theme="light"] .glow { opacity: .28; }
   </div>
 </section>
 
-<!-- ============================== ECOSYSTEM ============================== -->
 <section class="section ecosystem" id="ecosystem">
   <div class="container">
     <header class="section-head center reveal">
@@ -675,7 +659,6 @@ html[data-theme="light"] .glow { opacity: .28; }
   </div>
 </section>
 
-<!-- ================================ WHY ================================ -->
 <section class="section why" id="why">
   <div class="container why-grid">
     <header class="why-head reveal">
@@ -694,7 +677,6 @@ html[data-theme="light"] .glow { opacity: .28; }
   </div>
 </section>
 
-<!-- ================================ TEAM ================================ -->
 <section class="section team" id="team">
   <div class="container">
     <header class="section-head center reveal">
@@ -706,7 +688,6 @@ html[data-theme="light"] .glow { opacity: .28; }
   </div>
 </section>
 
-<!-- =============================== CONTACT =============================== -->
 <section class="section contact" id="contact">
   <div class="container contact-grid">
     <div class="contact-info reveal">
@@ -752,12 +733,36 @@ html[data-theme="light"] .glow { opacity: .28; }
       </div>
       <button class="btn btn-primary btn-lg" type="submit">Send message <svg class="ico"><use href="#i-arrow"/></svg></button>
       <p class="form-status" id="formStatus" role="status" aria-live="polite"></p>
-      <p class="form-note">Frontend preview: this form validates your input but is not connected to a backend yet.</p>
+      <p class="form-note">You can browse without an account. Sign up or log in is required only when you send a message.</p>
     </form>
   </div>
+
+<div class="contact-auth-modal" id="contactAuthModal" role="dialog" aria-modal="true" aria-labelledby="contactAuthTitle" aria-hidden="true">
+  <div class="contact-auth-card">
+    <button class="contact-auth-close" type="button" id="contactAuthClose" aria-label="Close login popup">&times;</button>
+    <p class="eyebrow">NEELAXMI ACCOUNT</p>
+    <h3 id="contactAuthTitle">Create your account</h3>
+    <p class="lead">Sign up or log in to send your message. You can continue browsing without an account.</p>
+    <div class="contact-auth-tabs" role="tablist" aria-label="Account access">
+      <button type="button" id="contactSignupTab" role="tab" aria-selected="true">Sign Up</button>
+      <button type="button" id="contactLoginTab" role="tab" aria-selected="false">Login</button>
+    </div>
+    <form id="contactAuthForm" class="contact-auth-fields">
+      <div id="contactSignupFields" class="contact-auth-fields">
+        <label>Full name<input id="contactAuthName" type="text" autocomplete="name" minlength="2" required></label>
+        <label>Class / Standard<select id="contactAuthClass" required><option value="">Select your class</option><option value="9">Class 9</option><option value="10">Class 10</option><option value="11">Class 11</option><option value="12">Class 12</option><option value="12+">Class 12+ (Dropper)</option></select></label>
+      </div>
+      <label>Email address<input id="contactAuthEmail" type="email" autocomplete="email" required></label>
+      <label>Password<input id="contactAuthPassword" type="password" autocomplete="new-password" minlength="6" required></label>
+      <p class="contact-auth-error" id="contactAuthError" role="alert"></p>
+      <button class="btn btn-primary" id="contactAuthSubmit" type="submit">Create account</button>
+    </form>
+    <button class="btn btn-ghost contact-auth-google" id="contactAuthGoogle" type="button">Continue with Google</button>
+  </div>
+</div>
+
 </section>
 
-<!-- ================================= FAQ ================================= -->
 <section class="section faq" id="faq">
   <div class="container faq-wrap">
     <header class="section-head center reveal">
@@ -797,7 +802,6 @@ html[data-theme="light"] .glow { opacity: .28; }
   </div>
 </section>
 
-<!-- ============================ FINAL CTA BAND ============================ -->
 <section class="cta-band">
   <div class="container cta-inner reveal">
     <h2>Learn Together. Grow Together. <span class="grad-text">Achieve Together.</span></h2>
@@ -807,7 +811,6 @@ html[data-theme="light"] .glow { opacity: .28; }
 
 </main>
 
-<!-- =============================== FOOTER =============================== -->
 <footer class="site-footer">
   <div class="container footer-grid">
     <div class="footer-brand">
@@ -847,72 +850,71 @@ html[data-theme="light"] .glow { opacity: .28; }
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
-/* ==========================================================================
-   NEELAXMI — THE UNION  |  CENTRAL CONFIGURATION
-   Edit ONLY this file to update logo, links, contact details, socials, team.
-   Any value left as an ALL_CAPS placeholder (e.g. QUESTION_BANK_URL) is
-   treated as "not configured yet": the button stays on the page and shows
-   a small notice instead of navigating anywhere.
-   ========================================================================== */
-window.NEELAXMI_CONFIG = {
-  brandName: "NEELAXMI",
-  identity: "THE UNION",
+  window.NEELAXMI_CONFIG = {
+    brandName: "NEELAXMI",
+    identity: "THE UNION",
 
-  /* 1. LOGO — set your official logo file path or URL below.
-        The logo is displayed as-is (never stretched or recoloured). */
-  logoPath: "/pictures/logo.png", // Official Neelaxmi logo
+    logoPath: "/pictures/logo.png",
 
-  /* 2. DESTINATIONS — replace the placeholders with real URLs
-        (full https://… address or a relative path like "quiz/index.html"). */
-  links: {
-    questionBank:     "/quiz/quizzes.html",      // main "Question Universe" destination
-    quiz:             "/quiz/quizzes.html",               // Quiz Arena
-    about:            "#about",                 // About destination (on-page by default)
-    learningResources:"#ecosystem",             // hero CTA 3 (on-page by default)
-    studentDashboard: "/quiz/dashboard.html",
-    mindmaps:         "/mindmap/mindmap.html",
-    classUpdates:     "/teachers/classupdates.html",
-    privacy:          "PRIVACY_POLICY_PATH",
-    terms:            "TERMS_PATH"
+    links: {
+      questionBank: "/quiz/quizzes.html",
+      quiz: "/quiz/quizzes.html",
+      about: "/teachers/about-us.html",
+      learningResources: "#ecosystem",
+      studentDashboard: "/quiz/dashboard.html",
+      mindmaps: "/mindmap/mindmap.html",
+      classUpdates: "/teachers/classupdates.html",
+      privacy: "/privacy.html",
+      terms: "/terms.html"
+    },
+
+    contactEmail: "neelaxmi.support@gmail.com",
+    contactFormEndpoint: "",
+
+    socials: [
+      {
+        label: "YouTube",
+        icon: "i-youtube",
+        url: "https://m.youtube.com/@NEELAXI-MUSICVIBES"
+      },
+      {
+        label: "Telegram",
+        icon: "i-telegram",
+        url: "https://telegram.me/Saksen_main_bot"
+      }
+    ],
+
+team: [
+  {
+    name: "LAXMI YADAV",
+    role: "Founder & Developer",
+    bio: "Leads the development and overall direction of the NEELAXMI ecosystem.",
+    photo: "/pictures/rasmalai.jpeg"
   },
-
-  /* 3. CONTACT */
-  contactEmail: "CONTACT_EMAIL",   // e.g. "hello@yourdomain.com"
-
-  /* Optional: paste a form-handling endpoint (Formspree, Netlify Forms proxy,
-     your own API …). While empty, the contact form validates but does NOT send
-     anything, and says so honestly to the visitor. */
-  contactFormEndpoint: "",
-
-  /* 4. SOCIAL LINKS — add or remove entries freely. */
-  socials: [
-    { label: "Instagram", icon: "i-instagram", url: "SOCIAL_INSTAGRAM_URL" },
-    { label: "YouTube",   icon: "i-youtube",   url: "SOCIAL_YOUTUBE_URL" },
-    { label: "Telegram",  icon: "i-telegram",  url: "SOCIAL_TELEGRAM_URL" },
-    { label: "LinkedIn",  icon: "i-linkedin",  url: "SOCIAL_LINKEDIN_URL" }
-  ],
-
-  /* 5. TEAM — placeholders until you provide real details.
-        photo: path to an image (e.g. "team/name.jpg"); empty = neutral avatar.
-        socials: any of { label, url }. Add as many members as you need. */
-  team: [
-    { name: "Team Member Name", role: "Designation", bio: "Short biography goes here. Replace this text with a few lines about this person.", photo: "",
-      socials: [ { label: "LinkedIn", url: "TEAM_1_LINKEDIN_URL" }, { label: "Instagram", url: "TEAM_1_INSTAGRAM_URL" } ] },
-    { name: "Team Member Name", role: "Designation", bio: "Short biography goes here. Replace this text with a few lines about this person.", photo: "",
-      socials: [ { label: "LinkedIn", url: "TEAM_2_LINKEDIN_URL" }, { label: "Instagram", url: "TEAM_2_INSTAGRAM_URL" } ] },
-    { name: "Team Member Name", role: "Designation", bio: "Short biography goes here. Replace this text with a few lines about this person.", photo: "",
-      socials: [ { label: "LinkedIn", url: "TEAM_3_LINKEDIN_URL" }, { label: "Instagram", url: "TEAM_3_INSTAGRAM_URL" } ] }
-  ]
-};
-
-</script>
+  {
+    name: "MRIDUL TIWARI",
+    role: "Co-Owner & Marketing",
+    bio: "Contributes to project leadership and marketing.",
+    photo: "/pictures/Thoughtful Young Man in Black.png"
+  },
+  {
+    name: "SHREYAS RAJ SINGH",
+    role: "Co-Owner & Brand Manager",
+    bio: "Contributes to project management and brand development.",
+    photo: "/pictures/shreyas.jpg"
+  },
+  {
+    name: "TANMAY RAJPUT",
+    role: "Security & Manager",
+    bio: "Contributes to payment management and coordination.",
+    photo: "/pictures/tanmay.webp"
+  },
+]  };
+</script><script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
 <script>
-/* ==========================================================================
-   NEELAXMI — THE UNION | main.js
-   Every function reports to the console:
-     [NeelaxmiBrand][SUCCESS] ...   when it completes
-     [NeelaxmiBrand][ERROR] ...     when it fails (errors are never swallowed)
-   ========================================================================== */
+
 (function () {
   'use strict';
 
@@ -920,7 +922,6 @@ window.NEELAXMI_CONFIG = {
   function ok(msg) { console.log(PREFIX + '[SUCCESS] ' + msg); }
   function fail(msg, err) { console.error(PREFIX + '[ERROR] ' + msg, err || ''); }
 
-  /* run(): executes fn, logs success or error, never hides a failure. */
   function run(name, fn) {
     try {
       var result = fn();
@@ -936,13 +937,185 @@ window.NEELAXMI_CONFIG = {
   var $$ = function (sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); };
   var reduceMotion = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
 
-  /* A value is a "placeholder" when it is empty, ALL_CAPS_UNDERSCORES, or an example domain. */
+  var NEELAXMI_FIREBASE_CONFIG = {
+    apiKey: "AIzaSyAOJmK4igVb_P8cV6jLfZhFPGFmAZfVvRE",
+    authDomain: "classupdates.netlify.app",
+    projectId: "quiznew-30700",
+    storageBucket: "quiznew-30700.firebasestorage.app",
+    messagingSenderId: "107821881642",
+    appId: "1:107821881642:web:7d708bda99196c85e42653",
+    measurementId: "G-0B6095T5X7"
+  };
+  var contactAuth = null;
+  var contactDb = null;
+  var contactCurrentUser = null;
+  var contactUserClass = '';
+  var contactAuthReady = false;
+
+  function initContactFirebase() {
+    try {
+      if (!window.firebase || !firebase.auth || !firebase.firestore) throw new Error('Firebase Auth/Firestore SDK did not load.');
+      var app = firebase.apps.length ? firebase.app() : firebase.initializeApp(NEELAXMI_FIREBASE_CONFIG);
+      if (app.options.projectId !== NEELAXMI_FIREBASE_CONFIG.projectId) throw new Error('An existing Firebase app is connected to a different project.');
+      contactAuth = firebase.auth();
+      contactDb = firebase.firestore();
+      ok('Contact Firebase connected to project ' + NEELAXMI_FIREBASE_CONFIG.projectId);
+      contactAuth.onAuthStateChanged(function (user) {
+        contactCurrentUser = user || null;
+        contactAuthReady = true;
+        if (user) {
+          closeContactAuthModal();
+          var emailInput = document.getElementById('cfEmail');
+          if (emailInput) {
+            emailInput.value = user.email || '';
+            emailInput.readOnly = true;
+          }
+          contactDb.collection('users').doc(user.uid).get().then(function (profile) {
+            var nameInput = document.getElementById('cfName');
+            var profileData = profile.exists && profile.data() ? profile.data() : {};
+            var profileName = profileData.name || '';
+            contactUserClass = profileData.class || '';
+            if (nameInput && profileName && !nameInput.value.trim()) nameInput.value = profileName;
+            ok('Contact user profile loaded for ' + user.uid);
+          }).catch(function (error) { fail('Could not load contact user profile', error); });
+          ok('Contact auth state: signed in');
+        } else {
+          var emailInput = document.getElementById('cfEmail');
+          if (emailInput) emailInput.readOnly = false;
+          ok('Contact auth state: signed out');
+        }
+      }, function (error) {
+        contactAuthReady = true;
+        fail('Contact auth state listener failed', error);
+      });
+      return true;
+    } catch (error) {
+      fail('Contact Firebase initialization failed', error);
+      return false;
+    }
+  }
+
+  var contactAuthMode = 'signup';
+  function setContactAuthMode(mode) {
+    run('setContactAuthMode(' + mode + ')', function () {
+      contactAuthMode = mode === 'login' ? 'login' : 'signup';
+      var signup = contactAuthMode === 'signup';
+      $('#contactSignupTab').setAttribute('aria-selected', String(signup));
+      $('#contactLoginTab').setAttribute('aria-selected', String(!signup));
+      $('#contactSignupFields').style.display = signup ? 'grid' : 'none';
+      $('#contactAuthTitle').textContent = signup ? 'Create your account' : 'Welcome back';
+      $('#contactAuthSubmit').textContent = signup ? 'Create account' : 'Log in';
+      $('#contactAuthPassword').autocomplete = signup ? 'new-password' : 'current-password';
+      $('#contactAuthName').required = signup;
+      $('#contactAuthClass').required = signup;
+      $('#contactAuthError').textContent = '';
+    });
+  }
+
+  function openContactAuthModal() {
+    run('openContactAuthModal', function () {
+      var modal = $('#contactAuthModal');
+      if (!modal) throw new Error('Contact auth popup not found');
+      setContactAuthMode('signup');
+      modal.classList.add('is-open');
+      modal.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('auth-modal-open');
+      $('#contactAuthName').focus();
+    });
+  }
+
+  function closeContactAuthModal() {
+    var modal = $('#contactAuthModal');
+    if (!modal || !modal.classList.contains('is-open')) return;
+    modal.classList.remove('is-open');
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('auth-modal-open');
+    ok('Contact login popup closed');
+  }
+
+  function initContactAuthModal() {
+    run('initContactAuthModal', function () {
+      $('#contactSignupTab').addEventListener('click', function () { setContactAuthMode('signup'); });
+      $('#contactLoginTab').addEventListener('click', function () { setContactAuthMode('login'); });
+      $('#contactAuthClose').addEventListener('click', closeContactAuthModal);
+      $('#contactAuthModal').addEventListener('click', function (event) { if (event.target.id === 'contactAuthModal') closeContactAuthModal(); });
+      document.addEventListener('keydown', function (event) { if (event.key === 'Escape') closeContactAuthModal(); });
+      $('#contactAuthForm').addEventListener('submit', async function (event) {
+        event.preventDefault();
+        var errorBox = $('#contactAuthError');
+        var submit = $('#contactAuthSubmit');
+        errorBox.textContent = '';
+        submit.disabled = true;
+        try {
+          var email = $('#contactAuthEmail').value.trim();
+          var password = $('#contactAuthPassword').value;
+          if (contactAuthMode === 'signup') {
+            var name = $('#contactAuthName').value.trim();
+            var userClass = $('#contactAuthClass').value;
+            if (name.length < 2 || !userClass) throw new Error('Please enter your name and select your class.');
+            var credential = await contactAuth.createUserWithEmailAndPassword(email, password);
+            var user = credential.user;
+            await contactDb.collection('users').doc(user.uid).set({
+              uid: user.uid, name: name, class: userClass,
+              username: 'student_' + user.uid.slice(0, 8), email: email,
+              bookmarks: [], geminiApiKey: null,
+              createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            }, { merge: true });
+            contactUserClass = userClass;
+            $('#cfName').value = name;
+            $('#cfEmail').value = email;
+            $('#cfEmail').readOnly = true;
+            ok('Contact popup signup completed and user profile saved');
+          } else {
+            var loginCredential = await contactAuth.signInWithEmailAndPassword(email, password);
+            var loginProfile = await contactDb.collection('users').doc(loginCredential.user.uid).get();
+            var loginData = loginProfile.exists ? loginProfile.data() : {};
+            contactUserClass = loginData.class || '';
+            if (loginData.name) $('#cfName').value = loginData.name;
+            $('#cfEmail').value = loginCredential.user.email || email;
+            $('#cfEmail').readOnly = true;
+            ok('Contact popup login completed and profile loaded');
+          }
+        } catch (error) {
+          errorBox.textContent = error.message || 'Authentication failed. Please try again.';
+          fail('Contact popup authentication failed', error);
+        } finally {
+          submit.disabled = false;
+        }
+      });
+      $('#contactAuthGoogle').addEventListener('click', async function () {
+        var errorBox = $('#contactAuthError');
+        errorBox.textContent = '';
+        try {
+          var provider = new firebase.auth.GoogleAuthProvider();
+          var result = await contactAuth.signInWithPopup(provider);
+          var user = result.user;
+          var ref = contactDb.collection('users').doc(user.uid);
+          var profile = await ref.get();
+          if (!profile.exists) {
+            await ref.set({ uid: user.uid, name: user.displayName || '', class: '', username: 'student_' + user.uid.slice(0, 8), email: user.email || '', bookmarks: [], createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+          } else {
+            var googleProfileData = profile.data() || {};
+            contactUserClass = googleProfileData.class || '';
+            if (googleProfileData.name) $('#cfName').value = googleProfileData.name;
+          }
+          $('#cfEmail').value = user.email || '';
+          $('#cfEmail').readOnly = true;
+          ok('Contact Google authentication completed');
+        } catch (error) {
+          errorBox.textContent = error.message || 'Google login failed.';
+          fail('Contact Google authentication failed', error);
+        }
+      });
+      ok('Contact auth popup handlers attached; signup is default');
+    });
+  }
+
   function isPlaceholder(v) {
     if (!v || typeof v !== 'string') return true;
     return /^[A-Z0-9_]+$/.test(v.trim()) || /yourdomain\.com|your-domain\.com/i.test(v);
   }
 
-  /* ---------- Toast ---------- */
   var toastTimer;
   function showToast(message) {
     run('showToast', function () {
@@ -955,7 +1128,6 @@ window.NEELAXMI_CONFIG = {
     });
   }
 
-  /* ---------- Brand + logo ---------- */
   function applyBrand() {
     run('applyBrand', function () {
       $$('[data-brand-name]').forEach(function (el) { el.textContent = CFG.brandName; });
@@ -971,7 +1143,6 @@ window.NEELAXMI_CONFIG = {
     });
   }
 
-  /* ---------- Links ---------- */
   function resolveLinks() {
     run('resolveLinks', function () {
       $$('[data-link]').forEach(function (a) {
@@ -1001,7 +1172,6 @@ window.NEELAXMI_CONFIG = {
     });
   }
 
-  /* ---------- Contact email ---------- */
   function applyEmail() {
     run('applyEmail', function () {
       var el = $('#contactEmailLink');
@@ -1017,7 +1187,6 @@ window.NEELAXMI_CONFIG = {
     });
   }
 
-  /* ---------- Socials ---------- */
   function renderSocials() {
     run('renderSocials', function () {
       $$('[data-socials]').forEach(function (box) {
@@ -1042,7 +1211,6 @@ window.NEELAXMI_CONFIG = {
     });
   }
 
-  /* ---------- Team ---------- */
   function renderTeam() {
     run('renderTeam', function () {
       var grid = $('#teamGrid');
@@ -1088,7 +1256,6 @@ window.NEELAXMI_CONFIG = {
     });
   }
 
-  /* ---------- Theme ---------- */
   function initTheme() {
     run('initTheme', function () {
       var btn = $('#themeToggle');
@@ -1114,7 +1281,6 @@ window.NEELAXMI_CONFIG = {
     });
   }
 
-  /* ---------- Mobile menu ---------- */
   function initMobileMenu() {
     run('initMobileMenu', function () {
       var btn = $('#menuToggle'), nav = $('#primaryNav');
@@ -1136,7 +1302,6 @@ window.NEELAXMI_CONFIG = {
     });
   }
 
-  /* ---------- Header state + active nav ---------- */
   function initHeader() {
     run('initHeader', function () {
       var header = $('#siteHeader');
@@ -1166,7 +1331,6 @@ window.NEELAXMI_CONFIG = {
     });
   }
 
-  /* ---------- Scroll reveal ---------- */
   function initReveal() {
     run('initReveal', function () {
       var els = $$('.reveal');
@@ -1181,7 +1345,7 @@ window.NEELAXMI_CONFIG = {
             var t = en.target;
             t.classList.add('in');
             obs.unobserve(t);
-            /* Once revealed, hand the element back to its own hover transitions. */
+
             t.addEventListener('transitionend', function done(ev) {
               if (ev.target !== t || ev.propertyName !== 'opacity') return;
               t.classList.remove('reveal', 'in');
@@ -1195,7 +1359,6 @@ window.NEELAXMI_CONFIG = {
     });
   }
 
-  /* ---------- 200K+ counter (counts to the supplied figure only) ---------- */
   function initCounter() {
     run('initCounter', function () {
       var el = $('[data-count-to]');
@@ -1220,7 +1383,6 @@ window.NEELAXMI_CONFIG = {
     });
   }
 
-  /* ---------- FAQ accordion ---------- */
   function initFaq() {
     run('initFaq', function () {
       var list = $('#faqList');
@@ -1243,12 +1405,13 @@ window.NEELAXMI_CONFIG = {
     });
   }
 
-  /* ---------- Contact form (validation only; no sending unless an endpoint is set) ---------- */
   function initContactForm() {
     run('initContactForm', function () {
       var form = $('#contactForm');
       if (!form) throw new Error('#contactForm not found');
       var status = $('#formStatus');
+      var submitButton = $('button[type="submit"]', form);
+      var fields = $$('input, select, textarea', form);
 
       function setErr(input, msg) {
         var err = document.getElementById(input.getAttribute('aria-describedby'));
@@ -1256,58 +1419,84 @@ window.NEELAXMI_CONFIG = {
         input.classList.toggle('invalid', !!msg);
         input.setAttribute('aria-invalid', msg ? 'true' : 'false');
       }
+
       function validateField(input) {
-        var v = input.value.trim(), msg = '';
-        if (input.name === 'name' && v.length < 2) msg = 'Please enter your name.';
-        if (input.name === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)) msg = 'Please enter a valid email address.';
-        if (input.name === 'topic' && !v) msg = 'Please choose a topic.';
-        if (input.name === 'message' && v.length < 10) msg = 'Please write at least 10 characters.';
+        var value = input.value.trim(), msg = '';
+        if (input.name === 'name' && value.length < 2) msg = 'Please enter your name.';
+        if (input.name === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value)) msg = 'Please enter a valid email address.';
+        if (input.name === 'topic' && !value) msg = 'Please choose a topic.';
+        if (input.name === 'message' && value.length < 10) msg = 'Please write at least 10 characters.';
         setErr(input, msg);
         return !msg;
       }
-      var fields = $$('input, select, textarea', form);
-      fields.forEach(function (f) {
-        f.addEventListener('blur', function () { run('validate(' + f.name + ')', function () { validateField(f); }); });
-        f.addEventListener('input', function () { if (f.classList.contains('invalid')) validateField(f); });
+
+      fields.forEach(function (field) {
+        field.addEventListener('blur', function () { run('validateContactField(' + field.name + ')', function () { validateField(field); }); });
+        field.addEventListener('input', function () { if (field.classList.contains('invalid')) validateField(field); });
       });
 
-      form.addEventListener('submit', function (e) {
-        e.preventDefault();
-        run('submitContactForm', function () {
-          status.className = 'form-status';
-          var allOk = fields.map(validateField).every(Boolean);
-          if (!allOk) {
+      form.addEventListener('submit', async function (event) {
+        event.preventDefault();
+        status.className = 'form-status';
+        try {
+          if (!contactAuth || !contactDb) throw new Error('Firebase is not ready. Please refresh and try again.');
+          if (!contactAuthReady) throw new Error('Authentication is still loading. Please wait a moment and try again.');
+          if (!contactCurrentUser) {
+            status.textContent = 'Please sign up or log in to send your message. You can close this popup and continue browsing.';
+            status.classList.add('info');
+            ok('Unauthenticated contact submission opened signup/login popup; message not sent');
+            openContactAuthModal();
+            return;
+          }
+          var allValid = fields.map(validateField).every(Boolean);
+          if (!allValid) {
             status.textContent = 'Please fix the highlighted fields.';
             status.classList.add('err');
-            var first = $('.invalid', form); if (first) first.focus();
-            ok('form validation caught invalid fields; submission blocked');
+            var firstInvalid = $('.invalid', form);
+            if (firstInvalid) firstInvalid.focus();
+            ok('Contact form validation blocked invalid submission');
             return;
           }
-          var data = {};
-          fields.forEach(function (f) { data[f.name] = f.value.trim(); });
 
-          if (!CFG.contactFormEndpoint) {
-            status.textContent = 'Thanks! Your details look good — but this preview is not connected to a backend yet, so nothing was sent. Please use the email above.';
-            status.classList.add('info');
-            return;
-          }
-          status.textContent = 'Sending…';
-          fetch(CFG.contactFormEndpoint, {
-            method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-            body: JSON.stringify(data)
-          }).then(function (res) {
-            if (!res.ok) throw new Error('Server responded ' + res.status);
-            status.textContent = 'Message sent. Thank you!';
-            status.classList.add('ok');
-            form.reset();
-            ok('contact form delivered to endpoint');
-          }).catch(function (err) {
-            fail('contact form delivery failed', err);
-            status.textContent = 'Sorry, the message could not be sent. Please try again later.';
-            status.classList.add('err');
-          });
-        });
+          var user = contactCurrentUser;
+          var name = $('#cfName').value.trim();
+          var email = user.email || '';
+          if (!email) throw new Error('Your signed-in account does not have an email address. Please use an email-enabled account.');
+          if (submitButton) submitButton.disabled = true;
+          status.textContent = 'Sending your message…';
+          status.classList.add('info');
+
+          var messageRecord = {
+            uid: user.uid,
+            name: name,
+            class: contactUserClass || '',
+            email: email,
+            topic: $('#cfTopic').value.trim(),
+            message: $('#cfMessage').value.trim(),
+            status: 'unread',
+            source: 'website_contact_form',
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          };
+          var docRef = await contactDb.collection('contact_messages').add(messageRecord);
+          ok('Contact message saved to Firestore', { documentId: docRef.id, uid: user.uid });
+          status.textContent = 'Message sent successfully. Thank you for contacting NEELAXMI!';
+          status.className = 'form-status ok';
+          form.reset();
+          var emailInput = $('#cfEmail');
+          if (emailInput) { emailInput.value = user.email || ''; emailInput.readOnly = true; }
+          var nameInput = $('#cfName');
+          if (nameInput) nameInput.value = name;
+        } catch (error) {
+          fail('Contact message submission failed', error);
+          status.textContent = error && error.code === 'permission-denied'
+            ? 'Your message could not be saved because Firestore permissions are not configured for contact messages.'
+            : 'Sorry, your message could not be sent. Please try again later.';
+          status.className = 'form-status err';
+        } finally {
+          if (submitButton) submitButton.disabled = false;
+        }
       });
+      ok('Contact form validation and Firebase submission handlers attached');
     });
   }
 
@@ -1318,14 +1507,15 @@ window.NEELAXMI_CONFIG = {
     });
   }
 
-  /* ---------- Boot ---------- */
   function boot() {
     if (!CFG) { fail('NEELAXMI_CONFIG missing — is the config script above main script?'); return; }
     applyBrand();
+    initContactFirebase();
+    initContactAuthModal();
     resolveLinks();
     applyEmail();
     renderSocials();
-    renderTeam();     // before initReveal so team cards animate in
+    renderTeam();
     initTheme();
     initMobileMenu();
     initHeader();

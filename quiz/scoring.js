@@ -76,9 +76,7 @@ function getPredictedRank(score) {
     if (score > highest.maxScore) return highest.rank; 
     if (score < lowest.minScore) {
         const worstKnown = parseInt(lowest.rank.split('-')[1].replace(/,/g, ''), 10);
-        // Manual Western-style comma grouping (not toLocaleString) so it
-        // matches the "339,301" / "390,000" style already used in the table
-        // above, instead of switching to Indian-style "3,90,000" grouping.
+
         const formatted = worstKnown.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
         return `${formatted}+ (est.)`;
     }

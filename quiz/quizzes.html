@@ -80,8 +80,7 @@
         }
         @keyframes spinner { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .option-btn:active { transform: scale(0.98); }
-        
-        /* Custom Range Slider for Video Progress */
+
 .video-range {
     -webkit-appearance: none;
     background: rgba(255,255,255,0.2);
@@ -93,13 +92,12 @@
     -webkit-appearance: none;
     height: 15px;
     width: 15px;
-    background: #ef4444; /* Red-500 */
+    background: #ef4444; 
     border-radius: 50%;
     margin-top: -5px; 
     box-shadow: 0 0 10px rgba(0,0,0,0.5);
 }
 
-/* Animations */
 .control-bar {
     transition: opacity 0.3s ease;
     background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
@@ -109,10 +107,9 @@
     opacity: 1;
 }
 .video-wrapper:not(.paused):not(:hover) .control-bar {
-    opacity: 0; /* Hide controls when playing and not hovering */
+    opacity: 0; 
 }
 
-/* YouTube-style Range Slider */
 input[type=range] {
     -webkit-appearance: none; 
     background: transparent; 
@@ -130,7 +127,6 @@ input[type=range]::-webkit-slider-thumb {
     transition: opacity 0.2s;
 }
 
-/* Show thumb on hover */
 .group\/timeline:hover input[type=range]::-webkit-slider-thumb {
     opacity: 1;
 }
@@ -149,7 +145,6 @@ input[type=range]::-moz-range-thumb {
     opacity: 1;
 }
 
-/* ===== NTA CBT Question Palette button states ===== */
 .qp-btn {
     width: 100%;
     aspect-ratio: 1 / 1;
@@ -277,7 +272,6 @@ input[type=range]::-moz-range-thumb {
 
     <div id="quiz-container" class="hidden fixed inset-0 z-40 w-full h-full flex flex-col bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 overflow-hidden">
 
-        <!-- ===== Proctoring Widget: local camera preview + live status. Video never leaves this element / device. ===== -->
         <div id="proctor-widget" class="fixed bottom-4 right-4 z-[55] flex flex-col items-end gap-1.5 select-none">
             <div class="relative w-24 h-[4.5rem] md:w-32 md:h-24 rounded-lg overflow-hidden border-2 border-white/80 dark:border-slate-600 shadow-xl bg-black">
                 <video id="proctor-video" class="w-full h-full object-cover -scale-x-100" autoplay muted playsinline></video>
@@ -489,8 +483,6 @@ input[type=range]::-moz-range-thumb {
 
             <div id="view-summary" class="space-y-6 animate-fade-in">
 
-
-
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     <div class="glass-panel rounded-xl p-6 relative overflow-hidden">
                         <dt class="text-sm font-medium text-slate-500 dark:text-slate-400 truncate">Total Score</dt>
@@ -519,7 +511,6 @@ input[type=range]::-moz-range-thumb {
                     </div>
                 </div>
 
-                <!-- Score hero -->
                 <div class="glass-panel rounded-2xl p-6 sm:p-8 text-center relative overflow-hidden">
                     <p class="text-xs font-semibold tracking-widest text-slate-400 uppercase mb-2">Your Performance</p>
                     <div class="flex items-end justify-center gap-2 mb-2">
@@ -545,7 +536,6 @@ input[type=range]::-moz-range-thumb {
                     </div>
                 </div>
 
-                <!-- Score scale -->
                 <div class="glass-panel rounded-xl p-5 sm:p-6">
                     <div class="flex items-center justify-between mb-1">
                         <p class="text-sm font-semibold text-slate-700 dark:text-slate-200">Score Standing</p>
@@ -576,7 +566,6 @@ input[type=range]::-moz-range-thumb {
                     </div>
                 </div>
 
-                <!-- Question performance + accuracy analysis -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     <div class="glass-panel rounded-xl p-5 sm:p-6">
                         <p class="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-4">Question Performance</p>
@@ -763,7 +752,6 @@ input[type=range]::-moz-range-thumb {
             </div>
             <p class="text-slate-500 dark:text-slate-400 mb-5 relative z-10 text-sm">Please read the instructions carefully and choose how you want to attempt this test.</p>
 
-            <!-- Instructions -->
             <div class="relative z-10 bg-slate-50 dark:bg-slate-700/40 border border-slate-200 dark:border-slate-700 rounded-xl p-4 mb-5">
                 <h4 class="text-sm font-bold text-slate-700 dark:text-slate-200 mb-2 uppercase tracking-wide">Instructions</h4>
                 <ul class="space-y-2 text-sm text-slate-600 dark:text-slate-300">
@@ -802,7 +790,6 @@ input[type=range]::-moz-range-thumb {
                 </div>
             </div>
 
-            <!-- Consent -->
             <label class="relative z-10 flex items-start gap-3 mb-5 cursor-pointer select-none">
                 <input type="checkbox" id="pre-quiz-consent-checkbox" class="mt-1 w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary shrink-0">
                 <span class="text-sm text-slate-600 dark:text-slate-300">I have read the instructions above, I agree to follow the test rules for the mode I selected, and (if CBT Mode is selected) I consent to on-device camera proctoring for the duration of this test.</span>
@@ -959,7 +946,6 @@ input[type=range]::-moz-range-thumb {
         </div>
     </div>
 
-
     <div id="why-gemini-modal" class="fixed inset-0 z-[101] hidden bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4 transition-all duration-300">
         <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-lg p-6 border border-slate-200 dark:border-slate-700 transform transition-all scale-100">
             <h2 class="text-2xl font-bold text-primary mb-4 flex items-center">
@@ -1001,7 +987,6 @@ input[type=range]::-moz-range-thumb {
         </div>
     </div>
 
-
     <div id="feedback-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
     <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl max-w-sm w-full text-center">
         <h3 class="text-xl font-bold mb-4 dark:text-white">Rate your experience!</h3>
@@ -1022,8 +1007,6 @@ input[type=range]::-moz-range-thumb {
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
 
     <script defer src="/vendor/face-api.min.js"></script>
-
-
 
     <script>
 
@@ -1135,7 +1118,6 @@ input[type=range]::-moz-range-thumb {
             
             window.closeZoomModal = () => {
                  document.getElementById('img-zoom-modal').classList.add('hidden');
-                 // Reset
                  scale = 1; translateX = 0; translateY = 0; updateTransform();
             };
         };
@@ -1160,7 +1142,6 @@ input[type=range]::-moz-range-thumb {
                 const btn = document.createElement("button");
                 btn.textContent = item.number;
                 
-                // Using your requested classes
                 btn.className = "w-10 h-10 rounded font-semibold border transition ";
                 
                 switch (item.status) {

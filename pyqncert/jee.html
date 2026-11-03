@@ -253,7 +253,6 @@
   </style>
 </head>
 <body>
-  <!-- Header: Keep the Neelaxmi name and logo visible on every page. -->
   <header class="site-header">
     <div class="container nav">
       <a class="brand" href="/index.html" aria-label="Neelaxmi home">
@@ -425,13 +424,9 @@
         const quizzes = [];
         snapshot.forEach((doc) => {
           const data = doc.data() || {};
-          // Keep the Admin-created UID untouched: targetQuizId wins, otherwise use this exact Firestore document ID.
           const uid = data.targetQuizId || doc.id;
           if (!uid) throw new Error(`Quiz document ${doc.id} has no usable UID.`);
           const title = data.title || data.quizTitle || data.name || data.chapterName || `Quiz ${doc.id}`;
-
-          // Content Manager's Broad Subject is the single source of truth.
-          // Never infer the subject from category/question metadata or route it to "Other".
           const rawSubject = String(data.subject || "").trim();
           const subject = normalizeAdminSubject(rawSubject);
           if (!subject) {

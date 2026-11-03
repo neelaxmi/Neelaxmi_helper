@@ -1,6 +1,6 @@
 :root {
-    --primary: #FF9933; /* Saffron */
-    --secondary: #00F3FF; 
+    --primary: #FF9933;
+    --secondary: #00F3FF;
     --dark: #050505;
     --glass: rgba(255, 255, 255, 0.05);
     --sidebar-width: 260px;
@@ -10,7 +10,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    cursor: none; 
+    cursor: none;
 }
 
 body {
@@ -18,11 +18,10 @@ body {
     color: white;
     font-family: 'Poppins', sans-serif;
     overflow-x: hidden;
-    font-size: 1rem; /* Ensure text size adjusts based on screen */
-    margin: 0;   
+    font-size: 1rem;
+    margin: 0;
 }
 
-/* --- CUSTOM CURSOR --- */
 #cursor {
     width: 20px;
     height: 20px;
@@ -46,14 +45,13 @@ body {
     transition: transform 0.1s;
 }
 
-/* --- BACKGROUND LAYERS --- */
 #vanta-bg {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100vh;
-    z-index: -2; 
+    z-index: -2;
     opacity: 0.8;
 }
 
@@ -64,27 +62,32 @@ body {
     transform: translate(-50%, -50%);
     width: 100%;
     height: 100vh;
-    background-image: url('/pictures/u67.jpg'); 
+    background-image: url('/pictures/u67.jpg');
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
     z-index: -1;
-    opacity: 1.7; 
+    opacity: 1.7;
     mask-image: radial-gradient(circle, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 80%);
     -webkit-mask-image: radial-gradient(circle, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 80%);
     filter: drop-shadow(0 0 20px rgba(0, 243, 255, 0.3)) contrast(1.1);
-    mix-blend-mode: screen; 
+    mix-blend-mode: screen;
     pointer-events: none;
     animation: mapPulse 8s infinite ease-in-out;
 }
 
-/* Animation for Map */
 @keyframes mapPulse {
-    0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.6; }
-    50% { transform: translate(-50%, -50%) scale(1.05); opacity: 0.8; }
+    0%, 100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0.6;
+    }
+
+    50% {
+        transform: translate(-50%, -50%) scale(1.05);
+        opacity: 0.8;
+    }
 }
 
-/* --- TYPOGRAPHY & ANIMATION --- */
 .glitch {
     font-family: 'Orbitron', sans-serif;
     font-size: 5rem;
@@ -94,7 +97,8 @@ body {
     text-transform: uppercase;
 }
 
-.glitch::before, .glitch::after {
+.glitch::before,
+.glitch::after {
     content: attr(data-text);
     position: absolute;
     top: 0;
@@ -119,19 +123,37 @@ body {
 }
 
 @keyframes glitch-anim {
-    0% { clip: rect(10px, 9999px, 30px, 0); }
-    20% { clip: rect(80px, 9999px, 100px, 0); }
-    40% { clip: rect(10px, 9999px, 120px, 0); }
-    100% { clip: rect(40px, 9999px, 60px, 0); }
+    0% {
+        clip: rect(10px, 9999px, 30px, 0);
+    }
+
+    20% {
+        clip: rect(80px, 9999px, 100px, 0);
+    }
+
+    40% {
+        clip: rect(10px, 9999px, 120px, 0);
+    }
+
+    100% {
+        clip: rect(40px, 9999px, 60px, 0);
+    }
 }
 
 @keyframes glitch-anim-2 {
-    0% { clip: rect(60px, 9999px, 80px, 0); }
-    20% { clip: rect(20px, 9999px, 40px, 0); }
-    100% { clip: rect(90px, 9999px, 10px, 0); }
+    0% {
+        clip: rect(60px, 9999px, 80px, 0);
+    }
+
+    20% {
+        clip: rect(20px, 9999px, 40px, 0);
+    }
+
+    100% {
+        clip: rect(90px, 9999px, 10px, 0);
+    }
 }
 
-/* --- SECTION & GRID LAYOUTS --- */
 section {
     min-height: 100vh;
     padding: 4rem 10%;
@@ -167,20 +189,13 @@ section {
 }
 
 .stat-card {
-    background: rgba(0, 0, 0, 0.45); /* Semi-transparent */
-    backdrop-filter: blur(10px);    /* This makes it look premium */
-    border: 1px solid rgba(255, 153, 51, 0.3); /* Subtle Saffron border */
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 153, 51, 0.3);
     border-radius: 12px;
     padding: 20px;
     transition: all 0.3s ease;
 }
-
-.stat-card:hover {
-    border-color: #ff9933;
-    box-shadow: 0 0 20px rgba(255, 153, 51, 0.2);
-    transform: translateY(-5px);
-}
-
 
 .stat-card:hover {
     transform: translateY(-10px);
@@ -225,23 +240,30 @@ section {
     border-radius: 50%;
 }
 
-.red { background: #ff5f56; }
-.yellow { background: #ffbd2e; }
-.green { background: #27c93f; }
+.red {
+    background: #ff5f56;
+}
+
+.yellow {
+    background: #ffbd2e;
+}
+
+.green {
+    background: #27c93f;
+}
 
 .cmd-line {
     color: var(--secondary);
     margin-bottom: 0.5rem;
 }
 
-/* --- PROJECT LIST --- */
 .project-item {
     padding: 0.5rem 0;
     border-bottom: 1px dashed #333;
     display: flex;
     justify-content: space-between;
     transition: 0.2s;
-    flex-wrap: wrap; 
+    flex-wrap: wrap;
 }
 
 .project-item:hover {
@@ -253,23 +275,23 @@ section {
 .project-list a {
     color: inherit;
     text-decoration: none;
-    cursor: none; 
+    cursor: none;
 }
 
 .badge-container {
     display: flex;
     gap: 1rem;
     margin: 1rem 0;
-    flex-wrap: wrap; /* Ensure badges wrap on small screens */
+    flex-wrap: wrap;
 }
 
 .badge {
-    background: rgba(255, 255, 255, 0.05); /* Glassmorphism style */
+    background: rgba(255, 255, 255, 0.05);
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 153, 51, 0.3);
     color: white;
     padding: 0.6rem 1.2rem;
-    border-radius: 12px; /* Slightly more modern than 50px */
+    border-radius: 12px;
     font-family: 'Orbitron';
     text-transform: uppercase;
     display: inline-flex;
@@ -285,16 +307,21 @@ section {
 }
 
 .badge-img {
-    width: 54px;  
-    height: 54px; 
-    border-radius: 50%; /* Makes the photos circular */
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
     object-fit: cover;
     border: 2px solid var(--primary);
     margin-left: 4px;
 }
 
-.highlight { color: var(--secondary); }
-.highlight-pol { color: var(--primary); }
+.highlight {
+    color: var(--secondary);
+}
+
+.highlight-pol {
+    color: var(--primary);
+}
 
 footer {
     text-align: center;
@@ -315,12 +342,9 @@ footer {
     z-index: 10000;
 }
 
-/* --- MEDIA QUERIES --- */
-
-/* For larger screens like tablets and desktops */
 @media (min-width: 768px) {
     .glitch {
-        font-size: 4rem; /* Adjust glitch text size */
+        font-size: 4rem;
     }
 
     section {
@@ -328,7 +352,7 @@ footer {
     }
 
     .stats-grid {
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Wider columns */
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     }
 
     .stat-card {
@@ -336,18 +360,17 @@ footer {
     }
 
     .badge {
-        font-size: 1.1rem; /* Slightly larger font size for larger screens */
+        font-size: 1.1rem;
     }
 }
 
-/* For mobile devices and small screens */
 @media (max-width: 768px) {
     body {
-        font-size: 0.9rem; /* Slightly smaller font on mobile */
+        font-size: 0.9rem;
     }
 
     .glitch {
-        font-size: 3rem; /* Decrease font size for small screens */
+        font-size: 3rem;
     }
 
     section {
@@ -355,36 +378,35 @@ footer {
     }
 
     #map-bg {
-        background-size: cover; 
-        width: 120vw; /* Adjust map size for small screens */
+        background-size: cover;
+        width: 120vw;
     }
 
     .stats-grid {
-        grid-template-columns: 1fr; /* Stack stats grid on mobile */
+        grid-template-columns: 1fr;
     }
 
     .badge-container {
-        justify-content: center; /* Center badges on mobile */
+        justify-content: center;
     }
 
     .badge {
-        font-size: 1rem; /* Smaller font size for mobile */
-        padding: 0.5rem 1rem; /* Reduce padding */
+        font-size: 1rem;
+        padding: 0.5rem 1rem;
     }
 
     .stat-card {
-        padding: 1.5rem; /* Reduce padding for smaller screens */
+        padding: 1.5rem;
     }
 
     .project-item {
-        font-size: 0.9rem; /* Reduce font size in project items */
+        font-size: 0.9rem;
     }
 
     footer {
-        font-size: 0.7rem; /* Smaller footer text on mobile */
+        font-size: 0.7rem;
     }
 
-    /* Ensure the custom cursor also resizes on smaller screens */
     #cursor {
         width: 16px;
         height: 16px;
@@ -396,14 +418,13 @@ footer {
     }
 }
 
-/* For very small screens like portrait mobile devices */
 @media (max-width: 480px) {
     body {
-        font-size: 0.8rem; /* Reduce font size even more */
+        font-size: 0.8rem;
     }
 
     .glitch {
-        font-size: 2.5rem; /* Reduce font size for tiny screens */
+        font-size: 2.5rem;
     }
 
     section {
@@ -412,14 +433,14 @@ footer {
 
     .badge {
         font-size: 0.9rem;
-        padding: 0.4rem 1rem; /* Further reduce padding */
+        padding: 0.4rem 1rem;
     }
 
     .stat-card {
-        padding: 1rem; /* Reduce card padding */
+        padding: 1rem;
     }
 
     footer {
-        font-size: 0.6rem; /* Further reduce footer text */
+        font-size: 0.6rem;
     }
 }

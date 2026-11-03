@@ -1,4 +1,3 @@
-/* --- 🛠 1. RESET & VARIABLES (UPGRADED) --- */
 * {
     box-sizing: border-box;
     margin: 0;
@@ -7,59 +6,45 @@
 }
 
 :root {
-    /* SPACING */
     --spacing-xs: 4px;
     --spacing-sm: 8px;
     --spacing-md: 16px;
     --spacing-lg: 32px;
     --spacing-xl: 64px;
-
-    /* RADIUS */
     --border-radius-sm: 8px;
     --border-radius-md: 16px;
     --border-radius-full: 50px;
-    
-    /* TRANSITIONS */
     --transition-smooth: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     --transition-bounce: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    
-    /* FONT */
     --font-main: 'Poppins', sans-serif;
-
-    /* 🆕 FONT SIZES (Modular Scale) */
     --font-size-base: 1rem;
     --font-size-sm: 0.875rem;
     --font-size-lg: 1.25rem;
     --font-size-xl: 1.875rem;
     --font-size-h1: 2.5rem;
     --font-size-h2: 2rem;
-
-    /* 🆕 FONT WEIGHTS */
     --font-weight-light: 300;
     --font-weight-normal: 400;
     --font-weight-medium: 600;
     --font-weight-bold: 800;
-
-    /* 🆕 Z-INDICES */
     --z-level-sticky: 100;
     --z-level-modal: 1000;
 }
 
-/* 🆕 Accessibility: Use :focus-visible for better focus handling */
 *:focus:not(:focus-visible) {
     outline: none;
 }
+
 *:focus-visible {
     outline: 2px solid var(--color-accent);
     outline-offset: 3px;
 }
 
-/* --- Theme Definitions (UPGRADED with Accent RGB) --- */
 .theme-default {
     --color-primary: #1976D2;
     --color-primary-rgb: 25, 118, 210;
     --color-accent: #00C853;
-    --color-accent-rgb: 0, 200, 83; /* Added */
+    --color-accent-rgb: 0, 200, 83;
     --color-bg: #F4F7FA;
     --color-surface: #FFFFFF;
     --color-text-main: #1A202C;
@@ -73,7 +58,7 @@
     --color-primary: #64B5F6;
     --color-primary-rgb: 100, 181, 246;
     --color-accent: #81C784;
-    --color-accent-rgb: 129, 199, 132; /* Added */
+    --color-accent-rgb: 129, 199, 132;
     --color-bg: #121212;
     --color-surface: #1E1E1E;
     --color-text-main: #E2E8F0;
@@ -87,7 +72,7 @@
     --color-primary: #E91E63;
     --color-primary-rgb: 233, 30, 99;
     --color-accent: #03A9F4;
-    --color-accent-rgb: 3, 169, 244; /* Added */
+    --color-accent-rgb: 3, 169, 244;
     --color-bg: #FFFFFF;
     --color-surface: #FAFAFA;
     --color-text-main: #111;
@@ -108,16 +93,13 @@ body {
     overflow-x: hidden;
 }
 
-/* --- 🧩 2. LAYOUT COMPONENTS (UPGRADED) --- */
-
 .container {
     max-width: 1200px;
-    margin-inline: auto; /* 🆕 Use logical property */
+    margin-inline: auto;
     padding: 0 var(--spacing-lg);
     width: 100%;
 }
 
-/* Modern Sticky Header with Glassmorphism */
 .main-header {
     background-color: rgba(var(--color-primary-rgb), 0.03);
     backdrop-filter: blur(12px);
@@ -126,7 +108,7 @@ body {
     padding: var(--spacing-md) 0;
     position: sticky;
     top: 0;
-    z-index: var(--z-level-sticky); /* Use variable */
+    z-index: var(--z-level-sticky);
     transition: var(--transition-smooth);
 }
 
@@ -138,8 +120,6 @@ body {
     gap: var(--spacing-sm);
 }
 
-/* --- 🖼️ LOGO & BRANDING --- */
-
 .logo-wrapper {
     position: relative;
     width: 80px;
@@ -147,7 +127,7 @@ body {
     border-radius: 50%;
     background-color: var(--color-surface);
     padding: 4px;
-    box-shadow: 
+    box-shadow:
         0 0 0 2px var(--color-bg),
         0 0 0 5px var(--color-primary),
         0 10px 20px rgba(var(--color-primary-rgb), 0.2);
@@ -157,9 +137,9 @@ body {
 
 .logo-wrapper:hover {
     transform: rotate(5deg) scale(1.05);
-    box-shadow: 
+    box-shadow:
         0 0 0 3px var(--color-bg),
-        0 0 0 7px var(--color-primary), 
+        0 0 0 7px var(--color-primary),
         0 15px 30px rgba(var(--color-primary-rgb), 0.3);
 }
 
@@ -171,8 +151,8 @@ body {
 }
 
 .title {
-    font-size: clamp(var(--font-size-h2), 4vw, var(--font-size-h1)); /* Use variable */
-    font-weight: var(--font-weight-bold); /* Use variable */
+    font-size: clamp(var(--font-size-h2), 4vw, var(--font-size-h1));
+    font-weight: var(--font-weight-bold);
     color: var(--color-primary);
     letter-spacing: -0.5px;
     margin: 0;
@@ -180,12 +160,10 @@ body {
 
 .subtitle {
     color: var(--color-text-muted);
-    font-size: var(--font-size-sm); /* Use variable */
+    font-size: var(--font-size-sm);
     max-width: 600px;
     margin: 0 auto;
 }
-
-/* --- 🎨 3. THEME SWITCHER --- */
 
 .controls-section {
     margin: var(--spacing-lg) 0;
@@ -216,23 +194,22 @@ body {
     border-radius: var(--border-radius-full);
     cursor: pointer;
     white-space: nowrap;
-    font-weight: var(--font-weight-medium); /* Use variable */
-    font-size: var(--font-size-sm); /* Use variable */
+    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-sm);
     transition: var(--transition-smooth);
     display: flex;
     align-items: center;
     gap: 6px;
 }
 
-.theme-btn:hover, .theme-btn.active {
+.theme-btn:hover,
+.theme-btn.active {
     background-color: var(--color-primary);
     color: white;
     border-color: var(--color-primary);
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(var(--color-primary-rgb), 0.3);
 }
-
-/* --- 🔍 4. SEARCH BAR --- */
 
 .search-wrapper {
     position: relative;
@@ -248,7 +225,7 @@ body {
     border: 2px solid transparent;
     background-color: var(--color-surface);
     color: var(--color-text-main);
-    font-size: var(--font-size-base); /* Use variable */
+    font-size: var(--font-size-base);
     font-family: inherit;
     box-shadow: var(--shadow-soft);
     transition: var(--transition-smooth);
@@ -257,7 +234,6 @@ body {
 .search-input:focus {
     outline: none;
     border-color: var(--color-primary);
-    /* 🆕 Use accent for the focus ring for better contrast */
     box-shadow: 0 0 0 4px rgba(var(--color-accent-rgb), 0.15);
 }
 
@@ -285,8 +261,6 @@ body {
 .clear-search:hover {
     color: var(--color-primary);
 }
-
-/* --- 📇 5. CARDS --- */
 
 main {
     flex: 1;
@@ -317,12 +291,19 @@ main {
 .teacher-card:hover {
     transform: translateY(-8px);
     box-shadow: var(--shadow-hover);
-    border-color: rgba(var(--color-primary-rgb), 0.3); /* Enhanced hover border */
+    border-color: rgba(var(--color-primary-rgb), 0.3);
 }
 
 @keyframes slideUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .card-header {
@@ -357,7 +338,7 @@ main {
     background: var(--color-accent);
     color: white;
     font-size: 0.6rem;
-    font-weight: var(--font-weight-bold); /* Use variable */
+    font-weight: var(--font-weight-bold);
     padding: 2px 6px;
     border-radius: 10px;
     text-transform: uppercase;
@@ -435,8 +416,6 @@ main {
     color: var(--color-text-muted);
 }
 
-/* --- 👣 FOOTER (New) --- */
-
 .main-footer {
     background-color: var(--color-surface);
     border-top: 1px solid var(--color-border);
@@ -469,12 +448,10 @@ main {
     color: var(--color-primary);
 }
 
-/* --- 📟 MODAL --- */
-
 .modal-backdrop {
     display: none;
     position: fixed;
-    z-index: var(--z-level-modal); /* Use variable */
+    z-index: var(--z-level-modal);
     left: 0;
     top: 0;
     width: 100%;
@@ -488,7 +465,7 @@ main {
 }
 
 .modal-backdrop.show {
-    display: flex; /* Ensure it is displayed when 'show' */
+    display: flex;
     opacity: 1;
 }
 
@@ -541,17 +518,21 @@ main {
     transform: translateY(-2px);
 }
 
-/* --- 📱 RESPONSIVE --- */
 @media (max-width: 768px) {
-    .title { font-size: 1.8rem; }
-    .container { padding: 0 var(--spacing-md); }
-    .theme-switcher { justify-content: flex-start; }
-    .logo-wrapper { width: 60px; height: 60px; }
+    .title {
+        font-size: 1.8rem;
+    }
+
+    .container {
+        padding: 0 var(--spacing-md);
+    }
+
+    .theme-switcher {
+        justify-content: flex-start;
+    }
+
+    .logo-wrapper {
+        width: 60px;
+        height: 60px;
+    }
 }
-
-
-
-
-
-
-

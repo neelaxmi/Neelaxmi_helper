@@ -1,6 +1,3 @@
-// Chapter list for the reader. Google Drive links live in public/chapters.json:
-//   { "ch1": "https://drive.google.com/file/d/FILE_ID/view", "ch2": "...", ... }
-// PDFs are public (files must be shared "Anyone with the link"); only the PYQ highlights stay behind login/subscription.
 export const CHAPTERS = [
   { id: "ch1",  title: "The Living World", free: true },
   { id: "ch2",  title: "Biological Classification" },
@@ -27,10 +24,9 @@ export const FREE_CHAPTER_IDS = new Set(CHAPTERS.filter((c) => c.free).map((c) =
 const idFromLink = (v) => {
   const s = String(v || "").trim();
   const m = s.match(/\/d\/([\w-]{15,})/) || s.match(/[?&]id=([\w-]{15,})/);
-  return m ? m[1] : /^[\w-]{15,}$/.test(s) ? s : null;      // full link or bare file ID
+  return m ? m[1] : /^[\w-]{15,}$/.test(s) ? s : null;     
 };
 let linksPromise = null;
-/** Returns the Drive file ID for a chapter ("ch2"), reading chapters.json beside this module. */
 export async function chapterFileId(chapterId) {
   try {
     if (!linksPromise) {
@@ -77,6 +73,5 @@ export async function chapterFileId(chapterId) {
     throw error;
   }
 }
-// 1st try: straight from Drive (works if Google allows it for the visitor's browser). 2nd: our tiny CORS pass-through.
 export const driveDirectUrl = (id) => `https://drive.usercontent.google.com/download?id=${id}&export=download&confirm=t`;
 export const driveProxyUrl = (id) => `/api/ncertpyq/drive-pdf?id=${encodeURIComponent(id)}`;
