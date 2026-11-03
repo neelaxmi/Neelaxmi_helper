@@ -297,10 +297,10 @@ function watchQuestionForResolution(battle, qIndex) {
         resolving = true;
         try {
         const myDoc = await answersCol.doc(`${myUid}_${qIndex}`).get();
-        if (!myDoc.exists) return; // I haven't answered (or timed out) yet
+        if (!myDoc.exists) { resolving = false; return; }
 
         const oppDoc = await answersCol.doc(`${oppUid}_${qIndex}`).get();
-        if (!oppDoc.exists && Date.now() < deadlineMs + BATTLE_CONFIG.RESOLVE_GRACE_MS) return; // give the opponent's write a fair chance to arrive
+        if (!oppDoc.exists && Date.now() < deadlineMs + BATTLE_CONFIG.RESOLVE_GRACE_MS) { resolving = false; return; }
 
         resolved = true;
         cleanup();
@@ -361,6 +361,7 @@ async function advanceQuestion(battleId, fromIndex, totalQuestions) {
 
 async function settleBattleIfNeeded(battleId) {
     const battleRef = db.collection('battles').doc(battleId);
+    let settlementWinnerUid = null;
 
     await db.runTransaction(async (tx) => {
         const battleDoc = await tx.get(battleRef);
@@ -411,8 +412,9 @@ async function settleBattleIfNeeded(battleId) {
         });
 
         tx.update(battleRef, { settled: true, winnerUid: winnerUid || 'draw' });
+        settlementWinnerUid = winnerUid || 'draw';
     });
-    console.log('[Battle][SUCCESS] Battle settlement completed.', {battleId, winnerUid: winnerUid || 'draw'});
+    console.log('[Battle][SUCCESS] Battle settlement completed.', {battleId, winnerUid: settlementWinnerUid});
 }
 
 async function getExplanationForBattleQuestion(sourceQuizId, qId) {
