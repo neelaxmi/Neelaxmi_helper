@@ -390,6 +390,7 @@ el('battle-auth-form').addEventListener('submit', async event => {
             if (name.length < 2) throw new Error('Please enter your full name.');
             const credential = await auth.createUserWithEmailAndPassword(email, password);
             await credential.user.updateProfile({ displayName: name });
+            await ensurePublicProfile(credential.user);
             authFeedback('Account created. Preparing your battle profile…', 'success');
         } else {
             await auth.signInWithEmailAndPassword(email, password);
