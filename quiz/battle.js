@@ -14,6 +14,7 @@ const db = firebase.firestore();
 
 const BATTLE_CONFIG = {
     STARTING_BALANCE: 100,
+    MAX_WAGER: 500,
     QUESTION_COUNTS: [5, 10, 15, 50],
     TIME_PER_QUESTION_MS: 20000,
     RESOLVE_GRACE_MS: 3000,
@@ -107,6 +108,7 @@ function initAuth(onReady) {
 
 async function loadBattleQuizSources() {
     const snap = await db.collection('quizzes').get();
+    console.log('[Battle][SUCCESS] Quiz sources loaded.', {count: snap.size});
     return snap.docs
         .map(d => ({ id: d.id, ...d.data() }))
         .filter(q => Array.isArray(q.questions) && q.questions.length >= Math.min(...BATTLE_CONFIG.QUESTION_COUNTS))
@@ -131,7 +133,10 @@ function randomBattleCode() {
 
 async function createBattle({ sourceQuiz, questionCount, wager }) {
     if (!CURRENT_USER) throw new Error('Not signed in.');
-    if (myProfile.balance < wager) throw new Error(`You only have ${myProfile.balance} coins — can't wager ${wager}.`);
+    if (!Number.isInteger(wager) || wager < 0 || wager > BATTLE_CONFIG.MAX_WAGER) throw new Error(`Wager must be between 0 and ${BATTLE_CONFIG.MAX_WAGER} coins.`);
+    if (!BATTLE_CONFIG.QUESTION_COUNTS.includes(questionCount)) throw new Error('Select a supported question count.');
+    if (!sourceQuiz || !Array.isArray(sourceQuiz.questions) || sourceQuiz.questions.length < questionCount) throw new Error('This quiz does not have enough questions.');
+    if (!myProfile || Number(myProfile.balance || 0) < wager) throw new Error(`You only have ${myProfile ? myProfile.balance : 0} coins — can't wager ${wager}.`);
 
     const picked = shuffledSample(
         sourceQuiz.questions.map((q, i) => ({ ...q, qId: `Q${i + 1}` })),
@@ -171,7 +176,7 @@ async function createBattle({ sourceQuiz, questionCount, wager }) {
         batch.set(battleRef.collection('answerKeys').doc(String(i)), { correctOption: q.answer });
     });
     await batch.commit();
-
+    console.log('[Battle][SUCCESS] Battle created.', {battleId: battleRef.id, code, questionCount, wager});
     return { battleId: battleRef.id, code };
 }
 async function joinBattleByCode(code) {
@@ -190,6 +195,7 @@ async function joinBattleByCode(code) {
     let result;
     await db.runTransaction(async (tx) => {
         const battleDoc = await tx.get(battleRef);
+        if (!battleDoc.exists) throw new Error('Battle no longer exists.');
         const battle = battleDoc.data();
         if (battle.status !== 'waiting' || battle.player2) throw new Error('This battle already started or is full.');
         if (battle.player1.uid === CURRENT_USER.uid) throw new Error("You can't join your own battle.");
@@ -218,6 +224,7 @@ async function joinBattleByCode(code) {
         result = { battleId: battleRef.id };
     });
 
+    console.log('[Battle][SUCCESS] Player joined battle.', result);
     return result;
 }
 
@@ -251,10 +258,18 @@ async function submitAnswer(battleId, qIndex, selectedOption) {
         await ref.create({
             uid: CURRENT_USER.uid,
             qIndex,
-            selectedOption, // number, or null if timed out with no selection
+            selectedOption,
             answeredAt: firebase.firestore.FieldValue.serverTimestamp(),
         });
+        console.log('[Battle][SUCCESS] Answer submitted.', {battleId, qIndex, timedOut: selectedOption === null});
+        return true;
     } catch (e) {
+        if (e.code === 'already-exists') {
+            console.warn('[Battle][INFO] Duplicate answer ignored.', {battleId, qIndex});
+            return false;
+        }
+        console.error('[Battle][ERROR] Answer submission failed.', e);
+        throw e;
     }
 }
 
@@ -272,12 +287,15 @@ function watchQuestionForResolution(battle, qIndex) {
         : Date.now() + BATTLE_CONFIG.TIME_PER_QUESTION_MS;
 
     let resolved = false;
+    let resolving = false;
     let unsubMy, unsubOpp, timeoutId;
 
     const cleanup = () => { if (unsubMy) unsubMy(); if (unsubOpp) unsubOpp(); if (timeoutId) clearTimeout(timeoutId); };
 
     const tryResolve = async () => {
-        if (resolved) return;
+        if (resolved || resolving) return;
+        resolving = true;
+        try {
         const myDoc = await answersCol.doc(`${myUid}_${qIndex}`).get();
         if (!myDoc.exists) return; // I haven't answered (or timed out) yet
 
@@ -311,10 +329,15 @@ function watchQuestionForResolution(battle, qIndex) {
         });
 
         await advanceQuestion(battleId, qIndex, battle.questions.length);
+        console.log('[Battle][SUCCESS] Question resolved.', {battleId, qIndex, scoreDelta: delta});
+        } catch (error) {
+            resolving = false;
+            console.error('[Battle][ERROR] Question resolution failed.', {battleId, qIndex, error});
+        }
     };
 
-    unsubMy = answersCol.doc(`${myUid}_${qIndex}`).onSnapshot(tryResolve);
-    unsubOpp = answersCol.doc(`${oppUid}_${qIndex}`).onSnapshot(tryResolve);
+    unsubMy = answersCol.doc(`${myUid}_${qIndex}`).onSnapshot(tryResolve, error => console.error('[Battle][ERROR] Own answer listener failed.', error));
+    unsubOpp = answersCol.doc(`${oppUid}_${qIndex}`).onSnapshot(tryResolve, error => console.error('[Battle][ERROR] Opponent answer listener failed.', error));
     timeoutId = setTimeout(tryResolve, Math.max(0, deadlineMs + BATTLE_CONFIG.RESOLVE_GRACE_MS - Date.now()));
 
     return cleanup;
@@ -389,6 +412,7 @@ async function settleBattleIfNeeded(battleId) {
 
         tx.update(battleRef, { settled: true, winnerUid: winnerUid || 'draw' });
     });
+    console.log('[Battle][SUCCESS] Battle settlement completed.', {battleId, winnerUid: winnerUid || 'draw'});
 }
 
 async function getExplanationForBattleQuestion(sourceQuizId, qId) {
