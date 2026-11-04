@@ -783,13 +783,8 @@ async function showBattleResult(battle) {
     el('result-me-score').textContent = myScore;
     el('result-opp-score').textContent = oppScore;
 
-    let coinDelta = myScore;
-    if (myScore > oppScore) coinDelta += battle.wager;
-    else if (myScore < oppScore) coinDelta -= battle.wager;
-    // draw: wager refunded, net 0 extra
-
-    el('result-coin-change').textContent = coinDelta >= 0 ? `+${coinDelta} coins` : `${coinDelta} coins`;
-    el('result-coin-change').className = `text-lg font-bold mb-5 ${coinDelta >= 0 ? 'text-green-500' : 'text-red-500'}`;
+    el('result-coin-change').textContent = `${Number(battle.wager || 0)} coins entry fee paid`;
+    el('result-coin-change').className = 'text-sm font-semibold mb-5 text-slate-400';
 
     await renderBattleReview(battle);
 }
