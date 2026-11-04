@@ -415,9 +415,7 @@ function watchQuestionForResolution(battle, qIndex) {
     const key = myPlayerKey(battle);
 
     const answersCol = db.collection('battles').doc(battleId).collection('answers');
-    const deadlineMs = battle.questionStartedAt
-        ? battle.questionStartedAt.toMillis() + BATTLE_CONFIG.TIME_PER_QUESTION_MS
-        : Date.now() + BATTLE_CONFIG.TIME_PER_QUESTION_MS;
+    const deadlineMs = getBattleQuestionStartMs(battle, qIndex) + BATTLE_CONFIG.TIME_PER_QUESTION_MS;
 
     let resolved = false;
     let resolving = false;
