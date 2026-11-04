@@ -106,13 +106,78 @@ function initAuth(onReady) {
 }
 
 
+function normalizeBattleQuestion(question, index) {
+    const q = question && typeof question === 'object' ? question : {};
+    const sourceOptions = q.options && typeof q.options === 'object' && !Array.isArray(q.options) ? q.options : {};
+    const options = {};
+    ['A', 'B', 'C', 'D'].forEach(key => {
+        if (sourceOptions[key] !== undefined && sourceOptions[key] !== null && String(sourceOptions[key]).trim()) {
+            options[key] = String(sourceOptions[key]);
+        }
+    });
+    const answer = String(q.answer || '').trim().toUpperCase();
+    if (!q.question || Object.keys(options).length < 2 || !options[answer]) return null;
+    return {
+        qId: 'Q' + (index + 1),
+        question: String(q.question),
+        options,
+        answer,
+        imageUrl: typeof q.imageUrl === 'string' && q.imageUrl.trim() ? q.imageUrl.trim() : null
+    };
+}
+
 async function loadBattleQuizSources() {
-    const snap = await db.collection('quizzes').get();
-    console.log('[Battle][SUCCESS] Quiz sources loaded.', {count: snap.size});
-    return snap.docs
-        .map(d => ({ id: d.id, ...d.data() }))
-        .filter(q => Array.isArray(q.questions) && q.questions.length >= Math.min(...BATTLE_CONFIG.QUESTION_COUNTS))
-        .sort((a, b) => (a.title || '').localeCompare(b.title || ''));
+    try {
+        const snap = await db.collection('quizzes').get();
+        const sources = [];
+        for (const doc of snap.docs) {
+            const data = doc.data() || {};
+            let rawQuestions = Array.isArray(data.questions) ? data.questions : [];
+            if (data.questionBankChapterQuiz === true && !rawQuestions.length) {
+                if (!data.chapter) {
+                    console.warn('[Battle][INFO] Skipping chapter quiz without chapter metadata.', { quizId: doc.id });
+                    continue;
+                }
+                const wantedSubject = String(data.subject || 'Unclassified').trim().toLowerCase();
+                const chapterQuestions = [];
+                let lastDoc = null;
+                while (true) {
+                    let query = db.collection('question_bank')
+                        .where('chapter', '==', data.chapter)
+                        .orderBy(firebase.firestore.FieldPath.documentId())
+                        .limit(500);
+                    if (lastDoc) query = query.startAfter(lastDoc);
+                    const bankSnap = await query.get();
+                    if (bankSnap.empty) break;
+                    bankSnap.docs.forEach(questionDoc => {
+                        const question = { ...questionDoc.data() };
+                        if (String(question.subject || 'Unclassified').trim().toLowerCase() !== wantedSubject) return;
+                        ['schemaVersion', 'createdAt', 'updatedAt', 'sourceFile'].forEach(key => delete question[key]);
+                        chapterQuestions.push(question);
+                    });
+                    lastDoc = bankSnap.docs[bankSnap.docs.length - 1];
+                    if (bankSnap.size < 500) break;
+                }
+                rawQuestions = chapterQuestions;
+            }
+            const questions = rawQuestions.map((question, index) => normalizeBattleQuestion(question, index)).filter(Boolean);
+            if (questions.length >= Math.min(...BATTLE_CONFIG.QUESTION_COUNTS)) {
+                sources.push({ id: doc.id, title: data.title || 'Quiz', questions });
+            }
+        }
+        sources.sort((a, b) => a.title.localeCompare(b.title));
+        console.log('[Battle][SUCCESS] Quiz sources loaded with quiz.js question schema.', {
+            quizDocuments: snap.size,
+            playableSources: sources.length,
+            totalPlayableQuestions: sources.reduce((total, source) => total + source.questions.length, 0)
+        });
+        return sources;
+    } catch (error) {
+        console.error('[Battle][ERROR] Could not load quiz sources using quiz.js schema.', {
+            code: error.code || 'unknown', message: error.message
+        });
+        throw error;
+    }
 }
 
 function shuffledSample(arr, n) {
@@ -147,10 +212,13 @@ async function createBattle({ sourceQuiz, questionCount, wager }) {
         const profileRef = db.collection('public_profiles').doc(CURRENT_USER.uid);
         const battleRef = db.collection('battles').doc();
         const code = randomBattleCode();
-        const picked = shuffledSample(
-            sourceQuiz.questions.map((q, i) => ({ ...q, qId: `Q${i + 1}` })),
-            questionCount
-        );
+        const playableQuestions = sourceQuiz.questions
+            .map((question, index) => normalizeBattleQuestion(question, index))
+            .filter(Boolean);
+        if (playableQuestions.length < questionCount) {
+            throw new Error(`This quiz has only ${playableQuestions.length} valid questions with options and answers.`);
+        }
+        const picked = shuffledSample(playableQuestions, questionCount);
         const questionsForClients = picked.map(q => ({
             qId: q.qId,
             question: q.question,
