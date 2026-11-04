@@ -132,100 +132,165 @@ function randomBattleCode() {
 }
 
 async function createBattle({ sourceQuiz, questionCount, wager }) {
-    if (!CURRENT_USER) throw new Error('Not signed in.');
-    if (!Number.isInteger(wager) || wager < 0 || wager > BATTLE_CONFIG.MAX_WAGER) throw new Error(`Wager must be between 0 and ${BATTLE_CONFIG.MAX_WAGER} coins.`);
-    if (!BATTLE_CONFIG.QUESTION_COUNTS.includes(questionCount)) throw new Error('Select a supported question count.');
-    if (!sourceQuiz || !Array.isArray(sourceQuiz.questions) || sourceQuiz.questions.length < questionCount) throw new Error('This quiz does not have enough questions.');
-    if (!myProfile || Number(myProfile.balance || 0) < wager) throw new Error(`You only have ${myProfile ? myProfile.balance : 0} coins — can't wager ${wager}.`);
+    try {
+        if (!CURRENT_USER) throw new Error('Not signed in.');
+        if (!Number.isInteger(wager) || wager < 0 || wager > BATTLE_CONFIG.MAX_WAGER) {
+            throw new Error(`Wager must be between 0 and ${BATTLE_CONFIG.MAX_WAGER} coins.`);
+        }
+        if (!BATTLE_CONFIG.QUESTION_COUNTS.includes(questionCount)) {
+            throw new Error('Select a supported question count.');
+        }
+        if (!sourceQuiz || !Array.isArray(sourceQuiz.questions) || sourceQuiz.questions.length < questionCount) {
+            throw new Error('This quiz does not have enough questions.');
+        }
 
-    const picked = shuffledSample(
-        sourceQuiz.questions.map((q, i) => ({ ...q, qId: `Q${i + 1}` })),
-        questionCount
-    );
+        const profileRef = db.collection('public_profiles').doc(CURRENT_USER.uid);
+        const battleRef = db.collection('battles').doc();
+        const code = randomBattleCode();
+        const picked = shuffledSample(
+            sourceQuiz.questions.map((q, i) => ({ ...q, qId: `Q${i + 1}` })),
+            questionCount
+        );
+        const questionsForClients = picked.map(q => ({
+            qId: q.qId,
+            question: q.question,
+            options: q.options,
+            imageUrl: q.imageUrl || null,
+        }));
 
-    const battleRef = db.collection('battles').doc();
-    const code = randomBattleCode();
+        // Atomically deduct only the host's own entry fee and create the battle.
+        await db.runTransaction(async tx => {
+            const profileDoc = await tx.get(profileRef);
+            if (!profileDoc.exists) throw new Error('Player profile not found. Please refresh and try again.');
 
-    const questionsForClients = picked.map(q => ({
-        qId: q.qId,
-        question: q.question,
-        options: q.options,
-        imageUrl: q.imageUrl || null,
-    }));
+            const balance = Number(profileDoc.data().balance || 0);
+            if (balance < wager) throw new Error(`You have ${balance} coins. You need ${wager} coins.`);
 
-    await battleRef.set({
-        code,
-        hostUid: CURRENT_USER.uid,
-        player1: { uid: CURRENT_USER.uid, name: CURRENT_USER.name || 'Player 1', photoURL: CURRENT_USER.photoURL || null, score: 0 },
-        player2: null,
-        sourceQuizId: sourceQuiz.id,
-        sourceQuizTitle: sourceQuiz.title || 'Quiz',
-        questionCount,
-        wager,
-        questions: questionsForClients,
-        status: 'waiting',
-        currentQuestionIndex: -1,
-        questionStartedAt: null,
-        settled: false,
-        winnerUid: null,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-    });
+            tx.update(profileRef, {
+                balance: balance - wager,
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
 
-    const batch = db.batch();
-    picked.forEach((q, i) => {
-        batch.set(battleRef.collection('answerKeys').doc(String(i)), { correctOption: q.answer });
-    });
-    await batch.commit();
-    console.log('[Battle][SUCCESS] Battle created.', {battleId: battleRef.id, code, questionCount, wager});
-    return { battleId: battleRef.id, code };
-}
-async function joinBattleByCode(code) {
-    if (!CURRENT_USER) throw new Error('Not signed in.');
-    const cleanCode = code.trim().toUpperCase();
-
-    const query = await db.collection('battles')
-        .where('code', '==', cleanCode)
-        .where('status', '==', 'waiting')
-        .limit(1)
-        .get();
-
-    if (query.empty) throw new Error('No open battle found with that code.');
-    const battleRef = query.docs[0].ref;
-
-    let result;
-    await db.runTransaction(async (tx) => {
-        const battleDoc = await tx.get(battleRef);
-        if (!battleDoc.exists) throw new Error('Battle no longer exists.');
-        const battle = battleDoc.data();
-        if (battle.status !== 'waiting' || battle.player2) throw new Error('This battle already started or is full.');
-        if (battle.player1.uid === CURRENT_USER.uid) throw new Error("You can't join your own battle.");
-
-        const p1Ref = db.collection('public_profiles').doc(battle.player1.uid);
-        const p2Ref = db.collection('public_profiles').doc(CURRENT_USER.uid);
-        const p1Doc = await tx.get(p1Ref);
-        const p2Doc = await tx.get(p2Ref);
-        const p1Balance = p1Doc.data().balance;
-        const p2Balance = p2Doc.data().balance;
-
-        if (p1Balance < battle.wager) throw new Error('The host no longer has enough coins for this wager — battle cancelled.');
-        if (p2Balance < battle.wager) throw new Error(`You need ${battle.wager} coins to join this battle.`);
-
-        tx.update(p1Ref, { balance: p1Balance - battle.wager, updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
-        tx.update(p2Ref, { balance: p2Balance - battle.wager, updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
-
-        tx.update(battleRef, {
-            player2: { uid: CURRENT_USER.uid, name: CURRENT_USER.name || 'Player 2', photoURL: CURRENT_USER.photoURL || null, score: 0 },
-            status: 'active',
-            currentQuestionIndex: 0,
-            questionStartedAt: firebase.firestore.FieldValue.serverTimestamp(),
-            startedAt: firebase.firestore.FieldValue.serverTimestamp(),
+            tx.set(battleRef, {
+                code,
+                hostUid: CURRENT_USER.uid,
+                player1: {
+                    uid: CURRENT_USER.uid,
+                    name: CURRENT_USER.name || 'Player 1',
+                    photoURL: CURRENT_USER.photoURL || null,
+                    score: 0
+                },
+                player2: null,
+                sourceQuizId: sourceQuiz.id,
+                sourceQuizTitle: sourceQuiz.title || 'Quiz',
+                questionCount,
+                wager,
+                questions: questionsForClients,
+                status: 'waiting',
+                currentQuestionIndex: -1,
+                questionStartedAt: null,
+                settled: false,
+                winnerUid: null,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            });
         });
 
-        result = { battleId: battleRef.id };
-    });
+        // Answer keys are written after battle creation because their rules
+        // verify the already-created parent battle and its host.
+        const batch = db.batch();
+        picked.forEach((q, i) => {
+            batch.set(battleRef.collection('answerKeys').doc(String(i)), {
+                correctOption: q.answer
+            });
+        });
+        await batch.commit();
 
-    console.log('[Battle][SUCCESS] Player joined battle.', result);
-    return result;
+        const result = { battleId: battleRef.id, code, entryFee: wager };
+        console.log('[Battle][SUCCESS] Battle created; host entry fee deducted.', result);
+        return { battleId: battleRef.id, code };
+    } catch (error) {
+        console.error('[Battle][ERROR] Battle creation failed.', {
+            code: error.code || 'unknown',
+            message: error.message,
+            error
+        });
+        throw error;
+    }
+}
+
+async function joinBattleByCode(code) {
+    try {
+        if (!CURRENT_USER) throw new Error('Not signed in.');
+        const cleanCode = String(code || '').trim().toUpperCase();
+        if (!/^[A-HJ-NP-Z2-9]{6}$/.test(cleanCode)) {
+            throw new Error('Enter a valid 6-character battle code.');
+        }
+
+        const query = await db.collection('battles')
+            .where('code', '==', cleanCode)
+            .where('status', '==', 'waiting')
+            .limit(1)
+            .get();
+
+        if (query.empty) throw new Error('No open battle found with that code.');
+
+        const battleRef = query.docs[0].ref;
+        const profileRef = db.collection('public_profiles').doc(CURRENT_USER.uid);
+
+        await db.runTransaction(async tx => {
+            // Read all documents before performing any transaction writes.
+            const battleDoc = await tx.get(battleRef);
+            const profileDoc = await tx.get(profileRef);
+
+            if (!battleDoc.exists) throw new Error('Battle no longer exists.');
+            if (!profileDoc.exists) throw new Error('Your player profile was not found. Refresh and try again.');
+
+            const battle = battleDoc.data();
+            if (battle.status !== 'waiting' || battle.player2) {
+                throw new Error('This battle is already started or full.');
+            }
+            if (battle.player1.uid === CURRENT_USER.uid) {
+                throw new Error("You can't join your own battle.");
+            }
+
+            const wager = Number(battle.wager || 0);
+            const balance = Number(profileDoc.data().balance || 0);
+            if (!Number.isInteger(wager) || wager < 0 || wager > BATTLE_CONFIG.MAX_WAGER) {
+                throw new Error('This battle has an invalid entry fee.');
+            }
+            if (balance < wager) throw new Error(`You need ${wager} coins to join this battle.`);
+
+            // A player can only spend their own coins; host balance is untouched.
+            tx.update(profileRef, {
+                balance: balance - wager,
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+
+            tx.update(battleRef, {
+                player2: {
+                    uid: CURRENT_USER.uid,
+                    name: CURRENT_USER.name || 'Player 2',
+                    photoURL: CURRENT_USER.photoURL || null,
+                    score: 0
+                },
+                status: 'active',
+                currentQuestionIndex: 0,
+                questionStartedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                startedAt: firebase.firestore.FieldValue.serverTimestamp(),
+            });
+        });
+
+        const result = { battleId: battleRef.id, uid: CURRENT_USER.uid };
+        console.log('[Battle][SUCCESS] Player joined; own entry fee deducted.', result);
+        return { battleId: battleRef.id };
+    } catch (error) {
+        console.error('[Battle][ERROR] Join battle failed.', {
+            code: error.code || 'unknown',
+            message: error.message,
+            error
+        });
+        throw error;
+    }
 }
 
 function cancelWaitingBattle(battleId) {
@@ -360,61 +425,54 @@ async function advanceQuestion(battleId, fromIndex, totalQuestions) {
 
 
 async function settleBattleIfNeeded(battleId) {
-    const battleRef = db.collection('battles').doc(battleId);
-    let settlementWinnerUid = null;
+    try {
+        const battleRef = db.collection('battles').doc(battleId);
+        let settlementWinnerUid = null;
 
-    await db.runTransaction(async (tx) => {
-        const battleDoc = await tx.get(battleRef);
-        const battle = battleDoc.data();
-        if (battle.settled) return;
-        const p1Score = battle.player1.score || 0;
-        const p2Score = battle.player2.score || 0;
-        let winnerUid = null;
-        if (p1Score > p2Score) winnerUid = battle.player1.uid;
-        else if (p2Score > p1Score) winnerUid = battle.player2.uid;
+        await db.runTransaction(async tx => {
+            const battleDoc = await tx.get(battleRef);
+            if (!battleDoc.exists) throw new Error('Battle not found.');
 
-        const p1Ref = db.collection('public_profiles').doc(battle.player1.uid);
-        const p2Ref = db.collection('public_profiles').doc(battle.player2.uid);
-        const p1Doc = await tx.get(p1Ref);
-        const p2Doc = await tx.get(p2Ref);
-        const p1 = p1Doc.data();
-        const p2 = p2Doc.data();
+            const battle = battleDoc.data();
+            if (battle.settled) {
+                settlementWinnerUid = battle.winnerUid;
+                return;
+            }
+            if (battle.status !== 'finished' || !battle.player2) {
+                throw new Error('Battle is not ready for settlement.');
+            }
 
-        let p1WagerDelta = 0, p2WagerDelta = 0;
-        if (winnerUid === battle.player1.uid) { p1WagerDelta = battle.wager; p2WagerDelta = -battle.wager; }
-        else if (winnerUid === battle.player2.uid) { p2WagerDelta = battle.wager; p1WagerDelta = -battle.wager; }
-        else { p1WagerDelta = battle.wager; p2WagerDelta = battle.wager; } 
+            const p1Score = Number(battle.player1.score || 0);
+            const p2Score = Number(battle.player2.score || 0);
+            let winnerUid = null;
 
-        const p1NetDelta = p1Score + p1WagerDelta;
-        const p2NetDelta = p2Score + p2WagerDelta;
+            if (p1Score > p2Score) winnerUid = battle.player1.uid;
+            else if (p2Score > p1Score) winnerUid = battle.player2.uid;
 
-        tx.update(p1Ref, {
-            balance: p1.balance + p1NetDelta,
-            coinStats: applyCoinDelta(p1.coinStats, p1NetDelta),
-            battleStats: {
-                wins: (p1.battleStats?.wins || 0) + (winnerUid === battle.player1.uid ? 1 : 0),
-                losses: (p1.battleStats?.losses || 0) + (winnerUid === battle.player2.uid ? 1 : 0),
-                draws: (p1.battleStats?.draws || 0) + (winnerUid === null ? 1 : 0),
-                totalBattles: (p1.battleStats?.totalBattles || 0) + 1,
-            },
-            updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-        });
-        tx.update(p2Ref, {
-            balance: p2.balance + p2NetDelta,
-            coinStats: applyCoinDelta(p2.coinStats, p2NetDelta),
-            battleStats: {
-                wins: (p2.battleStats?.wins || 0) + (winnerUid === battle.player2.uid ? 1 : 0),
-                losses: (p2.battleStats?.losses || 0) + (winnerUid === battle.player1.uid ? 1 : 0),
-                draws: (p2.battleStats?.draws || 0) + (winnerUid === null ? 1 : 0),
-                totalBattles: (p2.battleStats?.totalBattles || 0) + 1,
-            },
-            updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+            settlementWinnerUid = winnerUid || 'draw';
+
+            // No cross-user balance writes or client-side coin payout on Spark.
+            tx.update(battleRef, {
+                settled: true,
+                winnerUid: settlementWinnerUid,
+                settledAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
         });
 
-        tx.update(battleRef, { settled: true, winnerUid: winnerUid || 'draw' });
-        settlementWinnerUid = winnerUid || 'draw';
-    });
-    console.log('[Battle][SUCCESS] Battle settlement completed.', {battleId, winnerUid: settlementWinnerUid});
+        console.log('[Battle][SUCCESS] Battle result settled; no coin transfer.', {
+            battleId,
+            winnerUid: settlementWinnerUid
+        });
+        return settlementWinnerUid;
+    } catch (error) {
+        console.error('[Battle][ERROR] Battle settlement failed.', {
+            battleId,
+            code: error.code || 'unknown',
+            message: error.message,
+            error
+        });
+        throw error;
+    }
 }
 
 async function getExplanationForBattleQuestion(sourceQuizId, qId) {
