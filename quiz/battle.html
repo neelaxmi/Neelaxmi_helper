@@ -688,65 +688,138 @@ function defaultAvatar(name) {
 }
 
 function renderBattleQuestion(battle, qIndex) {
-    const q = battle.questions[qIndex];
-    el('battle-question-text').textContent = q.question;
-    if (q.imageUrl) {
-        el('battle-question-image').src = q.imageUrl;
-        el('battle-question-image').classList.remove('hidden');
-    } else {
-        el('battle-question-image').classList.add('hidden');
+    try {
+        const q = battle.questions[qIndex];
+        if (!q || !q.question) throw new Error('Question data is missing.');
+        el('battle-question-text').textContent = q.question;
+        const image = el('battle-question-image');
+        image.onerror = () => {
+            image.classList.add('hidden');
+            console.error('[Battle][IMAGE][ERROR] Question image failed to load.', {
+                battleId: battle.id, qId: q.qId, imageUrl: q.imageUrl || null
+            });
+        };
+        if (q.imageUrl) {
+            image.src = q.imageUrl;
+            image.classList.remove('hidden');
+            image.onload = () => console.info('[Battle][IMAGE][SUCCESS] Question image loaded.', { battleId: battle.id, qId: q.qId });
+        } else {
+            image.removeAttribute('src');
+            image.classList.add('hidden');
+        }
+        const options = q.options && typeof q.options === 'object' ? q.options : {};
+        const optionKeys = ['A', 'B', 'C', 'D'].filter(key =>
+            options[key] !== undefined && options[key] !== null && String(options[key]).trim()
+        );
+        el('battle-wait-msg').classList.add('hidden');
+        el('battle-options').innerHTML = optionKeys.map(key => `
+            <button type="button" class="option-btn w-full text-left px-4 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-700 hover:border-primary text-sm font-medium" data-option="${key}">
+                <span class="inline-flex mr-2 font-bold">${key}.</span>${escapeHtmlBattle(options[key])}
+            </button>`).join('');
+        if (!optionKeys.length) throw new Error('No A/B/C/D options were found in the saved quiz question.');
+        el('battle-options').querySelectorAll('.option-btn').forEach(button => {
+            button.addEventListener('click', () => onSelectOption(battle, qIndex, button.dataset.option));
+        });
+        renderMath(el('battle-question-text'));
+        renderMath(el('battle-options'));
+        console.log('[Battle][QUESTION][SUCCESS] Question and options rendered from quiz.js data shape.', {
+            battleId: battle.id, sourceQuizId: battle.sourceQuizId, qId: q.qId,
+            optionKeys, hasImage: !!q.imageUrl
+        });
+    } catch (error) {
+        el('battle-options').innerHTML = '';
+        console.error('[Battle][QUESTION][ERROR] Could not render battle question.', {
+            battleId: battle && battle.id, qIndex, message: error.message
+        });
+        el('battle-question-text').textContent = 'This question could not be loaded. Please wait for the next question.';
     }
-
-    el('battle-wait-msg').classList.add('hidden');
-    el('battle-options').innerHTML = (q.options || []).map((opt, i) => `
-        <button type="button" class="option-btn w-full text-left px-4 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-700 hover:border-primary text-sm font-medium" data-option="${i}">
-            ${escapeHtmlBattle(opt)}
-        </button>`).join('');
-
-    el('battle-options').querySelectorAll('.option-btn').forEach(btn => {
-        btn.addEventListener('click', () => onSelectOption(battle, qIndex, parseInt(btn.dataset.option, 10)));
-    });
-
-    renderMath(el('battle-question-text'));
-    renderMath(el('battle-options'));
 }
 
-async function onSelectOption(battle, qIndex, optionIndex) {
+async function onSelectOption(battle, qIndex, optionKey) {
     if (myAnsweredThisQuestion) return;
     myAnsweredThisQuestion = true;
-
-    el('battle-options').querySelectorAll('.option-btn').forEach(b => {
-        b.disabled = true;
-        if (parseInt(b.dataset.option, 10) === optionIndex) b.classList.add('ring-2', 'ring-primary');
+    el('battle-options').querySelectorAll('.option-btn').forEach(button => {
+        button.disabled = true;
+        if (button.dataset.option === optionKey) button.classList.add('ring-2', 'ring-primary');
     });
     el('battle-wait-msg').classList.remove('hidden');
+    try {
+        await submitAnswer(currentBattleId, qIndex, optionKey);
+        console.info('[Battle][ANSWER][SUCCESS] Selected option submitted.', { battleId: currentBattleId, qIndex, optionKey });
+    } catch (error) {
+        console.error('[Battle][ANSWER][ERROR] Selected option could not be submitted.', { battleId: currentBattleId, qIndex, optionKey, message: error.message });
+        el('battle-wait-msg').classList.add('hidden');
+    }
+}
+const battleQuestionFallbackStarts = new Map();
 
-    await submitAnswer(currentBattleId, qIndex, optionIndex);
+function battleTimestampToMillis(value) {
+    if (!value) return null;
+    if (typeof value.toMillis === 'function') return value.toMillis();
+    if (value instanceof Date) return value.getTime();
+    if (typeof value === 'number' && Number.isFinite(value)) return value;
+    if (typeof value === 'string') {
+        const parsed = Date.parse(value);
+        return Number.isFinite(parsed) ? parsed : null;
+    }
+    if (typeof value.seconds === 'number') {
+        return value.seconds * 1000 + Math.floor((Number(value.nanoseconds) || 0) / 1000000);
+    }
+    return null;
+}
+
+function getBattleQuestionStartMs(battle, qIndex) {
+    const savedStart = battleTimestampToMillis(battle.questionStartedAt);
+    const key = battle.id + ':' + qIndex;
+    if (savedStart) {
+        battleQuestionFallbackStarts.set(key, savedStart);
+        return savedStart;
+    }
+    const battleStart = battleTimestampToMillis(battle.startedAt);
+    if (!battleQuestionFallbackStarts.has(key)) {
+        const fallback = battleStart || Date.now();
+        battleQuestionFallbackStarts.set(key, fallback);
+        console.warn('[Battle][TIMER][INFO] questionStartedAt was missing or unreadable; using a stable fallback.', {
+            battleId: battle.id, qIndex, fallbackStartMs: fallback
+        });
+    }
+    return battleQuestionFallbackStarts.get(key);
 }
 
 function startQuestionTimer(battle) {
-    if (timerInterval) clearInterval(timerInterval);
-    if (!battle.questionStartedAt) return;
-
-    const startMs = battle.questionStartedAt.toMillis();
+    if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+    }
+    const qIndex = Number(battle.currentQuestionIndex);
+    const startMs = getBattleQuestionStartMs(battle, qIndex);
     const totalMs = BATTLE_CONFIG.TIME_PER_QUESTION_MS;
-
+    console.info('[Battle][TIMER][SUCCESS] Question timer initialized.', {
+        battleId: battle.id, qIndex, startMs, durationMs: totalMs
+    });
     const tick = async () => {
-        const elapsed = Date.now() - startMs;
+        const elapsed = Math.max(0, Date.now() - startMs);
         const remaining = Math.max(0, totalMs - elapsed);
         const pct = Math.max(0, Math.min(100, (remaining / totalMs) * 100));
         el('battle-timer-bar').style.width = `${pct}%`;
         el('battle-timer-bar').classList.toggle('bg-red-500', pct < 25);
         el('battle-timer-bar').classList.toggle('bg-primary', pct >= 25);
         el('battle-timer-text').textContent = `${Math.ceil(remaining / 1000)}s`;
-
         if (remaining <= 0) {
-            clearInterval(timerInterval);
+            if (timerInterval) clearInterval(timerInterval);
+            timerInterval = null;
+            console.info('[Battle][TIMER][SUCCESS] Question timer reached zero.', { battleId: battle.id, qIndex });
             if (!myAnsweredThisQuestion) {
                 myAnsweredThisQuestion = true;
-                el('battle-options').querySelectorAll('.option-btn').forEach(b => b.disabled = true);
+                el('battle-options').querySelectorAll('.option-btn').forEach(button => button.disabled = true);
                 el('battle-wait-msg').classList.remove('hidden');
-                await submitAnswer(currentBattleId, lastRenderedQIndex, null); // timed out — no answer
+                try {
+                    await submitAnswer(currentBattleId, qIndex, null);
+                } catch (error) {
+                    console.error('[Battle][TIMER][ERROR] Timed-out answer submission failed.', {
+                        battleId: battle.id, qIndex, message: error.message
+                    });
+                }
             }
         }
     };
