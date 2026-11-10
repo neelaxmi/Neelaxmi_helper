@@ -334,8 +334,8 @@ section{padding:60px 0}.founder{flex-direction:column;text-align:center}form{gri
     <p style="font-size:.72rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#ea580c;margin-bottom:6px">Update Available</p>
     <h2 style="font-family:'Bricolage Grotesque',sans-serif;color:#1e1b4b;font-size:1.35rem;margin-bottom:10px">Neelaxmi has a new version!</h2>
     <p id="upd-msg" style="color:#5d6177;font-size:.93rem;line-height:1.55;margin-bottom:22px"></p>
-    <a id="upd-btn" href="#" style="display:flex;align-items:center;justify-content:center;gap:.5rem;background:linear-gradient(135deg,#ea580c,#f97316);color:#fff;font-weight:800;padding:14px 20px;border-radius:13px;text-decoration:none;font-size:1rem;box-shadow:0 8px 20px rgba(234,88,12,.35);margin-bottom:10px">
-      <i class="fa-solid fa-download"></i> Download Update
+    <a id="upd-btn" href="#" onclick="handleApkInstall(event)" style="display:flex;align-items:center;justify-content:center;gap:.5rem;background:linear-gradient(135deg,#ea580c,#f97316);color:#fff;font-weight:800;padding:14px 20px;border-radius:13px;text-decoration:none;font-size:1rem;box-shadow:0 8px 20px rgba(234,88,12,.35);margin-bottom:10px">
+      <i class="fa-solid fa-download"></i> Download &amp; Install Update
     </a>
     <button id="upd-later" style="background:none;border:none;color:#9ca3af;font-size:.85rem;cursor:pointer;padding:6px 12px;font-family:inherit">Remind me later</button>
     <p style="margin-top:14px;font-size:.75rem;color:#c7cae8;border-top:1px solid #f0f0f0;padding-top:12px">Same app — just install over existing one. No data lost.</p>
@@ -347,6 +347,42 @@ section{padding:60px 0}.founder{flex-direction:column;text-align:center}form{gri
 <script src="https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore-compat.js"></script>
 <script>
 const $=(s,c=document)=>c.querySelector(s),$$=(s,c=document)=>[...c.querySelectorAll(s)];
+
+// APK Install Handler
+function handleApkInstall(e){
+  e.preventDefault();
+  const apkUrl = e.currentTarget.href !== "#" ? e.currentTarget.href : "/apks/neelaxmi.apk";
+  const fullUrl = apkUrl.startsWith("http") ? apkUrl : "https://neelaxmi.vercel.app" + apkUrl;
+
+  // Step 1: Try Median's built-in download + install
+  try{
+    if(typeof median !== "undefined" && median.share && median.share.downloadFile){
+      median.share.downloadFile({
+        url: fullUrl,
+        open: true
+      });
+      return;
+    }
+  }catch(err){console.warn(err);}
+
+  // Step 2: Try gonative download
+  try{
+    if(typeof gonative !== "undefined" && gonative.share && gonative.share.downloadFile){
+      gonative.share.downloadFile({
+        url: fullUrl,
+        open: true
+      });
+      return;
+    }
+  }catch(err){console.warn(err);}
+
+  // Step 3: Fallback — direct download
+  // Vercel pe download hogi, Android install prompt aayega
+  const a = document.createElement("a");
+  a.href = fullUrl;
+  a.download = "neelaxmi-update.apk";
+  a.click();
+}
 
 // ── APK UPDATE CHECK ──────────────────────────────────────────────
 (function(){
