@@ -235,7 +235,7 @@ section{padding:60px 0}.founder{flex-direction:column;text-align:center}form{gri
 <details><summary>DPP Analysis</summary><div>Performance insights for Daily Practice Papers.<br><a href="https://dppanalysis.netlify.app/" target="_blank" rel="noopener">Try it</a></div></details>
 <details><summary>Schedule Tracker</summary><div>Plan lectures, revision cycles and routines.<br><a href="#contact">Request this feature</a></div></details>
 <details><summary>Updates &amp; Information</summary><div>Latest notifications, news and critical updates.<br><a href="/aboutus.html">Explore Neelaxmi</a></div></details>
-<details><summary>Diwali VFX Project</summary><div>An interactive festive visual-effects page.<br><a href="http://diwalisak.netlify.app/" target="_blank" rel="noopener">Check it out</a></div></details></div>
+<details><summary>Diwali VFX Project</summary><div>An interactive festive visual-effects page.<br><a href="https://diwalisak.netlify.app/" target="_blank" rel="noopener">Check it out</a></div></details></div>
 <div><h3><i class="fa-solid fa-robot"></i> Telegram bots &amp; info</h3>
 <details><summary>Main Bot (Saksen)</summary><div>Your central helper hub on Telegram.<br><a href="https://telegram.me/saksen_main_bot" target="_blank" rel="noopener">Launch bot</a></div></details>
 <details><summary>Lecture Extractor</summary><div>Extract and organise video lectures.<br><a href="#contact">Request access</a></div></details>
@@ -263,9 +263,7 @@ section{padding:60px 0}.founder{flex-direction:column;text-align:center}form{gri
 </div>
 <p style="text-align:center;margin-top:28px"><button class="btn btn-o" id="moreBtn" aria-expanded="false" aria-controls="more">Load more material</button></p>
 </div></section>
-<a href="https://median.dev/download-functions/">
-  Test Median Download
-</a>
+
 <section id="upcoming"><div class="wrap">
 <div class="head"><h2>What we're building next</h2><p style="color:#c7cae8">Nothing here is set in stone. Tell us what matters most through Contact.</p></div>
 <div class="road">
@@ -338,7 +336,7 @@ section{padding:60px 0}.founder{flex-direction:column;text-align:center}form{gri
     <h2 style="font-family:'Bricolage Grotesque',sans-serif;color:#1e1b4b;font-size:1.35rem;margin-bottom:10px">Neelaxmi has a new version!</h2>
     <p id="upd-msg" style="color:#5d6177;font-size:.93rem;line-height:1.55;margin-bottom:22px"></p>
     <a id="upd-btn" href="#" onclick="handleApkInstall(event)" style="display:flex;align-items:center;justify-content:center;gap:.5rem;background:linear-gradient(135deg,#ea580c,#f97316);color:#fff;font-weight:800;padding:14px 20px;border-radius:13px;text-decoration:none;font-size:1rem;box-shadow:0 8px 20px rgba(234,88,12,.35);margin-bottom:10px">
-      <i class="fa-solid fa-download"></i> Download &amp; Install Update
+      <i class="fa-solid fa-download"></i> Download Update
     </a>
     <button id="upd-later" style="background:none;border:none;color:#9ca3af;font-size:.85rem;cursor:pointer;padding:6px 12px;font-family:inherit">Remind me later</button>
     <p style="margin-top:14px;font-size:.75rem;color:#c7cae8;border-top:1px solid #f0f0f0;padding-top:12px">Same app — just install over existing one. No data lost.</p>
@@ -351,42 +349,54 @@ section{padding:60px 0}.founder{flex-direction:column;text-align:center}form{gri
 <script>
 const $=(s,c=document)=>c.querySelector(s),$$=(s,c=document)=>[...c.querySelectorAll(s)];
 
-// APK Install Handler
+// APK Update Download Handler (temporary manual-install flow)
 async function handleApkInstall(e) {
   e.preventDefault();
 
   const apkUrl = "https://neelaxmi.vercel.app/apks/neelaxmi.apk";
+  const button = document.getElementById("upd-btn");
+  const originalLabel = button ? button.innerHTML : "";
 
-  // Check Median bridge
-  if (!window.median) {
-    alert("Median Bridge not detected!");
-    console.error("Median object missing");
-    return;
-  }
-
-  if (!window.median.share?.downloadFile) {
-    alert("Median downloadFile API not available!");
-    console.error("Download API missing", window.median);
+  if (!window.median?.share?.downloadFile) {
+    alert("Neelaxmi app bridge nahi mila. Kripya update app ke andar se hi download karein.");
+    console.error("Median downloadFile API unavailable", window.median);
     return;
   }
 
   try {
-    console.log("Starting native APK download...");
+    if (button) {
+      button.style.pointerEvents = "none";
+      button.style.opacity = "0.7";
+      button.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Download starting…';
+    }
 
+    // open:false = download only; user will open the APK manually from Downloads.
     const result = window.median.share.downloadFile({
       url: apkUrl,
-      open: true
+      open: false
     });
 
     if (result && typeof result.then === "function") {
       await result;
     }
 
-    console.log("Median download command executed", result);
+    alert(
+      "APK download request bhej di gayi hai.\n\n" +
+      "Download poora hone tak notification panel mein progress dekhein.\n\n" +
+      "Download complete hone par notification par tap karein. Agar notification na mile, to File Manager / My Files → Downloads → neelaxmi.apk kholkar Install dabayein.\n\n" +
+      "Android security prompt aaye to sirf Neelaxmi APK ke liye Install allow karein."
+    );
 
+    console.log("Median APK download requested", result);
   } catch (error) {
     console.error("APK download error:", error);
-    alert("Download error: " + error.message);
+    alert("APK download start nahi ho paya: " + (error?.message || error));
+  } finally {
+    if (button) {
+      button.innerHTML = originalLabel;
+      button.style.pointerEvents = "";
+      button.style.opacity = "";
+    }
   }
 }
 // ── APK UPDATE CHECK ──────────────────────────────────────────────
@@ -435,9 +445,6 @@ async function handleApkInstall(e) {
             const url = d.apk_url || "/apks/neelaxmi.apk";
             const msg = d.message || "Naya update available! Download karo.";
 
-            // DEBUG — remove after testing
-            alert("Installed: " + installedVersion + "\nLatest: " + latest + "\nNeedsUpdate: " + (compareVersions(installedVersion, latest) < 0));
-
             if(compareVersions(installedVersion, latest) < 0){
               showBanner(msg, url);
             }
@@ -450,8 +457,6 @@ async function handleApkInstall(e) {
 
   // Median callback — ye globally available hona chahiye
   window._medianDeviceCb = function(info){
-    // DEBUG alert
-    alert("Device info callback:\n" + JSON.stringify(info));
     const v = info.appVersion || info.version || info.app_version || null;
     if(v) doCheck(v);
   };
@@ -461,28 +466,24 @@ async function handleApkInstall(e) {
     try{
       // Style 1: median.device.getInfo with callback string
       if(typeof median !== "undefined"){
-        alert("median object mila! Keys: " + Object.keys(median).join(", "));
         if(median.device && median.device.getInfo){
           median.device.getInfo({callback:"_medianDeviceCb"});
         } else if(median.deviceInfo){
           median.deviceInfo({callback:"_medianDeviceCb"});
-        } else {
-          alert("median hai but device method nahi:\n" + JSON.stringify(median));
         }
       }
       // Style 2: gonative (old name of Median)
       else if(typeof gonative !== "undefined"){
-        alert("gonative object mila!");
         if(gonative.device && gonative.device.getInfo){
           gonative.device.getInfo({callback:"_medianDeviceCb"});
         }
       }
       // Style 3: window.location based (last resort)
       else{
-        alert("Na median na gonative mila.\nwindow.location: " + window.location.href + "\nUserAgent: " + navigator.userAgent);
+        console.warn("Median/Gonative bridge unavailable on this page.");
       }
     } catch(e){
-      alert("Error: " + e.message);
+      console.warn("Device info bridge error:", e);
     }
   }, 2500);
 })();
