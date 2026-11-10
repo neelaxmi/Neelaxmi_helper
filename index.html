@@ -407,27 +407,43 @@ const $=(s,c=document)=>c.querySelector(s),$$=(s,c=document)=>[...c.querySelecto
     },300);
   }
 
-  // Try Median JS Bridge first
-  if(typeof median !== "undefined" && median.device && typeof median.device.getInfo === "function"){
-    median.device.getInfo().then(info=>{
-      // DEBUG
-      alert("median.device.getInfo: " + JSON.stringify(info));
-      const v = info.appVersion || info.version || null;
-      if(v) doCheck(v);
-    }).catch(()=>{
-      // Try callback style
-      median.device.getInfo({callback:"window._medianDeviceCb"});
-    });
-  } else if(typeof median !== "undefined" && median.device && typeof median.device.info === "function"){
-    median.device.info().then(info=>{
-      alert("median.device.info: " + JSON.stringify(info));
-      const v = info.appVersion || info.version || null;
-      if(v) doCheck(v);
-    }).catch(e=>console.warn(e));
-  } else {
-    // Not in APK / median not available — skip
-    console.log("[Neelaxmi] Not running in Median APK, skipping update check.");
-  }
+  // Median callback — ye globally available hona chahiye
+  window._medianDeviceCb = function(info){
+    // DEBUG alert
+    alert("Device info callback:\n" + JSON.stringify(info));
+    const v = info.appVersion || info.version || info.app_version || null;
+    if(v) doCheck(v);
+  };
+
+  // Median ke multiple possible bridge styles try karo
+  setTimeout(function(){
+    try{
+      // Style 1: median.device.getInfo with callback string
+      if(typeof median !== "undefined"){
+        alert("median object mila! Keys: " + Object.keys(median).join(", "));
+        if(median.device && median.device.getInfo){
+          median.device.getInfo({callback:"_medianDeviceCb"});
+        } else if(median.deviceInfo){
+          median.deviceInfo({callback:"_medianDeviceCb"});
+        } else {
+          alert("median hai but device method nahi:\n" + JSON.stringify(median));
+        }
+      }
+      // Style 2: gonative (old name of Median)
+      else if(typeof gonative !== "undefined"){
+        alert("gonative object mila!");
+        if(gonative.device && gonative.device.getInfo){
+          gonative.device.getInfo({callback:"_medianDeviceCb"});
+        }
+      }
+      // Style 3: window.location based (last resort)
+      else{
+        alert("Na median na gonative mila.\nwindow.location: " + window.location.href + "\nUserAgent: " + navigator.userAgent);
+      }
+    } catch(e){
+      alert("Error: " + e.message);
+    }
+  }, 2500);
 })();
 // ── END APK UPDATE CHECK ─────────────────────────────────────────
 const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
