@@ -350,63 +350,84 @@ const $=(s,c=document)=>c.querySelector(s),$$=(s,c=document)=>[...c.querySelecto
 
 // ── APK UPDATE CHECK ──────────────────────────────────────────────
 (function(){
-  // DEBUG — remove after testing
-  setTimeout(()=>{
-    alert("median_app_version: " + window.median_app_version
-        + "\nmedian?.app?.version: " + window.median?.app?.version
-        + "\nmedian_device_info: " + JSON.stringify(window.median_device_info));
-  }, 2000);
+  function showBanner(msg, url){
+    const snooze = parseInt(localStorage.getItem("upd_snooze")||"0",10);
+    if(Date.now() < snooze) return; // snoozed
 
-  // Median injects window.median_app_version in the WebView
-  // If running in browser (not APK), skip entirely
-  const rawV = window.median_app_version
-             ?? window.median?.app?.version
-             ?? window.median_device_info?.appVersion
-             ?? null;
+    const overlay = document.getElementById("upd-overlay");
+    document.getElementById("upd-msg").textContent = msg;
+    document.getElementById("upd-btn").href = url;
+    overlay.hidden = false;
+    overlay.style.display = "flex";
 
-  if(rawV === null) return; // browser — skip
-
-  const installedV = parseInt(rawV, 10) || 1;
-
-  // Show banner after Firebase initialises (slight delay)
-  function doCheck(){
-    if(!window.firebase || !firebase.apps.length) return;
-    firebase.firestore()
-      .collection("app_config").doc("version").get()
-      .then(doc=>{
-        if(!doc.exists) return;
-        const d = doc.data();
-        const latest = parseInt(d.latest_apk || "1", 10);
-        if(installedV >= latest) return; // already up to date
-
-        const overlay = document.getElementById("upd-overlay");
-        document.getElementById("upd-msg").textContent =
-          d.message || "A new version is ready. Install it over the existing app — no data will be lost.";
-        document.getElementById("upd-btn").href = d.apk_url || "/apks/neelaxmi.apk";
-        overlay.hidden = false;
-        overlay.style.display = "flex";
-
-        document.getElementById("upd-later").onclick = ()=>{
-          overlay.hidden = true;
-          overlay.style.display = "none";
-          // Remind again in 2 days
-          localStorage.setItem("upd_snooze", Date.now() + 2*24*60*60*1000);
-        };
-
-        // Respect snooze
-        const snooze = parseInt(localStorage.getItem("upd_snooze") || "0", 10);
-        if(Date.now() < snooze){ overlay.hidden=true; overlay.style.display="none"; }
-      })
-      .catch(e=>console.warn("[Neelaxmi] Update check failed:", e));
+    document.getElementById("upd-later").onclick = ()=>{
+      overlay.hidden = true;
+      overlay.style.display = "none";
+      localStorage.setItem("upd_snooze", Date.now() + 2*24*60*60*1000);
+    };
   }
 
-  // Wait for Firebase db to be ready, then check
-  let tries=0;
-  const wait=setInterval(()=>{
-    tries++;
-    if(db){clearInterval(wait);doCheck();}
-    if(tries>20)clearInterval(wait); // give up after 6s
-  },300);
+  function compareVersions(v1, v2){
+    // "1.0.0.0" vs "2.1.0.0"
+    const a = v1.split(".").map(Number);
+    const b = v2.split(".").map(Number);
+    for(let i=0;i<Math.max(a.length,b.length);i++){
+      const x = a[i]||0, y = b[i]||0;
+      if(x < y) return -1;
+      if(x > y) return 1;
+    }
+    return 0;
+  }
+
+  function doCheck(installedVersion){
+    // Wait for db
+    let tries=0;
+    const wait=setInterval(()=>{
+      tries++;
+      if(db){
+        clearInterval(wait);
+        db.collection("app_config").doc("version").get()
+          .then(doc=>{
+            if(!doc.exists) return;
+            const d = doc.data();
+            const latest = d.latest_apk || "1.0.0.0";
+            const url = d.apk_url || "/apks/neelaxmi.apk";
+            const msg = d.message || "Naya update available! Download karo.";
+
+            // DEBUG — remove after testing
+            alert("Installed: " + installedVersion + "\nLatest: " + latest + "\nNeedsUpdate: " + (compareVersions(installedVersion, latest) < 0));
+
+            if(compareVersions(installedVersion, latest) < 0){
+              showBanner(msg, url);
+            }
+          })
+          .catch(e=>console.warn("[Update]",e));
+      }
+      if(tries>20) clearInterval(wait);
+    },300);
+  }
+
+  // Try Median JS Bridge first
+  if(typeof median !== "undefined" && median.device && typeof median.device.getInfo === "function"){
+    median.device.getInfo().then(info=>{
+      // DEBUG
+      alert("median.device.getInfo: " + JSON.stringify(info));
+      const v = info.appVersion || info.version || null;
+      if(v) doCheck(v);
+    }).catch(()=>{
+      // Try callback style
+      median.device.getInfo({callback:"window._medianDeviceCb"});
+    });
+  } else if(typeof median !== "undefined" && median.device && typeof median.device.info === "function"){
+    median.device.info().then(info=>{
+      alert("median.device.info: " + JSON.stringify(info));
+      const v = info.appVersion || info.version || null;
+      if(v) doCheck(v);
+    }).catch(e=>console.warn(e));
+  } else {
+    // Not in APK / median not available — skip
+    console.log("[Neelaxmi] Not running in Median APK, skipping update check.");
+  }
 })();
 // ── END APK UPDATE CHECK ─────────────────────────────────────────
 const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
