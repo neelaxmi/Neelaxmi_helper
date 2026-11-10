@@ -349,7 +349,7 @@ section{padding:60px 0}.founder{flex-direction:column;text-align:center}form{gri
 <script>
 const $=(s,c=document)=>c.querySelector(s),$$=(s,c=document)=>[...c.querySelectorAll(s)];
 
-// APK Update Download Handler (temporary manual-install flow)
+// APK Update Download Handler (open Android installer after download)
 async function handleApkInstall(e) {
   e.preventDefault();
 
@@ -367,25 +367,20 @@ async function handleApkInstall(e) {
     if (button) {
       button.style.pointerEvents = "none";
       button.style.opacity = "0.7";
-      button.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Download starting…';
+      button.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Downloading update…';
     }
 
-    // open:false = download only; user will open the APK manually from Downloads.
+    // open:true asks Median to open the downloaded APK when the download completes.
     const result = window.median.share.downloadFile({
       url: apkUrl,
-      open: false
+      open: true
     });
 
     if (result && typeof result.then === "function") {
       await result;
     }
 
-    alert(
-      "APK download request bhej di gayi hai.\n\n" +
-      "Download poora hone tak notification panel mein progress dekhein.\n\n" +
-      "Download complete hone par notification par tap karein. Agar notification na mile, to File Manager / My Files → Downloads → neelaxmi.apk kholkar Install dabayein.\n\n" +
-      "Android security prompt aaye to sirf Neelaxmi APK ke liye Install allow karein."
-    );
+    // Median handles opening the APK after download when supported by the app configuration.
 
     console.log("Median APK download requested", result);
   } catch (error) {
