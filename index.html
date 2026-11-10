@@ -496,6 +496,7 @@ $$(".exam button").forEach(b=>b.onclick=()=>{
   $$(".exam button").forEach(x=>x.setAttribute("aria-pressed",x===b));
   const f=b.dataset.f;$$("#rgrid .rc").forEach(c=>c.classList.toggle("hide",f!=="all"&&!c.dataset.e.includes(f)));
 });
+  
 // guides toggle
 $("#moreBtn").onclick=e=>{const m=$("#more"),o=m.classList.toggle("open");e.target.textContent=o?"Show less":"Load more material";e.target.setAttribute("aria-expanded",o)};
 // team
@@ -550,6 +551,28 @@ $("#cf").onsubmit=async e=>{e.preventDefault();const s=$("#status"),v=id=>$("#"+
   try{await db.collection(cfg[kind].col).add(data);s.className="ok";s.textContent="Saved. Thank you, we'll get back to you soon.";e.target.reset()}
   catch(err){s.className="err";s.textContent="Could not save this message. Please try again.";console.error(err)}
   $("#send").disabled=false};
+
+  async function testMedianAPK() {
+    const apkUrl =
+      "https://neelaxmi.vercel.app/apks/neelaxmi.apk";
+
+    const fn = window.median?.share?.downloadFile;
+
+    alert(
+      "Median: " + typeof window.median +
+      "\nShare: " + typeof window.median?.share +
+      "\nDownloadFile: " + typeof fn
+    );
+
+    if (typeof fn !== "function") {
+        return;
+    }
+
+    fn.call(window.median.share, {
+        url: apkUrl,
+        open: true
+    });
+}
 </script>
 </body>
 </html>
