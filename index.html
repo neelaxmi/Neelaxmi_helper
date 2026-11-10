@@ -350,6 +350,13 @@ const $=(s,c=document)=>c.querySelector(s),$$=(s,c=document)=>[...c.querySelecto
 
 // ── APK UPDATE CHECK ──────────────────────────────────────────────
 (function(){
+  // DEBUG — remove after testing
+  setTimeout(()=>{
+    alert("median_app_version: " + window.median_app_version
+        + "\nmedian?.app?.version: " + window.median?.app?.version
+        + "\nmedian_device_info: " + JSON.stringify(window.median_device_info));
+  }, 2000);
+
   // Median injects window.median_app_version in the WebView
   // If running in browser (not APK), skip entirely
   const rawV = window.median_app_version
@@ -393,8 +400,13 @@ const $=(s,c=document)=>c.querySelector(s),$$=(s,c=document)=>[...c.querySelecto
       .catch(e=>console.warn("[Neelaxmi] Update check failed:", e));
   }
 
-  // Wait 3s for Firebase to initialise, then check
-  setTimeout(doCheck, 3000);
+  // Wait for Firebase db to be ready, then check
+  let tries=0;
+  const wait=setInterval(()=>{
+    tries++;
+    if(db){clearInterval(wait);doCheck();}
+    if(tries>20)clearInterval(wait); // give up after 6s
+  },300);
 })();
 // ── END APK UPDATE CHECK ─────────────────────────────────────────
 const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -431,11 +443,29 @@ $$(".tabs button").forEach(t=>t.onclick=()=>{kind=t.dataset.k;
   $$("#cf [data-k]").forEach(el=>el.hidden=el.dataset.k!==kind);
   $("#msgL").textContent=cfg[kind].msg;$("#send").textContent=cfg[kind].btn;$("#status").textContent="";});
 let db=null;
-try{firebase.initializeApp({apiKey:"AIzaSyChDQfgKaT2a_7m12SYeHumkdSw7uR2TBU",authDomain:"neelaxmi-helper.firebaseapp.com",projectId:"neelaxmi-helper",storageBucket:"neelaxmi-helper.firebasestorage.app",messagingSenderId:"372413252551",appId:"1:372413252551:web:c21f3addf4955cbcfa4fe2"});db=firebase.firestore()}catch(e){console.warn(e)}
+function initFirebase(){
+  try{
+    if(typeof firebase==="undefined") return false;
+    if(!firebase.apps.length){
+      firebase.initializeApp({
+        apiKey:"AIzaSyChDQfgKaT2a_7m12SYeHumkdSw7uR2TBU",
+        authDomain:"neelaxmi-helper.firebaseapp.com",
+        projectId:"neelaxmi-helper",
+        storageBucket:"neelaxmi-helper.firebasestorage.app",
+        messagingSenderId:"372413252551",
+        appId:"1:372413252551:web:c21f3addf4955cbcfa4fe2"
+      });
+    }
+    db=firebase.firestore();
+    return true;
+  }catch(e){console.warn("[Firebase]",e);return false;}
+}
+// Keep trying until Firebase script loads
+const fbInterval=setInterval(()=>{if(initFirebase())clearInterval(fbInterval);},300);
 $("#cf").onsubmit=async e=>{e.preventDefault();const s=$("#status"),v=id=>$("#"+id).value.trim();
   const need=["f_name","f_email","f_msg"].concat(kind==="join"?["f_tg"]:kind==="issue"?["f_type"]:["f_class"]);
   if(need.some(i=>!v(i))||(kind==="join"&&!$("#f_ok").checked)){s.className="err";s.textContent="Please fill the required fields"+(kind==="join"?" and accept consent.":".");return}
-  if(!db){s.className="err";s.textContent="Form service unavailable. Your message was not sent.";return}
+  if(!db){s.className="err";s.textContent="Form service load nahi hua. Thoda wait karo aur dobara try karo.";return}
   const base={name:v("f_name"),email:v("f_email"),submittedAt:new Date().toISOString()};
   const data=kind==="feedback"?{...base,studentClass:v("f_class"),timeUsingWebsite:v("f_dur"),message:v("f_msg")}
    :kind==="join"?{...base,telegramId:v("f_tg"),whyJoin:v("f_msg"),howCanHelp:v("f_help"),consent:$("#f_ok").checked,socialPromoLinks:v("f_links")}
