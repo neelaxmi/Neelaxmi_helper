@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en-IN">
 <head>
@@ -349,41 +350,43 @@ section{padding:60px 0}.founder{flex-direction:column;text-align:center}form{gri
 const $=(s,c=document)=>c.querySelector(s),$$=(s,c=document)=>[...c.querySelectorAll(s)];
 
 // APK Install Handler
-function handleApkInstall(e){
+async function handleApkInstall(e) {
   e.preventDefault();
-  const apkUrl = e.currentTarget.href !== "#" ? e.currentTarget.href : "/apks/neelaxmi.apk";
-  const fullUrl = apkUrl.startsWith("http") ? apkUrl : "https://neelaxmi.vercel.app" + apkUrl;
 
-  // Step 1: Try Median's built-in download + install
-  try{
-    if(typeof median !== "undefined" && median.share && median.share.downloadFile){
-      median.share.downloadFile({
-        url: fullUrl,
-        open: true
-      });
-      return;
+  const apkUrl = "https://neelaxmi.vercel.app/apks/neelaxmi.apk";
+
+  // Check Median bridge
+  if (!window.median) {
+    alert("Median Bridge not detected!");
+    console.error("Median object missing");
+    return;
+  }
+
+  if (!window.median.share?.downloadFile) {
+    alert("Median downloadFile API not available!");
+    console.error("Download API missing", window.median);
+    return;
+  }
+
+  try {
+    console.log("Starting native APK download...");
+
+    const result = window.median.share.downloadFile({
+      url: apkUrl,
+      open: true
+    });
+
+    if (result && typeof result.then === "function") {
+      await result;
     }
-  }catch(err){console.warn(err);}
 
-  // Step 2: Try gonative download
-  try{
-    if(typeof gonative !== "undefined" && gonative.share && gonative.share.downloadFile){
-      gonative.share.downloadFile({
-        url: fullUrl,
-        open: true
-      });
-      return;
-    }
-  }catch(err){console.warn(err);}
+    console.log("Median download command executed", result);
 
-  // Step 3: Fallback — direct download
-  // Vercel pe download hogi, Android install prompt aayega
-  const a = document.createElement("a");
-  a.href = fullUrl;
-  a.download = "neelaxmi-update.apk";
-  a.click();
+  } catch (error) {
+    console.error("APK download error:", error);
+    alert("Download error: " + error.message);
+  }
 }
-
 // ── APK UPDATE CHECK ──────────────────────────────────────────────
 (function(){
   function showBanner(msg, url){
