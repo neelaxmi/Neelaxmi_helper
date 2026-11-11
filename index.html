@@ -133,8 +133,16 @@ details div{padding:0 18px 18px;font-size:.93rem;color:var(--muted)}details div 
 .tm h3{font-size:1.1rem}.tm p{color:var(--muted);font-size:.88rem}
 .founder{display:flex;gap:28px;align-items:center;background:#fff;border:2px solid var(--ink);border-radius:24px;padding:28px;margin-top:28px;box-shadow:8px 8px 0 var(--hl-2)}
 .founder img{width:150px;height:150px;border-radius:20px;object-fit:cover;flex-shrink:0}.founder h3{font-size:1.6rem}.founder p{color:var(--muted);margin:8px 0 14px}
-dialog{border:2px solid var(--ink);border-radius:22px;padding:28px;width:min(420px,92vw);text-align:center}dialog::backdrop{background:rgba(30,27,75,.55)}
-dialog img{width:120px;height:120px;border-radius:50%;object-fit:cover;margin:0 auto 12px}dialog button{margin-top:16px}
+/* TEAM DIALOG (fixed: centered, scroll-safe, clean layout) */
+dialog{margin:auto;position:fixed;inset:0;border:2px solid var(--ink);border-radius:22px;padding:30px 24px 24px;width:min(380px,calc(100vw - 2rem));max-height:calc(100dvh - 2rem);overflow-y:auto;text-align:center;background:#fff;color:var(--text);box-shadow:10px 10px 0 var(--hl-2)}
+dialog[open]{animation:dlgpop .22s ease}
+dialog::backdrop{background:rgba(30,27,75,.6);backdrop-filter:blur(3px)}
+dialog img{display:block;width:120px;height:120px;border-radius:50%;object-fit:cover;margin:0 auto 14px;border:4px solid var(--indigo-2);background:var(--indigo-2)}
+dialog h3{font-size:1.45rem;overflow-wrap:anywhere}
+dialog #dr{color:var(--indigo)!important;font-weight:700;margin-top:4px}
+dialog #dd{color:var(--muted);margin-top:6px}
+dialog button{margin-top:20px;width:100%;justify-content:center}
+@keyframes dlgpop{from{opacity:0;transform:scale(.93)}to{opacity:1;transform:none}}
 /* CONTACT */
 #contact{background:var(--indigo-2)}
 .cbox{background:#fff;border:2px solid var(--ink);border-radius:24px;padding:30px;max-width:760px;margin-inline:auto;box-shadow:8px 8px 0 var(--hl-2)}
@@ -161,6 +169,29 @@ footer{background:var(--ink);color:#c7cae8;padding:60px 0 28px;font-size:.92rem}
 footer h3{color:#fff;font-size:1rem;margin-bottom:12px}footer li{list-style:none;margin-bottom:8px}footer ul{padding:0}footer a:hover{color:#fdba74}
 .so{display:flex;gap:10px;margin-top:14px}.so a{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.1)}
 .copy{padding-top:22px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;font-size:.82rem}
+/* APK UPDATE POPUP */
+.upd-overlay{position:fixed;inset:0;z-index:9999;background:rgba(15,12,41,.85);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:16px;overflow-y:auto}
+.upd-card{background:#fff;border-radius:24px;padding:26px 22px 20px;max-width:380px;width:100%;max-height:calc(100dvh - 32px);overflow-y:auto;text-align:center;box-shadow:0 24px 64px rgba(0,0,0,.45)}
+.upd-emoji{font-size:2.6rem;line-height:1;margin-bottom:6px}
+.upd-tag{font-size:.72rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--hl);margin-bottom:6px}
+.upd-card h2{font-size:1.35rem;margin-bottom:8px}
+#upd-msg{color:var(--muted);font-size:.93rem;line-height:1.5;margin-bottom:12px}
+.upd-ver{display:flex;align-items:center;justify-content:center;gap:10px;font-size:.82rem;color:var(--muted);background:var(--indigo-2);border-radius:12px;padding:8px 12px;margin-bottom:16px}
+.upd-ver b{color:var(--ink)}.upd-ver .new b{color:var(--ok)}
+.upd-dl{display:flex;align-items:center;justify-content:center;gap:.5rem;width:100%;background:linear-gradient(135deg,#ea580c,#f97316);color:#fff;font-weight:800;padding:14px 20px;border-radius:14px;font-size:1rem;box-shadow:0 8px 20px rgba(234,88,12,.35);border:0;cursor:pointer;font-family:inherit}
+.upd-dl:active{transform:scale(.98)}
+.upd-done{margin-top:12px;background:#ecfdf5;border:1.5px solid #6ee7b7;color:#065f46;border-radius:12px;padding:10px 12px;font-size:.86rem;font-weight:700;line-height:1.45;text-align:left}
+.upd-guide{margin-top:16px;text-align:left}
+.upd-guide h3{font-size:.95rem;margin-bottom:10px;display:flex;align-items:center;gap:.4rem}
+.upd-steps{list-style:none;padding:0;display:flex;flex-direction:column;gap:8px}
+.upd-steps li{display:flex;gap:11px;align-items:flex-start;padding:10px 11px;border:1.5px solid var(--line);border-radius:12px;background:var(--paper);font-size:.86rem;line-height:1.45;color:var(--text);transition:.25s}
+.upd-steps li .n{flex:0 0 26px;height:26px;border-radius:50%;background:var(--indigo);color:#fff;font:800 .85rem 'Bricolage Grotesque';display:grid;place-items:center;margin-top:1px}
+.upd-steps li b{color:var(--ink)}
+.upd-steps li small{display:block;color:var(--muted);font-size:.77rem;margin-top:2px}
+.upd-steps li.on{border-color:var(--hl);background:#fff7ed;box-shadow:0 0 0 3px rgba(234,88,12,.12)}
+.upd-steps li.on .n{background:var(--hl)}
+.upd-safe{margin-top:12px;font-size:.8rem;color:var(--muted);text-align:center}
+.upd-later{background:none;border:0;color:#6b7280;font-size:.86rem;cursor:pointer;padding:10px 12px;margin-top:6px;font-family:inherit;text-decoration:underline}
 @media(max-width:900px){.hero .wrap,#how .wrap,.eco,.fg{grid-template-columns:1fr}.tl{grid-template-columns:1fr 1fr}.tl:before{display:none}
 .links{display:none;position:absolute;top:68px;left:0;right:0;background:var(--paper);flex-direction:column;padding:12px 20px;border-bottom:1px solid var(--line);gap:0}.links.open{display:flex}.links a{padding:.9rem 0}.menu{display:block}
 section{padding:60px 0}.founder{flex-direction:column;text-align:center}form{grid-template-columns:1fr}}
@@ -325,77 +356,93 @@ section{padding:60px 0}.founder{flex-direction:column;text-align:center}form{gri
 <div class="copy"><p>&copy; <span id="yr">2026</span> Neelaxmi The Helper. All rights reserved.</p><p>Made for NEET &amp; JEE aspirants across India 🇮🇳</p></div>
 </div></footer>
 
-<dialog id="dlg" aria-labelledby="dn"><img id="dp" alt="" width="120" height="120"><h3 id="dn"></h3><p id="dr" style="color:var(--muted)"></p><p id="dd" style="font-size:.9rem;margin-top:8px"></p><button class="btn btn-p" id="dc">Close</button></dialog>
+<dialog id="dlg" aria-labelledby="dn"><img id="dp" alt="" width="120" height="120"><h3 id="dn"></h3><p id="dr"></p><p id="dd"></p><button class="btn btn-p" id="dc">Close</button></dialog>
 
-<!-- ===== APK UPDATE BANNER ===== -->
-<div id="upd-overlay" hidden style="position:fixed;inset:0;z-index:9999;background:rgba(15,12,41,.82);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:20px">
-  <div style="background:#fff;border-radius:22px;padding:30px 24px;max-width:340px;width:100%;text-align:center;box-shadow:0 24px 64px rgba(0,0,0,.45)">
-    <div style="font-size:2.8rem;margin-bottom:4px">🚀</div>
-    <p style="font-size:.72rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#ea580c;margin-bottom:6px">Update Available</p>
-    <h2 style="font-family:'Bricolage Grotesque',sans-serif;color:#1e1b4b;font-size:1.35rem;margin-bottom:10px">Neelaxmi has a new version!</h2>
-    <p id="upd-msg" style="color:#5d6177;font-size:.93rem;line-height:1.55;margin-bottom:22px"></p>
-    <a id="upd-btn" href="#" onclick="handleApkInstall(event)" style="display:flex;align-items:center;justify-content:center;gap:.5rem;background:linear-gradient(135deg,#ea580c,#f97316);color:#fff;font-weight:800;padding:14px 20px;border-radius:13px;text-decoration:none;font-size:1rem;box-shadow:0 8px 20px rgba(234,88,12,.35);margin-bottom:10px">
-      <i class="fa-solid fa-download"></i> Download &amp; Install Update
-    </a>
-    <button id="upd-later" style="background:none;border:none;color:#9ca3af;font-size:.85rem;cursor:pointer;padding:6px 12px;font-family:inherit">Remind me later</button>
-    <div style="margin-top:14px;font-size:.8rem;color:#6b7280;border-top:1px solid #f0f0f0;padding-top:12px;text-align:left;line-height:1.6">
-      <b style="color:#1e1b4b">Install kaise karein:</b><br>
-      1️⃣ "Download" tap karo<br>
-      2️⃣ Notification bar neeche kholo<br>
-      3️⃣ "neelaxmi.apk" pe tap karo<br>
-      4️⃣ Install tap karo → Done! ✅<br>
-      <span style="color:#9ca3af;font-size:.75rem">Same app hai — data safe rahega</span>
+<!-- ===== APK UPDATE POPUP ===== -->
+<div id="upd-overlay" class="upd-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="upd-title">
+  <div class="upd-card">
+    <div class="upd-emoji">🚀</div>
+    <p class="upd-tag">Update Available</p>
+    <h2 id="upd-title">Neelaxmi ka naya version aa gaya!</h2>
+    <p id="upd-msg"></p>
+    <div class="upd-ver" id="upd-ver" hidden>
+      <span>Aapka: <b id="upd-cur"></b></span>
+      <i class="fa-solid fa-arrow-right"></i>
+      <span class="new">Naya: <b id="upd-new"></b></span>
     </div>
+
+    <button type="button" id="upd-btn" class="upd-dl"><i class="fa-solid fa-download"></i> Download &amp; Install Update</button>
+    <p class="upd-done" id="upd-done" hidden>✅ Download shuru ho gaya! Ab neeche Step 2 follow karo: notification bar kholo aur downloaded file pe tap karo.</p>
+
+    <div class="upd-guide">
+      <h3><i class="fa-solid fa-list-check" style="color:var(--hl)"></i> Install kaise karein? (4 easy steps)</h3>
+      <ol class="upd-steps" id="upd-steps">
+        <li data-s="1"><span class="n">1</span><div><b>"Download &amp; Install Update" dabao</b><small>Upar wala orange button. Download apne aap shuru ho jayega.</small></div></li>
+        <li data-s="2"><span class="n">2</span><div><b>Notification bar neeche kheencho</b><small>Wahan <b>neelaxmi.apk</b> "Download complete" dikhega. Na dikhe to <b>Files → Downloads</b> me dekho.</small></div></li>
+        <li data-s="3"><span class="n">3</span><div><b>neelaxmi.apk pe tap karo</b><small>Agar phone "Install unknown apps" poochhe to <b>Settings</b> dabao, <b>Allow from this source</b> ON karo, phir back aao.</small></div></li>
+        <li data-s="4"><span class="n">4</span><div><b>"Install" / "Update" dabao → Done! ✅</b><small>Install hone ke baad <b>Open</b> dabao aur naya Neelaxmi use karo.</small></div></li>
+      </ol>
+    </div>
+    <p class="upd-safe"><i class="fa-solid fa-shield-halved" style="color:var(--ok)"></i> Same app hai, aapka data safe rahega.</p>
+    <button type="button" id="upd-later" class="upd-later">Baad me yaad dilana</button>
   </div>
 </div>
-<!-- ===== END UPDATE BANNER ===== -->
+<!-- ===== END UPDATE POPUP ===== -->
 
 <script src="https://www.gstatic.com/firebasejs/12.15.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore-compat.js"></script>
 <script>
 const $=(s,c=document)=>c.querySelector(s),$$=(s,c=document)=>[...c.querySelectorAll(s)];
 
-// APK Install Handler - simplest approach
-function handleApkInstall(e){
-  e.preventDefault();
-  const fullUrl = "https://neelaxmi.vercel.app/apks/neelaxmi.apk";
-  // Seedha href change karo - sabse simple aur reliable
-  window.location.href = fullUrl;
-}
-
 // ── APK UPDATE CHECK ──────────────────────────────────────────────
 (function(){
-  function showBanner(msg, url){
-    const snooze = parseInt(localStorage.getItem("upd_snooze")||"0",10);
-    if(Date.now() < snooze) return; // snoozed
+  const overlay=document.getElementById("upd-overlay");
+  const btn=document.getElementById("upd-btn");
+  let apkUrl="/apks/neelaxmi.apk";
 
-    const overlay = document.getElementById("upd-overlay");
-    document.getElementById("upd-msg").textContent = msg;
-    document.getElementById("upd-btn").href = url;
-    overlay.hidden = false;
-    overlay.style.display = "flex";
-
-    document.getElementById("upd-later").onclick = ()=>{
-      overlay.hidden = true;
-      overlay.style.display = "none";
-      localStorage.setItem("upd_snooze", Date.now() + 2*24*60*60*1000);
-    };
+  function highlightStep(n){
+    document.querySelectorAll("#upd-steps li").forEach(li=>li.classList.toggle("on",li.dataset.s===String(n)));
   }
 
-  function compareVersions(v1, v2){
-    // "1.0.0.0" vs "2.1.0.0"
-    const a = v1.split(".").map(Number);
-    const b = v2.split(".").map(Number);
+  function showBanner(msg,url,cur,latest){
+    const snooze=parseInt(localStorage.getItem("upd_snooze")||"0",10);
+    if(Date.now()<snooze) return; // snoozed
+    try{apkUrl=new URL(url,location.href).href}catch(e){apkUrl="https://neelaxmi.vercel.app/apks/neelaxmi.apk"}
+    document.getElementById("upd-msg").textContent=msg;
+    if(cur&&latest){
+      document.getElementById("upd-cur").textContent=cur;
+      document.getElementById("upd-new").textContent=latest;
+      document.getElementById("upd-ver").hidden=false;
+    }
+    highlightStep(1);
+    overlay.hidden=false;
+  }
+
+  btn.onclick=function(){
+    // download shuru karo
+    window.location.href=apkUrl;
+    document.getElementById("upd-done").hidden=false;
+    btn.innerHTML='<i class="fa-solid fa-rotate-right"></i> Dobara download karo';
+    highlightStep(2);
+    document.getElementById("upd-steps").scrollIntoView({behavior:"smooth",block:"nearest"});
+  };
+
+  document.getElementById("upd-later").onclick=function(){
+    overlay.hidden=true;
+    localStorage.setItem("upd_snooze",String(Date.now()+2*24*60*60*1000));
+  };
+
+  function compareVersions(v1,v2){
+    const a=String(v1).split(".").map(Number),b=String(v2).split(".").map(Number);
     for(let i=0;i<Math.max(a.length,b.length);i++){
-      const x = a[i]||0, y = b[i]||0;
-      if(x < y) return -1;
-      if(x > y) return 1;
+      const x=a[i]||0,y=b[i]||0;
+      if(x<y) return -1;
+      if(x>y) return 1;
     }
     return 0;
   }
 
   function doCheck(installedVersion){
-    // Wait for db
     let tries=0;
     const wait=setInterval(()=>{
       tries++;
@@ -404,16 +451,12 @@ function handleApkInstall(e){
         db.collection("app_config").doc("version").get()
           .then(doc=>{
             if(!doc.exists) return;
-            const d = doc.data();
-            const latest = d.latest_apk || "1.0.0.0";
-            const url = d.apk_url || "/apks/neelaxmi.apk";
-            const msg = d.message || "Naya update available! Download karo.";
-
-            // DEBUG — remove after testing
-            alert("Installed: " + installedVersion + "\nLatest: " + latest + "\nNeedsUpdate: " + (compareVersions(installedVersion, latest) < 0));
-
-            if(compareVersions(installedVersion, latest) < 0){
-              showBanner(msg, url);
+            const d=doc.data();
+            const latest=d.latest_apk||"1.0.0.0";
+            const url=d.apk_url||"/apks/neelaxmi.apk";
+            const msg=d.message||"Naya update available hai. Download karke install karo.";
+            if(compareVersions(installedVersion,latest)<0){
+              showBanner(msg,url,installedVersion,latest);
             }
           })
           .catch(e=>console.warn("[Update]",e));
@@ -422,43 +465,27 @@ function handleApkInstall(e){
     },300);
   }
 
-  // Median callback — ye globally available hona chahiye
-  window._medianDeviceCb = function(info){
-    // DEBUG alert
-    alert("Device info callback:\n" + JSON.stringify(info));
-    const v = info.appVersion || info.version || info.app_version || null;
+  // Median callback — globally available hona chahiye
+  window._medianDeviceCb=function(info){
+    const v=info&&(info.appVersion||info.version||info.app_version);
     if(v) doCheck(v);
   };
 
-  // Median ke multiple possible bridge styles try karo
   setTimeout(function(){
     try{
-      // Style 1: median.device.getInfo with callback string
-      if(typeof median !== "undefined"){
-        alert("median object mila! Keys: " + Object.keys(median).join(", "));
-        if(median.device && median.device.getInfo){
+      if(typeof median!=="undefined"){
+        if(median.device&&median.device.getInfo){
           median.device.getInfo({callback:"_medianDeviceCb"});
-        } else if(median.deviceInfo){
+        }else if(median.deviceInfo){
           median.deviceInfo({callback:"_medianDeviceCb"});
-        } else {
-          alert("median hai but device method nahi:\n" + JSON.stringify(median));
         }
-      }
-      // Style 2: gonative (old name of Median)
-      else if(typeof gonative !== "undefined"){
-        alert("gonative object mila!");
-        if(gonative.device && gonative.device.getInfo){
+      }else if(typeof gonative!=="undefined"){
+        if(gonative.device&&gonative.device.getInfo){
           gonative.device.getInfo({callback:"_medianDeviceCb"});
         }
       }
-      // Style 3: window.location based (last resort)
-      else{
-        alert("Na median na gonative mila.\nwindow.location: " + window.location.href + "\nUserAgent: " + navigator.userAgent);
-      }
-    } catch(e){
-      alert("Error: " + e.message);
-    }
-  }, 2500);
+    }catch(e){console.warn("[Update]",e)}
+  },2500);
 })();
 // ── END APK UPDATE CHECK ─────────────────────────────────────────
 const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -483,6 +510,11 @@ const team=[
 $("#teamGrid").innerHTML=team.map((m,i)=>`<button class="tm" data-i="${i}" aria-haspopup="dialog"><img src="${m.p}" alt="" loading="lazy"><h3>${esc(m.n)}</h3><p>${esc(m.r)}</p></button>`).join("");
 $$(".tm").forEach(b=>b.onclick=()=>{const m=team[b.dataset.i];$("#dp").src=m.p;$("#dn").textContent=m.n;$("#dr").textContent=m.r;$("#dd").textContent=`${m.q} · Age ${m.a}`;$("#dlg").showModal()});
 $("#dc").onclick=()=>$("#dlg").close();
+// backdrop pe click karne se dialog band ho
+$("#dlg").addEventListener("click",e=>{
+  const r=e.currentTarget.getBoundingClientRect();
+  if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom) e.currentTarget.close();
+});
 // partner marquee
 const mq=[["akmsir.jpg","AKM Sir","Physical Chemistry"],["pj.jpg","PJ Sir","Mathematics Core"],["ppsir.jpeg","PP Sir","Physics Expert"],["rssir2.jpeg","RS Sir","Defense & Science"]];
 const one=mq.map(([i,n,s])=>`<figure><img src="/pictures/${i}" alt="${n}" loading="lazy"><div><b>${n}</b><small>${s}</small></div></figure>`).join("");
