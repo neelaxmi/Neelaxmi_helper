@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en-IN">
 <head>
@@ -235,7 +234,7 @@ section{padding:60px 0}.founder{flex-direction:column;text-align:center}form{gri
 <details><summary>DPP Analysis</summary><div>Performance insights for Daily Practice Papers.<br><a href="https://dppanalysis.netlify.app/" target="_blank" rel="noopener">Try it</a></div></details>
 <details><summary>Schedule Tracker</summary><div>Plan lectures, revision cycles and routines.<br><a href="#contact">Request this feature</a></div></details>
 <details><summary>Updates &amp; Information</summary><div>Latest notifications, news and critical updates.<br><a href="/aboutus.html">Explore Neelaxmi</a></div></details>
-<details><summary>Diwali VFX Project</summary><div>An interactive festive visual-effects page.<br><a href="https://diwalisak.netlify.app/" target="_blank" rel="noopener">Check it out</a></div></details></div>
+<details><summary>Diwali VFX Project</summary><div>An interactive festive visual-effects page.<br><a href="http://diwalisak.netlify.app/" target="_blank" rel="noopener">Check it out</a></div></details></div>
 <div><h3><i class="fa-solid fa-robot"></i> Telegram bots &amp; info</h3>
 <details><summary>Main Bot (Saksen)</summary><div>Your central helper hub on Telegram.<br><a href="https://telegram.me/saksen_main_bot" target="_blank" rel="noopener">Launch bot</a></div></details>
 <details><summary>Lecture Extractor</summary><div>Extract and organise video lectures.<br><a href="#contact">Request access</a></div></details>
@@ -336,10 +335,17 @@ section{padding:60px 0}.founder{flex-direction:column;text-align:center}form{gri
     <h2 style="font-family:'Bricolage Grotesque',sans-serif;color:#1e1b4b;font-size:1.35rem;margin-bottom:10px">Neelaxmi has a new version!</h2>
     <p id="upd-msg" style="color:#5d6177;font-size:.93rem;line-height:1.55;margin-bottom:22px"></p>
     <a id="upd-btn" href="#" onclick="handleApkInstall(event)" style="display:flex;align-items:center;justify-content:center;gap:.5rem;background:linear-gradient(135deg,#ea580c,#f97316);color:#fff;font-weight:800;padding:14px 20px;border-radius:13px;text-decoration:none;font-size:1rem;box-shadow:0 8px 20px rgba(234,88,12,.35);margin-bottom:10px">
-      <i class="fa-solid fa-download"></i> Download Update
+      <i class="fa-solid fa-download"></i> Download &amp; Install Update
     </a>
     <button id="upd-later" style="background:none;border:none;color:#9ca3af;font-size:.85rem;cursor:pointer;padding:6px 12px;font-family:inherit">Remind me later</button>
-    <p style="margin-top:14px;font-size:.75rem;color:#c7cae8;border-top:1px solid #f0f0f0;padding-top:12px">Same app — just install over existing one. No data lost.</p>
+    <div style="margin-top:14px;font-size:.8rem;color:#6b7280;border-top:1px solid #f0f0f0;padding-top:12px;text-align:left;line-height:1.6">
+      <b style="color:#1e1b4b">Install kaise karein:</b><br>
+      1️⃣ "Download" tap karo<br>
+      2️⃣ Notification bar neeche kholo<br>
+      3️⃣ "neelaxmi.apk" pe tap karo<br>
+      4️⃣ Install tap karo → Done! ✅<br>
+      <span style="color:#9ca3af;font-size:.75rem">Same app hai — data safe rahega</span>
+    </div>
   </div>
 </div>
 <!-- ===== END UPDATE BANNER ===== -->
@@ -349,51 +355,39 @@ section{padding:60px 0}.founder{flex-direction:column;text-align:center}form{gri
 <script>
 const $=(s,c=document)=>c.querySelector(s),$$=(s,c=document)=>[...c.querySelectorAll(s)];
 
-// APK Update Download Handler (open Android installer after download)
-async function handleApkInstall(e) {
+// APK Install Handler
+function handleApkInstall(e){
   e.preventDefault();
+  const fullUrl = "https://neelaxmi.vercel.app/apks/neelaxmi.apk";
 
-  const apkUrl = "https://neelaxmi.vercel.app/apks/neelaxmi.apk";
-  const button = document.getElementById("upd-btn");
-  const originalLabel = button ? button.innerHTML : "";
+  // Show download started message
+  const btn = document.getElementById("upd-btn");
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Downloading... Notification bar check karo';
+  btn.style.background = "#16a34a";
 
-  if (!window.median?.share?.downloadFile) {
-    alert("Neelaxmi app bridge nahi mila. Kripya update app ke andar se hi download karein.");
-    console.error("Median downloadFile API unavailable", window.median);
+  // Method 1: Median external browser (Chrome) — most reliable
+  try{
+    if(typeof median !== "undefined" && median.links){
+      median.links.openExternal({url: fullUrl});
+      return;
+    }
+  }catch(err){console.warn(err);}
+
+  // Method 2: _system target — opens in default browser
+  try{
+    window.open(fullUrl, "_system");
     return;
-  }
+  }catch(err){console.warn(err);}
 
-  try {
-    if (button) {
-      button.style.pointerEvents = "none";
-      button.style.opacity = "0.7";
-      button.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Downloading update…';
-    }
-
-    // open:true asks Median to open the downloaded APK when the download completes.
-    const result = window.median.share.downloadFile({
-      url: apkUrl,
-      open: true
-    });
-
-    if (result && typeof result.then === "function") {
-      await result;
-    }
-
-    // Median handles opening the APK after download when supported by the app configuration.
-
-    console.log("Median APK download requested", result);
-  } catch (error) {
-    console.error("APK download error:", error);
-    alert("APK download start nahi ho paya: " + (error?.message || error));
-  } finally {
-    if (button) {
-      button.innerHTML = originalLabel;
-      button.style.pointerEvents = "";
-      button.style.opacity = "";
-    }
-  }
+  // Method 3: Direct anchor download
+  const a = document.createElement("a");
+  a.href = fullUrl;
+  a.download = "neelaxmi.apk";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
 }
+
 // ── APK UPDATE CHECK ──────────────────────────────────────────────
 (function(){
   function showBanner(msg, url){
@@ -440,6 +434,9 @@ async function handleApkInstall(e) {
             const url = d.apk_url || "/apks/neelaxmi.apk";
             const msg = d.message || "Naya update available! Download karo.";
 
+            // DEBUG — remove after testing
+            alert("Installed: " + installedVersion + "\nLatest: " + latest + "\nNeedsUpdate: " + (compareVersions(installedVersion, latest) < 0));
+
             if(compareVersions(installedVersion, latest) < 0){
               showBanner(msg, url);
             }
@@ -452,6 +449,8 @@ async function handleApkInstall(e) {
 
   // Median callback — ye globally available hona chahiye
   window._medianDeviceCb = function(info){
+    // DEBUG alert
+    alert("Device info callback:\n" + JSON.stringify(info));
     const v = info.appVersion || info.version || info.app_version || null;
     if(v) doCheck(v);
   };
@@ -461,24 +460,28 @@ async function handleApkInstall(e) {
     try{
       // Style 1: median.device.getInfo with callback string
       if(typeof median !== "undefined"){
+        alert("median object mila! Keys: " + Object.keys(median).join(", "));
         if(median.device && median.device.getInfo){
           median.device.getInfo({callback:"_medianDeviceCb"});
         } else if(median.deviceInfo){
           median.deviceInfo({callback:"_medianDeviceCb"});
+        } else {
+          alert("median hai but device method nahi:\n" + JSON.stringify(median));
         }
       }
       // Style 2: gonative (old name of Median)
       else if(typeof gonative !== "undefined"){
+        alert("gonative object mila!");
         if(gonative.device && gonative.device.getInfo){
           gonative.device.getInfo({callback:"_medianDeviceCb"});
         }
       }
       // Style 3: window.location based (last resort)
       else{
-        console.warn("Median/Gonative bridge unavailable on this page.");
+        alert("Na median na gonative mila.\nwindow.location: " + window.location.href + "\nUserAgent: " + navigator.userAgent);
       }
     } catch(e){
-      console.warn("Device info bridge error:", e);
+      alert("Error: " + e.message);
     }
   }, 2500);
 })();
@@ -494,7 +497,6 @@ $$(".exam button").forEach(b=>b.onclick=()=>{
   $$(".exam button").forEach(x=>x.setAttribute("aria-pressed",x===b));
   const f=b.dataset.f;$$("#rgrid .rc").forEach(c=>c.classList.toggle("hide",f!=="all"&&!c.dataset.e.includes(f)));
 });
-  
 // guides toggle
 $("#moreBtn").onclick=e=>{const m=$("#more"),o=m.classList.toggle("open");e.target.textContent=o?"Show less":"Load more material";e.target.setAttribute("aria-expanded",o)};
 // team
@@ -549,28 +551,6 @@ $("#cf").onsubmit=async e=>{e.preventDefault();const s=$("#status"),v=id=>$("#"+
   try{await db.collection(cfg[kind].col).add(data);s.className="ok";s.textContent="Saved. Thank you, we'll get back to you soon.";e.target.reset()}
   catch(err){s.className="err";s.textContent="Could not save this message. Please try again.";console.error(err)}
   $("#send").disabled=false};
-
-  async function testMedianAPK() {
-    const apkUrl =
-      "https://neelaxmi.vercel.app/apks/neelaxmi.apk";
-
-    const fn = window.median?.share?.downloadFile;
-
-    alert(
-      "Median: " + typeof window.median +
-      "\nShare: " + typeof window.median?.share +
-      "\nDownloadFile: " + typeof fn
-    );
-
-    if (typeof fn !== "function") {
-        return;
-    }
-
-    fn.call(window.median.share, {
-        url: apkUrl,
-        open: true
-    });
-}
 </script>
 </body>
 </html>
