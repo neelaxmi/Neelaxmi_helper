@@ -355,37 +355,12 @@ section{padding:60px 0}.founder{flex-direction:column;text-align:center}form{gri
 <script>
 const $=(s,c=document)=>c.querySelector(s),$$=(s,c=document)=>[...c.querySelectorAll(s)];
 
-// APK Install Handler
+// APK Install Handler - simplest approach
 function handleApkInstall(e){
   e.preventDefault();
   const fullUrl = "https://neelaxmi.vercel.app/apks/neelaxmi.apk";
-
-  // Show download started message
-  const btn = document.getElementById("upd-btn");
-  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Downloading... Notification bar check karo';
-  btn.style.background = "#16a34a";
-
-  // Method 1: Median external browser (Chrome) — most reliable
-  try{
-    if(typeof median !== "undefined" && median.links){
-      median.links.openExternal({url: fullUrl});
-      return;
-    }
-  }catch(err){console.warn(err);}
-
-  // Method 2: _system target — opens in default browser
-  try{
-    window.open(fullUrl, "_system");
-    return;
-  }catch(err){console.warn(err);}
-
-  // Method 3: Direct anchor download
-  const a = document.createElement("a");
-  a.href = fullUrl;
-  a.download = "neelaxmi.apk";
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
+  // Seedha href change karo - sabse simple aur reliable
+  window.location.href = fullUrl;
 }
 
 // ── APK UPDATE CHECK ──────────────────────────────────────────────
