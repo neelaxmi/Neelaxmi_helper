@@ -56,14 +56,14 @@ section{padding:88px 0}
 .btn-p{background:var(--hl);color:#fff;box-shadow:0 8px 20px rgba(234,88,12,.3)}.btn-p:hover{background:#c2410c;transform:translateY(-2px)}
 .btn-o{background:#fff;border-color:var(--ink);color:var(--ink)}.btn-o:hover{background:var(--ink);color:#fff}
 .skip{position:absolute;left:1rem;top:-60px;background:var(--indigo);color:#fff;padding:.6rem 1rem;border-radius:8px;z-index:200}.skip:focus{top:1rem}
-/* NAV */
+
 nav{position:sticky;top:0;z-index:50;background:rgba(251,250,246,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
 nav .wrap{display:flex;align-items:center;justify-content:space-between;height:68px}
 .brand{display:flex;align-items:center;gap:.7rem;font:800 1.25rem 'Bricolage Grotesque';color:var(--ink)}
 .brand img{width:38px;height:38px;border-radius:50%;border:2px solid var(--hl);background:#fff;object-fit:cover}.brand b{color:var(--hl)}
 .links{display:flex;gap:1.6rem;font-weight:700;font-size:.93rem}.links a{padding:.3rem 0;border-bottom:3px solid transparent}.links a:hover{border-color:var(--hl)}
 .menu{display:none;background:none;border:0;font-size:1.4rem;color:var(--ink);min-width:44px;min-height:44px;cursor:pointer}
-/* HERO */
+
 .hero{padding:72px 0 56px;background:radial-gradient(circle at 85% 10%,rgba(67,56,202,.1),transparent 45%),linear-gradient(rgba(55,48,163,.05) 1px,transparent 1px) 0 0/100% 34px,var(--paper);position:relative;overflow:hidden}
 .hero .wrap{display:grid;grid-template-columns:1.15fr .85fr;gap:56px;align-items:center}
 .pill{display:inline-flex;gap:.5rem;align-items:center;background:var(--indigo-2);color:var(--indigo);font-weight:700;font-size:.82rem;padding:.4rem .9rem;border-radius:99px;margin-bottom:20px}
@@ -77,7 +77,7 @@ nav .wrap{display:flex;align-items:center;justify-content:space-between;height:6
 .badge-card img{width:170px;height:170px;margin:0 auto 18px;border-radius:50%;object-fit:contain;background:#fff;border:4px solid var(--indigo-2);padding:10px}
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;border-top:2px dashed var(--line);padding-top:18px}
 .stats strong{display:block;font:800 1.5rem 'Bricolage Grotesque';color:var(--indigo)}.stats span{font-size:.78rem;color:var(--muted);font-weight:700}
-/* RESOURCES */
+
 #resources{background:#fff;background-image:linear-gradient(rgba(255,255,255,.93),rgba(255,255,255,.93)),url('/pictures/core.jpg');background-size:cover}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:18px}
 .rc{display:flex;flex-direction:column;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:24px;box-shadow:var(--sh);transition:.2s;position:relative;overflow:hidden}
@@ -87,20 +87,20 @@ nav .wrap{display:flex;align-items:center;justify-content:space-between;height:6
 .rc .go{font-weight:700;color:var(--hl);font-size:.9rem;margin-top:6px}.rc:hover .go{letter-spacing:.02em}
 .rc.hide{display:none}
 .rc.feat{background:var(--ink);color:#e0e1ff;border-color:var(--ink)}.rc.feat h3{color:#fff}.rc.feat p{color:#c7cae8}.rc.feat .ic{background:rgba(255,255,255,.12);color:#fde68a}.rc.feat .go{color:#fdba74}
-/* STORY */
+
 #story{background:var(--paper);background-image:linear-gradient(rgba(251,250,246,.9),rgba(251,250,246,.9)),url('/pictures/story.jpeg');background-size:cover;background-position:center}
 .tl{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;position:relative}
 .tl:before{content:'';position:absolute;top:22px;left:0;right:0;border-top:3px dashed #c9c6f0}
 .tl div{position:relative;padding-top:52px}.tl div:before{content:'';position:absolute;top:12px;left:0;width:22px;height:22px;border-radius:50%;background:#fff;border:5px solid var(--indigo)}
 .tl .bad:before{border-color:#dc2626}.tl .now:before{border-color:var(--hl);background:var(--hl)}
 .tl time{font:800 1.2rem 'Bricolage Grotesque';color:var(--ink)}.tl p{font-size:.93rem;color:var(--muted)}
-/* MISSION */
+
 #how{background:var(--ink);color:#d9dbff;background-image:linear-gradient(rgba(30,27,75,.92),rgba(30,27,75,.92)),url('/pictures/Mission.jpg');background-size:cover}
 #how h2{color:#fff}#how .wrap{display:grid;grid-template-columns:1.2fr 1fr;gap:48px;align-items:center}
 #how .big{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 #how .big div{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:var(--r);padding:26px}
 #how .big strong{display:block;font:800 2.4rem 'Bricolage Grotesque';color:#fde68a}
-/* ECOSYSTEM */
+
 #projects{background:var(--indigo-2);background-image:linear-gradient(rgba(238,240,255,.93),rgba(238,240,255,.93)),url('/pictures/ecosystem.png');background-size:cover}
 .eco{display:grid;grid-template-columns:1fr 1fr;gap:20px}
 .eco h3{margin-bottom:14px;font-size:1.3rem}
@@ -109,10 +109,10 @@ details[open]{border-color:var(--indigo);box-shadow:var(--sh)}
 summary{list-style:none;cursor:pointer;padding:15px 18px;font-weight:700;color:var(--ink);display:flex;justify-content:space-between;gap:10px;min-height:52px;align-items:center}
 summary::-webkit-details-marker{display:none}summary:after{content:'\f078';font:900 .8rem 'Font Awesome 6 Free';color:var(--indigo);transition:.2s}details[open] summary:after{transform:rotate(180deg)}
 details div{padding:0 18px 18px;font-size:.93rem;color:var(--muted)}details div a{display:inline-block;margin-top:10px;background:var(--indigo);color:#fff;font-weight:700;padding:.5rem 1rem;border-radius:9px;font-size:.88rem}
-/* APP */
+
 .apps{display:flex;gap:16px;flex-wrap:wrap}.app{flex:1 1 240px;display:flex;gap:16px;align-items:center;background:#fff;border:2px solid var(--ink);border-radius:var(--r);padding:22px;box-shadow:6px 6px 0 var(--hl-2);transition:.2s}
 .app:hover{transform:translate(-3px,-3px)}.app i{font-size:2.4rem;color:var(--ok)}.app h3{font-size:1.1rem}.app p{font-size:.88rem;color:var(--muted)}
-/* GUIDES */
+
 #Guides{background:#fff}
 .gcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:22px}
 .gc{background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh);transition:.2s;display:flex;flex-direction:column}
@@ -120,20 +120,20 @@ details div{padding:0 18px 18px;font-size:.93rem;color:var(--muted)}details div 
 .gc div{padding:20px;display:flex;flex-direction:column;gap:8px;flex:1}.gc span.t{font-size:.75rem;font-weight:800;color:var(--hl)}
 .gc h3{font-size:1.15rem}.gc p{font-size:.9rem;color:var(--muted);flex:1}.gc b{color:var(--indigo);font-size:.9rem}
 .more{display:none}.more.open{display:grid;margin-top:22px}
-/* ROADMAP */
+
 #upcoming{background:var(--ink);color:#c7cae8}#upcoming h2{color:#fff}
 .road{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
 .road div{border:1px solid rgba(255,255,255,.14);border-radius:var(--r);padding:22px;background:rgba(255,255,255,.05)}
 .road em{font-style:normal;font-size:.74rem;font-weight:800;background:#fde68a;color:var(--ink);padding:.2rem .6rem;border-radius:99px}
 .road h3{color:#fff;font-size:1.1rem;margin:12px 0 6px}.road p{font-size:.9rem}
-/* TEAM */
+
 .team{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:18px}
 .tm{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:26px 18px;text-align:center;box-shadow:var(--sh);cursor:pointer;font:inherit;transition:.2s}
 .tm:hover{transform:translateY(-5px);border-color:var(--indigo)}.tm img{width:92px;height:92px;border-radius:50%;object-fit:cover;margin:0 auto 12px;border:3px solid var(--indigo-2)}
 .tm h3{font-size:1.1rem}.tm p{color:var(--muted);font-size:.88rem}
 .founder{display:flex;gap:28px;align-items:center;background:#fff;border:2px solid var(--ink);border-radius:24px;padding:28px;margin-top:28px;box-shadow:8px 8px 0 var(--hl-2)}
 .founder img{width:150px;height:150px;border-radius:20px;object-fit:cover;flex-shrink:0}.founder h3{font-size:1.6rem}.founder p{color:var(--muted);margin:8px 0 14px}
-/* TEAM DIALOG (fixed: centered, scroll-safe, clean layout) */
+
 dialog{margin:auto;position:fixed;inset:0;border:2px solid var(--ink);border-radius:22px;padding:30px 24px 24px;width:min(380px,calc(100vw - 2rem));max-height:calc(100dvh - 2rem);overflow-y:auto;text-align:center;background:#fff;color:var(--text);box-shadow:10px 10px 0 var(--hl-2)}
 dialog[open]{animation:dlgpop .22s ease}
 dialog::backdrop{background:rgba(30,27,75,.6);backdrop-filter:blur(3px)}
@@ -143,7 +143,7 @@ dialog #dr{color:var(--indigo)!important;font-weight:700;margin-top:4px}
 dialog #dd{color:var(--muted);margin-top:6px}
 dialog button{margin-top:20px;width:100%;justify-content:center}
 @keyframes dlgpop{from{opacity:0;transform:scale(.93)}to{opacity:1;transform:none}}
-/* CONTACT */
+
 #contact{background:var(--indigo-2)}
 .cbox{background:#fff;border:2px solid var(--ink);border-radius:24px;padding:30px;max-width:760px;margin-inline:auto;box-shadow:8px 8px 0 var(--hl-2)}
 .tabs{display:flex;gap:6px;background:var(--indigo-2);padding:5px;border-radius:12px;margin-bottom:22px;flex-wrap:wrap}
@@ -153,23 +153,44 @@ label{display:block;font-size:.85rem;font-weight:700;color:var(--ink);margin-bot
 input,select,textarea{width:100%;font:inherit;padding:.75rem .9rem;border:1.5px solid #cfd2e6;border-radius:10px;background:#fff;color:var(--text)}
 input:focus,select:focus,textarea:focus{outline:none;border-color:var(--indigo);box-shadow:0 0 0 4px rgba(55,48,163,.15)}
 #status{font-weight:700;font-size:.9rem}.ok{color:#0f766e}.err{color:#b91c1c}[hidden]{display:none!important}
-/* PARTNERS */
+
 .mq{overflow:hidden;padding:22px 0;background:#fff;border-block:1px solid var(--line)}
 .mq div{display:flex;gap:18px;width:max-content;animation:mq 32s linear infinite}.mq:hover div{animation-play-state:paused}
 .mq figure{display:flex;align-items:center;gap:10px;background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:8px 18px 8px 8px;margin:0}
 .mq img{width:42px;height:42px;border-radius:10px;object-fit:cover}.mq b{display:block;font-size:.85rem;color:var(--ink)}.mq small{font-size:.7rem;color:var(--muted);font-weight:700}
 @keyframes mq{to{transform:translateX(-50%)}}
-/* VOICES */
-#voices{background:#fff}.vs{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px}
-.vs blockquote{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:24px;margin:0;font-size:.95rem}.vs cite{display:block;margin-top:12px;font-style:normal;font-weight:700;color:var(--ink);font-size:.88rem}.vs cite small{display:block;color:var(--muted);font-weight:600}
-.vs .shot img{border-radius:12px;margin-bottom:10px}
-/* FOOTER */
+
+#voices{background:#fff}
+.vs-wrap{overflow:hidden;position:relative;padding:8px 0}
+.vs-wrap:before,.vs-wrap:after{content:'';position:absolute;top:0;bottom:0;width:80px;z-index:2;pointer-events:none}
+.vs-wrap:before{left:0;background:linear-gradient(to right,#fff,transparent)}
+.vs-wrap:after{right:0;background:linear-gradient(to left,#fff,transparent)}
+.vs-track{display:flex;gap:16px;width:max-content;animation:vsScroll 40s linear infinite}
+.vs-wrap:hover .vs-track{animation-play-state:paused}
+@keyframes vsScroll{to{transform:translateX(-50%)}}
+.vs-card{flex:0 0 280px;background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:20px;font-size:.93rem;line-height:1.55}
+.vs-card q{display:block;color:var(--text);quotes:"\201C""\201D"}
+.vs-card q::before{content:open-quote;font-size:1.5rem;color:var(--indigo);line-height:0;vertical-align:-.3em;margin-right:2px}
+.vs-meta{margin-top:12px;display:flex;flex-direction:column;gap:2px}
+.vs-name{font-weight:800;color:var(--ink);font-size:.9rem}
+.vs-class{font-size:.78rem;color:var(--indigo);font-weight:700}
+.vs-dur{font-size:.75rem;color:var(--muted)}
+.vs-empty{color:var(--muted);font-size:.93rem;padding:20px 0}
+ .vs-vid{flex:0 0 260px;border-radius:var(--r);overflow:hidden;border:1px solid var(--line);background:#000;position:relative}
+.vs-vid video{width:100%;height:200px;object-fit:cover;display:block}
+.vs-vid .play-btn{position:absolute;inset:0 0 52px;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.32);border:0;color:#fff;cursor:pointer;transition:.2s}
+.vs-vid .play-btn i{font-size:2.6rem;filter:drop-shadow(0 2px 6px rgba(0,0,0,.5))}
+.vs-vid:hover .play-btn{background:rgba(0,0,0,.16)}
+.vs-vid.playing .play-btn{display:none}
+.vs-vid .vid-meta{position:absolute;bottom:0;left:0;right:0;padding:10px 12px;background:linear-gradient(transparent,rgba(0,0,0,.82));color:#fff;pointer-events:none}
+.vs-vid .vid-meta .vs-name{color:#fff}.vs-vid .vid-meta .vs-class{color:#fde68a}.vs-vid .vid-meta .vs-dur{color:#d1d5db}
+
 footer{background:var(--ink);color:#c7cae8;padding:60px 0 28px;font-size:.92rem}
 .fg{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:30px;padding-bottom:34px;border-bottom:1px solid rgba(255,255,255,.14)}
 footer h3{color:#fff;font-size:1rem;margin-bottom:12px}footer li{list-style:none;margin-bottom:8px}footer ul{padding:0}footer a:hover{color:#fdba74}
 .so{display:flex;gap:10px;margin-top:14px}.so a{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.1)}
 .copy{padding-top:22px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;font-size:.82rem}
-/* APK UPDATE POPUP */
+
 .upd-overlay{position:fixed;inset:0;z-index:9999;background:rgba(15,12,41,.85);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:16px;overflow-y:auto}
 .upd-card{background:#fff;border-radius:24px;padding:26px 22px 20px;max-width:380px;width:100%;max-height:calc(100dvh - 32px);overflow-y:auto;text-align:center;box-shadow:0 24px 64px rgba(0,0,0,.45)}
 .upd-emoji{font-size:2.6rem;line-height:1;margin-bottom:6px}
@@ -265,7 +286,7 @@ section{padding:60px 0}.founder{flex-direction:column;text-align:center}form{gri
 <details><summary>DPP Analysis</summary><div>Performance insights for Daily Practice Papers.<br><a href="https://dppanalysis.netlify.app/" target="_blank" rel="noopener">Try it</a></div></details>
 <details><summary>Schedule Tracker</summary><div>Plan lectures, revision cycles and routines.<br><a href="#contact">Request this feature</a></div></details>
 <details><summary>Updates &amp; Information</summary><div>Latest notifications, news and critical updates.<br><a href="/aboutus.html">Explore Neelaxmi</a></div></details>
-<details><summary>Diwali VFX Project</summary><div>An interactive festive visual-effects page.<br><a href="http://diwalisak.netlify.app/" target="_blank" rel="noopener">Check it out</a></div></details></div>
+<details><summary>Diwali VFX Project</summary><div>An interactive festive visual-effects page.<br><a href="https://diwalisak.netlify.app/" target="_blank" rel="noopener">Check it out</a></div></details></div>
 <div><h3><i class="fa-solid fa-robot"></i> Telegram bots &amp; info</h3>
 <details><summary>Main Bot (Saksen)</summary><div>Your central helper hub on Telegram.<br><a href="https://telegram.me/saksen_main_bot" target="_blank" rel="noopener">Launch bot</a></div></details>
 <details><summary>Lecture Extractor</summary><div>Extract and organise video lectures.<br><a href="#contact">Request access</a></div></details>
@@ -316,13 +337,9 @@ section{padding:60px 0}.founder{flex-direction:column;text-align:center}form{gri
 
 <section id="voices"><div class="wrap">
 <div class="head"><h2>Trusted by thousands</h2><p>Feedback from the community.</p></div>
-<div class="vs">
-<blockquote>"When the group got deleted I panicked, but the new platform is insane. The free questions are exactly what I needed for practice."<cite>Qualified Student<small>NEET Dropper</small></cite></blockquote>
-<blockquote>"The Lecture Extractor bot is flawless. I couldn't afford premium batches, but these materials levelled the playing field."<cite>Rohan Patel<small>JEE Aspirant</small></cite></blockquote>
-<blockquote>"The AKM Sir Module Discussion tool is so well coded. Hard to believe it was built while prepping for exams."<cite>Anjali Verma<small>Class 12 Board</small></cite></blockquote>
-<blockquote class="shot"><img src="/pictures/testimonial-review-1.jpg" alt="Screenshot of a review from Priya S." loading="lazy" onerror="this.remove()"><cite>Priya S.<small>NEET Aspirant</small></cite></blockquote>
-</div></div></section>
-
+</div>
+<div class="vs-wrap"><div class="vs-track" id="vsTrack"><p class="vs-empty" style="padding:0 40px">Loading feedback…</p></div></div>
+</section>
 
 <section id="contact"><div class="wrap">
 <div class="head" style="margin-inline:auto;text-align:center"><h2>Contact &amp; join us</h2><p>Messages are saved to Firebase and confirmed only after saving succeeds.</p></div>
@@ -359,7 +376,6 @@ section{padding:60px 0}.founder{flex-direction:column;text-align:center}form{gri
 
 <dialog id="dlg" aria-labelledby="dn"><img id="dp" alt="" width="120" height="120"><h3 id="dn"></h3><p id="dr"></p><p id="dd"></p><button class="btn btn-p" id="dc">Close</button></dialog>
 
-<!-- ===== APK UPDATE POPUP ===== -->
 <div id="upd-overlay" class="upd-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="upd-title">
   <div class="upd-card">
     <div class="upd-emoji">🚀</div>
@@ -388,14 +404,12 @@ section{padding:60px 0}.founder{flex-direction:column;text-align:center}form{gri
     <button type="button" id="upd-later" class="upd-later">Baad me yaad dilana</button>
   </div>
 </div>
-<!-- ===== END UPDATE POPUP ===== -->
 
 <script src="https://www.gstatic.com/firebasejs/12.15.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore-compat.js"></script>
 <script>
 const $=(s,c=document)=>c.querySelector(s),$$=(s,c=document)=>[...c.querySelectorAll(s)];
 
-// ── APK UPDATE CHECK ──────────────────────────────────────────────
 (function(){
   const overlay=document.getElementById("upd-overlay");
   const btn=document.getElementById("upd-btn");
@@ -407,7 +421,7 @@ const $=(s,c=document)=>c.querySelector(s),$$=(s,c=document)=>[...c.querySelecto
 
   function showBanner(msg,url,cur,latest){
     const snooze=parseInt(localStorage.getItem("upd_snooze")||"0",10);
-    if(Date.now()<snooze) return; // snoozed
+    if(Date.now()<snooze) return;
     try{apkUrl=new URL(url,location.href).href}catch(e){apkUrl="https://neelaxmi.vercel.app/apks/neelaxmi.apk"}
     document.getElementById("upd-msg").textContent=msg;
     if(cur&&latest){
@@ -420,7 +434,6 @@ const $=(s,c=document)=>c.querySelector(s),$$=(s,c=document)=>[...c.querySelecto
   }
 
   btn.onclick=function(){
-    // download shuru karo
     window.location.href=apkUrl;
     document.getElementById("upd-done").hidden=false;
     btn.innerHTML='<i class="fa-solid fa-rotate-right"></i> Dobara download karo';
@@ -466,7 +479,6 @@ const $=(s,c=document)=>c.querySelector(s),$$=(s,c=document)=>[...c.querySelecto
     },300);
   }
 
-  // Median callback — globally available hona chahiye
   window._medianDeviceCb=function(info){
     const v=info&&(info.appVersion||info.version||info.app_version);
     if(v) doCheck(v);
@@ -488,21 +500,16 @@ const $=(s,c=document)=>c.querySelector(s),$$=(s,c=document)=>[...c.querySelecto
     }catch(e){console.warn("[Update]",e)}
   },2500);
 })();
-// ── END APK UPDATE CHECK ─────────────────────────────────────────
 const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-// nav
 const menu=$("#menu"),links=$("#links");
 menu.onclick=()=>{const o=links.classList.toggle("open");menu.setAttribute("aria-expanded",o)};
 $$("#links a").forEach(a=>a.onclick=()=>links.classList.remove("open"));
 $("#yr").textContent=new Date().getFullYear();
-// exam filter
 $$(".exam button").forEach(b=>b.onclick=()=>{
   $$(".exam button").forEach(x=>x.setAttribute("aria-pressed",x===b));
   const f=b.dataset.f;$$("#rgrid .rc").forEach(c=>c.classList.toggle("hide",f!=="all"&&!c.dataset.e.includes(f)));
 });
-// guides toggle
 $("#moreBtn").onclick=e=>{const m=$("#more"),o=m.classList.toggle("open");e.target.textContent=o?"Show less":"Load more material";e.target.setAttribute("aria-expanded",o)};
-// team
 const team=[
 {n:"SAKSHAM",p:"/pictures/owner.jpeg",r:"Owner & Lead Developer",q:"State level player",a:"19"},
 {n:"Shreyas Raj Singh",p:"/pictures/shreyas.jpg",r:"Co-Owner",q:"MBBS (GMC)",a:"21"},
@@ -511,16 +518,13 @@ const team=[
 $("#teamGrid").innerHTML=team.map((m,i)=>`<button class="tm" data-i="${i}" aria-haspopup="dialog"><img src="${m.p}" alt="" loading="lazy"><h3>${esc(m.n)}</h3><p>${esc(m.r)}</p></button>`).join("");
 $$(".tm").forEach(b=>b.onclick=()=>{const m=team[b.dataset.i];$("#dp").src=m.p;$("#dn").textContent=m.n;$("#dr").textContent=m.r;$("#dd").textContent=`${m.q} · Age ${m.a}`;$("#dlg").showModal()});
 $("#dc").onclick=()=>$("#dlg").close();
-// backdrop pe click karne se dialog band ho
 $("#dlg").addEventListener("click",e=>{
   const r=e.currentTarget.getBoundingClientRect();
   if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom) e.currentTarget.close();
 });
-// partner marquee
 const mq=[["akmsir.jpg","AKM Sir","Physical Chemistry"],["pj.jpg","PJ Sir","Mathematics Core"],["ppsir.jpeg","PP Sir","Physics Expert"],["rssir2.jpeg","RS Sir","Defense & Science"]];
 const one=mq.map(([i,n,s])=>`<figure><img src="/pictures/${i}" alt="${n}" loading="lazy"><div><b>${n}</b><small>${s}</small></div></figure>`).join("");
 $("#mq").innerHTML=one+one+one+one;
-// contact
 const cfg={feedback:{col:"feedback",msg:"Feedback message *",btn:"Send feedback"},join:{col:"teamApplications",msg:"Why do you want to join Neelaxmi? *",btn:"Send application"},issue:{col:"issueReports",msg:"Tell us what happened *",btn:"Send report"}};
 let kind="feedback";
 $$(".tabs button").forEach(t=>t.onclick=()=>{kind=t.dataset.k;
@@ -545,8 +549,114 @@ function initFirebase(){
     return true;
   }catch(e){console.warn("[Firebase]",e);return false;}
 }
-// Keep trying until Firebase script loads
 const fbInterval=setInterval(()=>{if(initFirebase())clearInterval(fbInterval);},300);
+
+(function(){
+  const fallback=[
+    {name:"Qualified Student",studentClass:"Dropper / Repeater",message:"When the group got deleted I panicked, but the new platform is insane. The free questions are exactly what I needed.",timeUsingWebsite:"6+ months"},
+    {name:"Rohan Patel",studentClass:"Class 12",message:"The Lecture Extractor bot is flawless. I couldn't afford premium batches, but these materials levelled the playing field.",timeUsingWebsite:"1–6 months"},
+    {name:"Anjali Verma",studentClass:"Class 12",message:"The AKM Sir Module Discussion tool is so well coded. Hard to believe it was built while prepping for exams.",timeUsingWebsite:"1–4 weeks"}
+  ];
+
+  const videoReviews=[
+    {name:"sir Prateek jain ",studentClass:"UNACADEMY Educator ",src:"/pictures/VID_20261111_112906_618.mp4"},
+    {name:" AJAY KUMAR MISHRA SIR  ",studentClass:"UNACADEMY Educator ",src:"/pictures/VID_20261111_114139_620.mp4"}
+
+  ];
+
+  function makeTextCard(d){
+    const dur=d.timeUsingWebsite||d.dur||"";
+    return `<div class="vs-card">
+      <q>${esc(d.message||d.msg||"")}</q>
+      <div class="vs-meta">
+        <span class="vs-name">${esc(d.name||"Anonymous")}</span>
+        ${d.studentClass?`<span class="vs-class">${esc(d.studentClass)}</span>`:""}
+        ${dur?`<span class="vs-dur">Using Neelaxmi: ${esc(dur)}</span>`:""}
+      </div>
+    </div>`;
+  }
+
+  function makeVideoCard(d,i){
+    const src=esc(d.src||"");
+    if(!src) return "";
+    return `<div class="vs-vid">
+      <video preload="metadata" playsinline controls aria-label="${esc(d.name||"Student")} video review">
+        <source src="${src}" type="video/mp4">
+        Your browser does not support HTML video.
+      </video>
+      <button class="play-btn" type="button" aria-label="Play video review from ${esc(d.name||"Student")}"><i class="fa-solid fa-play" aria-hidden="true"></i></button>
+      <div class="vid-meta">
+        <span class="vs-name">${esc(d.name||"Student Review")}</span>
+        ${d.studentClass?`<span class="vs-class">${esc(d.studentClass)}</span>`:""}
+        <span class="vs-dur">Video review</span>
+      </div>
+    </div>`;
+  }
+
+  function setupVideoCards(){
+    const track=document.getElementById("vsTrack");
+    track.querySelectorAll(".vs-vid").forEach(card=>{
+      const video=card.querySelector("video");
+      const button=card.querySelector(".play-btn");
+      button.addEventListener("click",()=>{
+        track.querySelectorAll(".vs-vid video").forEach(other=>{
+          if(other!==video){other.pause();other.closest(".vs-vid").classList.remove("playing");}
+        });
+        video.play().then(()=>{
+          card.classList.add("playing");
+          track.style.animationPlayState="paused";
+        }).catch(()=>{card.classList.remove("playing");});
+      });
+      video.addEventListener("play",()=>{
+        card.classList.add("playing");
+        track.style.animationPlayState="paused";
+      });
+      video.addEventListener("pause",()=>{
+        card.classList.remove("playing");
+        if(![...track.querySelectorAll(".vs-vid video")].some(v=>!v.paused)) track.style.animationPlayState="";
+      });
+      video.addEventListener("ended",()=>{
+        card.classList.remove("playing");
+        track.style.animationPlayState="";
+      });
+    });
+  }
+
+  function renderTrack(items){
+    const track=document.getElementById("vsTrack");
+    if(!track) return;
+    const textItems=items.length?items:fallback;
+    const cards=textItems.map(makeTextCard).join("")+videoReviews.map(makeVideoCard).join("");
+    if(!cards){track.innerHTML=`<p class="vs-empty" style="padding:0 40px">Be the first to leave feedback!</p>`;return;}
+    track.innerHTML=cards+cards+cards+cards;
+    track.style.animationDuration=Math.max(30,(textItems.length+videoReviews.length)*8)+"s";
+    setupVideoCards();
+  }
+
+  function loadFeedback(){
+    let tries=0;
+    const wait=setInterval(()=>{
+      tries++;
+      if(db){
+        clearInterval(wait);
+        db.collection("feedback")
+          .where("approved","==",true)
+          .orderBy("submittedAt","desc")
+          .limit(30)
+          .get()
+          .then(snap=>{
+            const items=[];
+            snap.forEach(doc=>items.push(doc.data()));
+            renderTrack(items);
+          })
+          .catch(()=>renderTrack([]));
+      }
+      if(tries>30){clearInterval(wait);renderTrack([]);}
+    },300);
+  }
+
+  loadFeedback();
+})();
 $("#cf").onsubmit=async e=>{e.preventDefault();const s=$("#status"),v=id=>$("#"+id).value.trim();
   const need=["f_name","f_email","f_msg"].concat(kind==="join"?["f_tg"]:kind==="issue"?["f_type"]:["f_class"]);
   if(need.some(i=>!v(i))||(kind==="join"&&!$("#f_ok").checked)){s.className="err";s.textContent="Please fill the required fields"+(kind==="join"?" and accept consent.":".");return}
