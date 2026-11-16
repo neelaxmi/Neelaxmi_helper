@@ -5,7 +5,7 @@ const PROJECT = "quiznew-30700";
 const BASE = "https://neelaxmi-mcp.vercel.app";
 const ISSUER = BASE;
 const RESOURCE = BASE + "/api/mcp";
-const FIREBASE_WEB_API_KEY = "AIzaSyAOJmK4igVb_P8cV6jLfZhFPGFmAZfVvRE";
+const FIREBASE_WEB_API_KEY = process.env.FIREBASE_WEB_API_KEY || "";
 const DEFAULT_ADMINS = ["mN6M8SImQzXE8qEtJF2MJ2XV8SG3", "Fjoi3zeE3bNOO1eQDmIolZzjIs03", "soQBFdrszGg3UTvAQSgys0TIUTz2"];
 const SCOPE = "mcp:tools";
 const CODE_TTL_MS = 5 * 60 * 1000;
@@ -106,9 +106,13 @@ function loginPage(params, error = "") {
   return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>NEELAXMI MCP Login</title><style>*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;background:#f3f5f9;font:16px system-ui;color:#172033}.card{width:min(92vw,420px);background:white;padding:30px;border-radius:18px;box-shadow:0 12px 40px #17203318}h1{margin:0 0 8px;font-size:25px}.muted{color:#667085;font-size:14px;line-height:1.5}label{display:block;margin:18px 0 7px;font-size:14px;font-weight:600}input{width:100%;padding:13px;border:1px solid #ccd2dc;border-radius:9px;font:inherit}button{width:100%;margin-top:22px;padding:13px;border:0;border-radius:9px;background:#263c83;color:white;font-weight:700;font-size:16px}.error{color:#b42318;background:#fff1f0;padding:10px;border-radius:8px;font-size:14px}</style></head><body><main class="card"><h1>NEELAXMI MCP</h1><p class="muted">Sign in with your approved NEELAXMI admin account to connect Claude securely.</p>' + (error ? '<p class="error">' + esc(error) + '</p>' : '') + '<form method="post" action="/api/oauth/login">' + hidden + '<label for="email">Admin email</label><input id="email" name="email" type="email" autocomplete="username" required><label for="password">Password</label><input id="password" name="password" type="password" autocomplete="current-password" required><button type="submit">Sign in and authorize Claude</button></form><p class="muted">Your password is verified by Firebase Authentication. NEELAXMI MCP does not store it.</p></main></body></html>';
 }
 function paramsFrom(req) {
-  const p = req.method === "POST" && req.body && typeof req.body === "object" ? req.body : req.query || {};
+  let p = req.method === "POST" ? req.body : req.query || {};
+  if (typeof p === "string" || Buffer.isBuffer(p)) {
+    const raw = Buffer.isBuffer(p) ? p.toString("utf8") : p;
+    p = Object.fromEntries(new URLSearchParams(raw).entries());
+  } else if (req.method === "POST" && (!p || typeof p !== "object")) p = {};
   const out = {};
-  for (const [k,v] of Object.entries(p)) if (typeof v === "string" || typeof v === "number") out[k] = String(v);
+  for (const [k,v] of Object.entries(p || {})) if (typeof v === "string" || typeof v === "number") out[k] = String(v);
   return out;
 }
 function redirect(res, uri, values) {
