@@ -48,11 +48,11 @@ function verifyOAuthAccessToken(token) {
       payload.exp-payload.iat > 15*60+5) throw new Error("Expired or incorrectly scoped access token.");
   const allow = (process.env.QUIZ_BANK_ADMIN_UIDS || DEFAULT_ADMINS.join(",")).split(",").map(x=>x.trim()).filter(Boolean);
   if (!allow.includes(payload.sub)) throw new Error("Firebase user is not an approved Question Bank admin.");
-  if (!String(payload.scope || "").split(/\\s+/).includes(REQUIRED_SCOPE)) throw new Error("Insufficient scope.");
+  if (!String(payload.scope || "").split(/\s+/).includes(REQUIRED_SCOPE)) throw new Error("Insufficient scope.");
   return {uid:payload.sub,email:payload.email || null};
 }
 async function verifyUser(req) {
-  const token = /^Bearer\\s+(.+)$/i.exec(String(req.headers.authorization || ""))?.[1];
+  const token = /^Bearer\s+(.+)$/i.exec(String(req.headers.authorization || ""))?.[1];
   if (!token) throw new Error("Missing bearer access token.");
   if (token.split(".").length === 3) return verifyOAuthAccessToken(token);
   if (!process.env.MCP_BEARER_SECRET || req.headers["x-mcp-secret"] !== process.env.MCP_BEARER_SECRET) throw new Error("Invalid legacy MCP host secret.");
