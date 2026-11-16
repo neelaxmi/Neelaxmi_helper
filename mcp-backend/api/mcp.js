@@ -4,6 +4,7 @@ import { z } from "zod";
 import admin from "firebase-admin";
 import { google } from "googleapis";
 import pdf from "pdf-parse";
+import crypto from "node:crypto";
 
 export const config = { api: { bodyParser: { sizeLimit: "4mb" } } };
 
@@ -22,10 +23,39 @@ function db() {
   }
   return admin.firestore(firebaseApp);
 }
+const OAUTH_ISSUER = "https://neelaxmi-mcp.vercel.app";
+const OAUTH_RESOURCE = OAUTH_ISSUER + "/api/mcp";
+const RESOURCE_METADATA = OAUTH_ISSUER + "/.well-known/oauth-protected-resource/api/mcp";
+const REQUIRED_SCOPE = "mcp:tools";
+function verifyOAuthAccessToken(token) {
+  const parts = String(token || "").split(".");
+  if (parts.length !== 3) throw new Error("Invalid access token.");
+  let header, payload;
+  try {
+    header = JSON.parse(Buffer.from(parts[0], "base64url").toString("utf8"));
+    payload = JSON.parse(Buffer.from(parts[1], "base64url").toString("utf8"));
+  } catch { throw new Error("Malformed access token."); }
+  const sa = jsonEnv("FIREBASE_SERVICE_ACCOUNT_JSON");
+  if (sa.project_id !== PROJECT || !sa.private_key) throw new Error("Firebase service account is invalid.");
+  const publicKey = crypto.createPublicKey(sa.private_key);
+  const kid = crypto.createHash("sha256").update(publicKey.export({type:"spki",format:"der"})).digest("hex").slice(0,24);
+  if (header.alg !== "RS256" || header.typ !== "at+jwt" || header.kid !== kid) throw new Error("Invalid access token header.");
+  const valid = crypto.verify("RSA-SHA256", Buffer.from(parts[0]+"."+parts[1]), publicKey, Buffer.from(parts[2],"base64url"));
+  if (!valid) throw new Error("Invalid access token signature.");
+  const now = Math.floor(Date.now()/1000);
+  if (payload.iss !== OAUTH_ISSUER || payload.aud !== OAUTH_RESOURCE || !payload.sub || payload.uid !== payload.sub ||
+      !Number.isInteger(payload.exp) || payload.exp <= now || !Number.isInteger(payload.iat) || payload.iat > now+60 ||
+      payload.exp-payload.iat > 15*60+5) throw new Error("Expired or incorrectly scoped access token.");
+  const allow = (process.env.QUIZ_BANK_ADMIN_UIDS || DEFAULT_ADMINS.join(",")).split(",").map(x=>x.trim()).filter(Boolean);
+  if (!allow.includes(payload.sub)) throw new Error("Firebase user is not an approved Question Bank admin.");
+  if (!String(payload.scope || "").split(/\\s+/).includes(REQUIRED_SCOPE)) throw new Error("Insufficient scope.");
+  return {uid:payload.sub,email:payload.email || null};
+}
 async function verifyUser(req) {
-  if (process.env.MCP_BEARER_SECRET && req.headers["x-mcp-secret"] !== process.env.MCP_BEARER_SECRET) throw new Error("Invalid MCP host secret.");
-  const token = /^Bearer\s+(.+)$/i.exec(String(req.headers.authorization || ""))?.[1];
-  if (!token) throw new Error("Missing Firebase ID token in Authorization: Bearer header.");
+  const token = /^Bearer\\s+(.+)$/i.exec(String(req.headers.authorization || ""))?.[1];
+  if (!token) throw new Error("Missing bearer access token.");
+  if (token.split(".").length === 3) return verifyOAuthAccessToken(token);
+  if (!process.env.MCP_BEARER_SECRET || req.headers["x-mcp-secret"] !== process.env.MCP_BEARER_SECRET) throw new Error("Invalid legacy MCP host secret.");
   const decoded = await admin.auth(firebaseApp || (db(), firebaseApp)).verifyIdToken(token, true);
   const allow = (process.env.QUIZ_BANK_ADMIN_UIDS || DEFAULT_ADMINS.join(",")).split(",").map(x => x.trim());
   if (decoded.firebase?.sign_in_provider === "anonymous" || !allow.includes(decoded.uid)) throw new Error("Firebase user is not an approved Question Bank admin.");
@@ -115,8 +145,12 @@ export default async function handler(req,res) {
   if(req.method==="GET") return res.status(200).json({ok:true,service:"neelaxmi-mcp",transport:"Streamable HTTP stateless",mcpEndpoint:"POST /api/mcp"});
   if(req.method!=="POST" && req.method!=="DELETE") return res.status(405).json({error:"Method not allowed"});
   let user;
-  try { db(); user=await verifyUser(req); }
-  catch(e) { return res.status(401).json({error:e.message||"Unauthorized"}); }
+  try { user=await verifyUser(req); }
+  catch(e) {
+    const hasBearer = /^Bearer\\s+.+$/i.test(String(req.headers.authorization || ""));
+    res.setHeader("WWW-Authenticate", 'Bearer realm="NEELAXMI MCP", resource_metadata="'+RESOURCE_METADATA+'", scope="'+REQUIRED_SCOPE+'"'+(hasBearer?', error="invalid_token"':""));
+    return res.status(401).json({error:"Unauthorized"});
+  }
   const server=createServer(user);
   const transport=new StreamableHTTPServerTransport({sessionIdGenerator:undefined,enableJsonResponse:true});
   res.on("close",()=>{void transport.close();void server.close();});
