@@ -15,8 +15,25 @@ let firebaseApp;
 let clientMetadataCache = { value: null, until: 0 };
 
 const jsonEnv = name => {
-  try { return JSON.parse(process.env[name] || ""); }
-  catch { throw new Error(name + " is missing or invalid JSON."); }
+  const raw = process.env[name];
+  if (typeof raw !== "string" || !raw.trim()) {
+    console.error("[NEELAXMI OAuth env diagnostic]", {
+      name, present: typeof raw === "string", length: typeof raw === "string" ? raw.length : 0
+    });
+    throw new Error(name + " is missing or empty at runtime.");
+  }
+  try {
+    return JSON.parse(raw.replace(/^\\uFEFF/, "").trim());
+  } catch (error) {
+    const value = raw.trim();
+    console.error("[NEELAXMI OAuth env diagnostic]", {
+      name, present: true, length: raw.length,
+      firstCharacter: value[0] || null,
+      lastCharacter: value[value.length - 1] || null,
+      parseError: String(error?.message || "JSON parse failed").slice(0, 180)
+    });
+    throw new Error(name + " is present but is not valid JSON; safe parse diagnostics were logged.");
+  }
 };
 function app() {
   if (!firebaseApp) {
