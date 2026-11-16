@@ -54,7 +54,11 @@ function verifyOAuthAccessToken(token) {
 async function verifyUser(req) {
   const token = /^Bearer\s+(.+)$/i.exec(String(req.headers.authorization || ""))?.[1];
   if (!token) throw new Error("Missing bearer access token.");
-  if (token.split(".").length === 3) return verifyOAuthAccessToken(token);
+  if (token.split(".").length === 3) {
+    let tokenIssuer = "";
+    try { tokenIssuer = JSON.parse(Buffer.from(token.split(".")[1], "base64url").toString("utf8")).iss || ""; } catch {}
+    if (tokenIssuer === OAUTH_ISSUER) return verifyOAuthAccessToken(token);
+  }
   if (!process.env.MCP_BEARER_SECRET || req.headers["x-mcp-secret"] !== process.env.MCP_BEARER_SECRET) throw new Error("Invalid legacy MCP host secret.");
   const decoded = await admin.auth(firebaseApp || (db(), firebaseApp)).verifyIdToken(token, true);
   const allow = (process.env.QUIZ_BANK_ADMIN_UIDS || DEFAULT_ADMINS.join(",")).split(",").map(x => x.trim());
