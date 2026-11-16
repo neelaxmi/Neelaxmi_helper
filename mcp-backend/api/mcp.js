@@ -60,17 +60,6 @@ function validate(q, i=0) {
   if (q.questionYear != null && Number.isFinite(Number(q.questionYear))) out.questionYear = Number(q.questionYear);
   return out;
 }
-async function generate({fileId,subject,chapter,className,examLevel="NEET",count=20,instructions=""}) {
-  if (!process.env.GROQ_API_KEY) throw new Error("GROQ_API_KEY is not configured.");
-  const source = await getPdf(fileId), n = Math.min(100,Math.max(1,Number(count)||20));
-  const prompt = `Using ONLY this PDF text, create exactly ${n} original ${examLevel} MCQs for class ${className}, ${subject}, chapter ${chapter}. Return JSON only: {"questions":[{"question":"...","options":{"A":"...","B":"...","C":"...","D":"..."},"answer":"A","explanation":"...","questionLevel":"Easy|Medium|Hard"}]}. Exactly one correct answer; no duplicates; don't invent facts. ${instructions}\nPDF: ${source.fileName}\nSOURCE:\n${source.text}`;
-  const resp = await fetch("https://api.groq.com/openai/v1/chat/completions", { method:"POST", headers:{ "Content-Type":"application/json", Authorization:"Bearer "+process.env.GROQ_API_KEY }, body:JSON.stringify({ model:process.env.GROQ_MODEL||"openai/gpt-oss-120b", messages:[{role:"system",content:"You write accurate exam MCQs grounded strictly in source material. Return valid JSON only."},{role:"user",content:prompt}], response_format:{type:"json_object"}, temperature:0.2 }) });
-  const data = await resp.json();
-  if (!resp.ok) throw new Error(data?.error?.message || "Groq request failed.");
-  const result = JSON.parse(data.choices?.[0]?.message?.content || "{}");
-  if (!Array.isArray(result.questions)) throw new Error("AI returned no questions array.");
-  return { source:{fileId,fileName:source.fileName,pages:source.pages}, requested:n, generated:result.questions.length, questions:result.questions.map((q,i)=>validate({...q,subject,chapter,class:className,examLevel},i)), note:"Preview only. Nothing has been written to Firebase." };
-}
 const result = value => ({ content:[{type:"text",text:JSON.stringify(value,null,2)}] });
 function createServer(user) {
   const s = new McpServer({name:"neelaxmi-mcp",version:"1.0.0"});
@@ -83,11 +72,10 @@ function createServer(user) {
     return result(r.data.files||[]);
   });
   s.registerTool("read_drive_pdf",{description:"Extract selectable text from a Drive PDF. OCR is needed for scanned files.",inputSchema:{fileId:z.string().min(10)}},async({fileId})=>result(await getPdf(fileId)));
-  s.registerTool("generate_mcqs_from_drive_pdf",{description:"Generate and validate MCQs from a Drive PDF. Preview only; no database writes.",inputSchema:{fileId:z.string().min(10),subject:z.string().min(1),chapter:z.string().min(1),className:z.string().min(1),examLevel:z.string().optional(),count:z.number().int().min(1).max(100),instructions:z.string().optional()}},async args=>result(await generate(args)));
   s.registerTool("save_questions_to_question_bank",{description:"Save reviewed canonical questions to quiznew-30700/question_bank. Explicit confirm=true required.",inputSchema:{confirm:z.boolean(),questions:z.array(z.record(z.any())).min(1).max(400),sourceFileId:z.string().optional(),sourceFileName:z.string().optional()}},async({confirm,questions,sourceFileId,sourceFileName})=>{
     if(!confirm) throw new Error("Save cancelled; set confirm=true after reviewing.");
     const clean=questions.map(validate), batch=db().batch(), ids=[];
-    clean.forEach((q,i)=>{const ref=db().collection("question_bank").doc();ids.push(ref.id);batch.set(ref,{...q,bankId:ref.id,sourceFile:sourceFileName||sourceFileId||"MCP generated",sourceFileId:sourceFileId||null,sourceIndex:i,aiGenerated:true,aiProvider:"groq",createdBy:user.uid,createdAt:admin.firestore.FieldValue.serverTimestamp(),updatedAt:admin.firestore.FieldValue.serverTimestamp(),schemaVersion:2});});
+    clean.forEach((q,i)=>{const ref=db().collection("question_bank").doc();ids.push(ref.id);batch.set(ref,{...q,bankId:ref.id,sourceFile:sourceFileName||sourceFileId||"MCP generated",sourceFileId:sourceFileId||null,sourceIndex:i,aiGenerated:true,generationMethod:"external_mcp_client",createdBy:user.uid,createdAt:admin.firestore.FieldValue.serverTimestamp(),updatedAt:admin.firestore.FieldValue.serverTimestamp(),schemaVersion:2});});
     await batch.commit();
     await db().collection("question_bank_meta").doc("analytics").set({stale:true,invalidatedReason:"mcp_import",updatedAt:admin.firestore.FieldValue.serverTimestamp()},{merge:true});
     return result({saved:ids.length,ids});
