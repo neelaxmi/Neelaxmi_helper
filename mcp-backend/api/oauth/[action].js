@@ -162,10 +162,28 @@ async function handleLogin(req, res) {
       method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email, password, returnSecureToken: true })
     });
     const data = await response.json();
-    if (!response.ok || !data.idToken) throw new Error(data.error?.message || "Firebase sign-in failed.");
+    if (!response.ok || !data.idToken) {
+      const firebaseCode = String(data.error?.message || "FIREBASE_SIGN_IN_FAILED").split(":")[0].slice(0, 100);
+      console.error("[NEELAXMI OAuth Firebase sign-in]", { httpStatus: response.status, firebaseCode, apiKeyPresent: Boolean(FIREBASE_WEB_API_KEY) });
+      const error = new Error(firebaseCode);
+      error.firebaseCode = firebaseCode;
+      throw error;
+    }
     idToken = data.idToken;
   } catch (e) {
-    const message = /INVALID_PASSWORD|EMAIL_NOT_FOUND|INVALID_LOGIN_CREDENTIALS/.test(e.message) ? "Email or password is incorrect." : "Could not sign in. Please check your details and try again.";
+    const code = String(e.firebaseCode || e.message || "FIREBASE_SIGN_IN_FAILED");
+    const messages = {
+      INVALID_PASSWORD: "Email or password is incorrect.",
+      EMAIL_NOT_FOUND: "Email or password is incorrect.",
+      INVALID_LOGIN_CREDENTIALS: "Email or password is incorrect.",
+      USER_DISABLED: "This Firebase account is disabled. Contact the administrator.",
+      OPERATION_NOT_ALLOWED: "Email/password sign-in is disabled in Firebase Authentication.",
+      API_KEY_INVALID: "Firebase API key is invalid. Please check the MCP server configuration.",
+      API_KEY_HTTP_REFERRER_BLOCKED: "Firebase API key is blocking this server request. Its application restriction must allow server-side use.",
+      TOO_MANY_ATTEMPTS_TRY_LATER: "Too many sign-in attempts. Please wait and try again.",
+      INVALID_EMAIL: "Enter a valid admin email address."
+    };
+    const message = messages[code] || "Firebase sign-in failed (" + code + "). Check the MCP Firebase configuration or contact the administrator.";
     return res.status(401).setHeader("Content-Type", "text/html; charset=utf-8").send(loginPage(oauth, message));
   }
   let decoded;
