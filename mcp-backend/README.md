@@ -11,8 +11,6 @@ Endpoint: `https://YOUR-VERCEL-DOMAIN/api/mcp`
 Set these in the new Vercel project only:
 - FIREBASE_SERVICE_ACCOUNT_JSON: service-account JSON for Firebase project quiznew-30700.
 - GOOGLE_DRIVE_SERVICE_ACCOUNT_JSON: read-only Google Drive service-account JSON; share the PDF folder with its client_email.
-- GROQ_API_KEY: Groq API key.
-- GROQ_MODEL: optional, defaults to openai/gpt-oss-120b.
 - QUIZ_BANK_ADMIN_UIDS: approved Question Bank admin UIDs (defaults are in .env.example).
 - GOOGLE_DRIVE_FOLDER_ID: optional folder restriction.
 - MCP_BEARER_SECRET: optional extra shared secret.
@@ -26,11 +24,10 @@ Every MCP POST must carry `Authorization: Bearer <fresh Firebase ID token>` from
 - get_mcp_identity
 - list_drive_pdfs
 - read_drive_pdf
-- generate_mcqs_from_drive_pdf (preview only)
 - save_questions_to_question_bank (confirm=true required)
 - sync_chapter_quiz (confirm=true required)
 - publish_quiz_to_catalog (confirm=true required)
 
-Workflow: list PDF → generate preview → approve/save questions → sync chapter quiz → approve/publish catalog entry.
+Workflow: list PDF → read PDF text → Claude (or another connected AI client) generates and reviews MCQs → save approved questions → sync chapter quiz → publish catalog entry. The MCP backend does not call any AI API and requires no Groq/OpenAI/Gemini key.
 
-PDF text extraction is not OCR; scanned PDFs must be OCRed first. AI-generated questions must be reviewed for factual accuracy before publishing.
+PDF text extraction is not OCR; scanned PDFs must be OCRed first. Claude-generated questions must be reviewed for factual accuracy before publishing.
