@@ -261,7 +261,7 @@ function normalizeZipQuestion(raw, index) {
     ...(Number.isInteger(year) && year>=1980 && year<=2100 ? {questionYear:year} : {}),
     ...(pyq !== undefined ? {isPYQ:typeof pyq==="boolean"?pyq:/^(1|true|yes|y|pyq)$/i.test(String(pyq).trim())} : {}),
     ...(first("explanation","solution","detailedSolution","detailed_solution","answerExplanation") != null ? {explanation:clean(first("explanation","solution","detailedSolution","detailed_solution","answerExplanation"))} : {}),
-    ...(imageRef ? {imageRef} : {}),
+    ...(imageRef && /^https:\/\//i.test(imageRef) ? {imageUrl:imageRef} : imageRef ? {imageRef} : {}),
     ...(first("id","questionId","question_id","uid") != null ? {originalId:clean(first("id","questionId","question_id","uid"))} : {})
   };
 }
