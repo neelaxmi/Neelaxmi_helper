@@ -203,11 +203,11 @@ function createServer(user) {
   registerAdminTools(s, user, { galleryDb: gallery().db, quizDb: db(), admin });
 
   s.registerTool("upload_question_image_to_getpronto", {
-    description: "Upload an image to NEELAXMI's existing Get Pronto image storage. Returns a permanent HTTPS imageUrl; pass that URL as imageUrl when saving the question with save_questions_to_question_bank or save_admin_quiz. Reads upload-only pronto_pk_ keys from quiznew-30700/question_bank_meta/pronto_keys; never reveals keys. Accepts original JPEG, PNG, WebP or GIF image files up to 10 MB; upload bytes are stored as the actual image, not as a text document.",
+    description: "Upload the REAL image file extracted from a source PDF (not a textual description, not a recreated drawing, and not a screenshot of the whole page unless that is the only source). Send the extracted image bytes as base64 with the matching MIME type. This tool decodes the base64 and uploads the actual binary image file to NEELAXMI Get Pronto storage using the configured Firebase upload-only keys. Returns the HTTPS imageUrl to attach to that exact question. Preserve original resolution and aspect ratio; do not downscale or recompress unless the file exceeds 10 MB. Supports JPEG, PNG, WebP and GIF up to 10 MB.",
     inputSchema: {
       filename: z.string().min(1).max(160),
       mimeType: z.enum(["image/jpeg","image/png","image/webp","image/gif"]),
-      imageBase64: z.string().min(1).max(14000000)
+      imageBase64: z.string().min(1).max(14000000).describe("Base64-encoded bytes of the actual extracted image file, not a description of the image.")
     }
   }, async ({ filename, mimeType, imageBase64 }) => result(await uploadImageToGetPronto({ filename, mimeType, imageBase64 })));
 
