@@ -5,16 +5,26 @@ import admin from "firebase-admin";
 import { google } from "googleapis";
 import pdf from "pdf-parse";
 import crypto from "node:crypto";
+import { registerAdminTools } from "./admin-tools.js";
 
 export const config = { api: { bodyParser: { sizeLimit: "4mb" } } };
 
 const PROJECT = "quiznew-30700";
 const DEFAULT_ADMINS = ["mN6M8SImQzXE8qEtJF2MJ2XV8SG3","Fjoi3zeE3bNOO1eQDmIolZzjIs03","soQBFdrszGg3UTvAQSgys0TIUTz2"];
 let firebaseApp;
+let galleryApp;
 const jsonEnv = name => {
   try { return JSON.parse(process.env[name] || ""); }
   catch { throw new Error(name + " is missing or invalid JSON."); }
 };
+function gallery() {
+  if (!galleryApp) {
+    const sa = jsonEnv("GALLERY_FIREBASE_SERVICE_ACCOUNT_JSON");
+    if (sa.project_id !== "gallery-83144") throw new Error("Gallery Firebase service account must belong to gallery-83144.");
+    galleryApp = admin.initializeApp({ credential: admin.credential.cert(sa), projectId: "gallery-83144" }, "neelaxmi-gallery-admin");
+  }
+  return { db: admin.firestore(galleryApp), auth: admin.auth(galleryApp) };
+}
 function db() {
   if (!firebaseApp) {
     const sa = jsonEnv("FIREBASE_SERVICE_ACCOUNT_JSON");
@@ -27,7 +37,7 @@ const OAUTH_ISSUER = "https://neelaxmi-mcp.vercel.app";
 const OAUTH_RESOURCE = OAUTH_ISSUER + "/api/mcp";
 const RESOURCE_METADATA = OAUTH_ISSUER + "/.well-known/oauth-protected-resource/api/mcp";
 const REQUIRED_SCOPE = "mcp:tools";
-function verifyOAuthAccessToken(token) {
+async function verifyOAuthAccessToken(token) {
   const parts = String(token || "").split(".");
   if (parts.length !== 3) throw new Error("Invalid access token.");
   let header, payload;
@@ -49,7 +59,23 @@ function verifyOAuthAccessToken(token) {
   const allow = (process.env.QUIZ_BANK_ADMIN_UIDS || DEFAULT_ADMINS.join(",")).split(",").map(x=>x.trim()).filter(Boolean);
   if (!allow.includes(payload.sub)) throw new Error("Firebase user is not an approved Question Bank admin.");
   if (!String(payload.scope || "").split(/\s+/).includes(REQUIRED_SCOPE)) throw new Error("Insufficient scope.");
-  return {uid:payload.sub,email:payload.email || null};
+  return resolveAdminIdentity({ uid:payload.sub, email:payload.email || null });
+}
+async function resolveAdminIdentity(identity) {
+  const email = String(identity.email || "").trim().toLowerCase();
+  if (!email) throw new Error("OAuth account has no verified email; cannot map Gallery Admin identity.");
+  const { db: galleryDb, auth: galleryAuth } = gallery();
+  let galleryUser;
+  try { galleryUser = await galleryAuth.getUserByEmail(email); }
+  catch { throw new Error("This email does not have an account in Gallery Firebase (gallery-83144)."); }
+  const superEmails = (process.env.GALLERY_SUPER_ADMIN_EMAILS || "sak06gupta@gmail.com").split(",").map(v => v.trim().toLowerCase()).filter(Boolean);
+  const superUids = (process.env.GALLERY_SUPER_ADMIN_UIDS || "CTLJaK6d1rZLS2JHXhOquZ6Asek2").split(",").map(v => v.trim()).filter(Boolean);
+  const subUids = (process.env.GALLERY_SUB_ADMIN_UIDS || "Md455pzr0VfEoGkmiVyDhjuDH8m2,j2Br2h6fpGbQgq71HlqSlWVVcaF2,9FRgUCZIivduw1jEjenKqLDj3B72").split(",").map(v => v.trim()).filter(Boolean);
+  let galleryRole = "none";
+  if (superEmails.includes(email) || superUids.includes(galleryUser.uid)) galleryRole = "super_admin";
+  else if (subUids.includes(galleryUser.uid)) galleryRole = "sub_admin";
+  if (galleryRole === "none") throw new Error("This account is not an approved Gallery Admin.");
+  return { ...identity, email, galleryUid: galleryUser.uid, galleryRole, projects: ["quiznew-30700","gallery-83144"] };
 }
 async function verifyUser(req) {
   const token = /^Bearer\s+(.+)$/i.exec(String(req.headers.authorization || ""))?.[1];
@@ -57,13 +83,13 @@ async function verifyUser(req) {
   if (token.split(".").length === 3) {
     let tokenIssuer = "";
     try { tokenIssuer = JSON.parse(Buffer.from(token.split(".")[1], "base64url").toString("utf8")).iss || ""; } catch {}
-    if (tokenIssuer === OAUTH_ISSUER) return verifyOAuthAccessToken(token);
+    if (tokenIssuer === OAUTH_ISSUER) return await verifyOAuthAccessToken(token);
   }
   if (!process.env.MCP_BEARER_SECRET || req.headers["x-mcp-secret"] !== process.env.MCP_BEARER_SECRET) throw new Error("Invalid legacy MCP host secret.");
   const decoded = await admin.auth(firebaseApp || (db(), firebaseApp)).verifyIdToken(token, true);
   const allow = (process.env.QUIZ_BANK_ADMIN_UIDS || DEFAULT_ADMINS.join(",")).split(",").map(x => x.trim());
   if (decoded.firebase?.sign_in_provider === "anonymous" || !allow.includes(decoded.uid)) throw new Error("Firebase user is not an approved Question Bank admin.");
-  return { uid: decoded.uid, email: decoded.email || null };
+  return resolveAdminIdentity({ uid: decoded.uid, email: decoded.email || null });
 }
 function drive() {
   const sa = jsonEnv("GOOGLE_DRIVE_SERVICE_ACCOUNT_JSON");
@@ -97,7 +123,8 @@ function validate(q, i=0) {
 const result = value => ({ content:[{type:"text",text:JSON.stringify(value,null,2)}] });
 function createServer(user) {
   const s = new McpServer({name:"neelaxmi-mcp",version:"1.0.0"});
-  s.registerTool("get_mcp_identity",{description:"Show the verified Question Bank admin identity.",inputSchema:{}},async()=>result({uid:user.uid,email:user.email,project:PROJECT}));
+  s.registerTool("get_mcp_identity",{description:"Show the verified MCP identity and mapped roles in both Firebase projects.",inputSchema:{}},async()=>result({uid:user.uid,email:user.email,project:PROJECT,galleryUid:user.galleryUid,galleryRole:user.galleryRole,projects:user.projects}));
+  registerAdminTools(s, user, { galleryDb: gallery().db, quizDb: db(), admin });
   s.registerTool("list_drive_pdfs",{description:"List PDF files visible to the configured read-only Google Drive service account.",inputSchema:{query:z.string().optional(),pageSize:z.number().int().min(1).max(100).optional()}},async({query="",pageSize=50})=>{
     const terms=["trashed=false","mimeType='application/pdf'"];
     if(process.env.GOOGLE_DRIVE_FOLDER_ID) terms.push("'"+process.env.GOOGLE_DRIVE_FOLDER_ID+"' in parents");
