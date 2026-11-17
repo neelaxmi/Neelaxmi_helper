@@ -142,8 +142,8 @@ async function uploadImageToGetPronto({ filename, mimeType, imageBase64 }) {
 
   const keyDoc = await db().collection("question_bank_meta").doc("pronto_keys").get();
   const keys = keyDoc.exists && Array.isArray(keyDoc.data().keys) ? keyDoc.data().keys : [];
-  const usableKeys = keys.map(v => String(v || "").trim()).filter(v => v.startsWith("pronto_pk_"));
-  if (!usableKeys.length) throw new Error("No Get Pronto upload-only keys (pronto_pk_) are configured in quiznew-30700/question_bank_meta/pronto_keys.");
+  const usableKeys = keys.map(v => String(v || "").trim()).filter(v => v.startsWith("pronto_sk_"));
+  if (!usableKeys.length) throw new Error("No Get Pronto secret keys (pronto_sk_) are configured in quiznew-30700/question_bank_meta/pronto_keys. Add a secret key to the Firebase pronto_keys document.");
 
   const customFilename = Date.now() + "-" + cleanName;
   let lastError;
