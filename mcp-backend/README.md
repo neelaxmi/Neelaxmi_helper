@@ -12,7 +12,7 @@ Endpoint: `https://neelaxmi-mcp.vercel.app/api/mcp`
 - `FIREBASE_SERVICE_ACCOUNT_JSON`: service-account JSON for `quiznew-30700`.
 - `GALLERY_FIREBASE_SERVICE_ACCOUNT_JSON`: service-account JSON for `gallery-83144`.
 - `GALLERY_SUPER_ADMIN_EMAILS`: defaults to `sak06gupta@gmail.com`.
-- `GALLERY_SUPER_ADMIN_UIDS`: defaults to the existing Gallery Super Admin UID.
+- `GALLERY_SUPER_ADMIN_UIDS`: defaults to no UID override; only the configured Super Admin email is privileged by default.
 - `GALLERY_SUB_ADMIN_UIDS`: defaults to the Sub Admin UIDs from the supplied Gallery rules (the stale UID in the older client JS is intentionally not included).
 - `QUIZ_BANK_ADMIN_UIDS`: approved Quiz Bank UIDs.
 - `GOOGLE_DRIVE_SERVICE_ACCOUNT_JSON`: read-only Drive service account; share the PDF folder with its client_email.
