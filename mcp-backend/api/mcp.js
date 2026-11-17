@@ -203,7 +203,7 @@ function createServer(user) {
   registerAdminTools(s, user, { galleryDb: gallery().db, quizDb: db(), admin });
 
   s.registerTool("upload_question_image_to_getpronto", {
-    description: "Upload the REAL image file extracted from a source PDF (not a textual description, not a recreated drawing, and not a screenshot of the whole page unless that is the only source). Send the extracted image bytes as base64 with the matching MIME type. This tool decodes the base64 and uploads the actual binary image file to NEELAXMI Get Pronto storage using the configured Firebase upload-only keys. Returns the HTTPS imageUrl to attach to that exact question. Preserve original resolution and aspect ratio; do not downscale or recompress unless the file exceeds 10 MB. Supports JPEG, PNG, WebP and GIF up to 10 MB.",
+    description: "Upload the REAL image file extracted from a source PDF (not a textual description, not a recreated drawing, and not a screenshot of the whole page unless that is the only source). Send the extracted image bytes as base64 with the matching MIME type. This tool decodes the base64 and uploads the actual binary image file to NEELAXMI Get Pronto storage using the configured Firebase Get Pronto secret keys (pronto_sk_) on the secure MCP server. Returns the HTTPS imageUrl to attach to that exact question. Preserve original resolution and aspect ratio; do not downscale or recompress unless the file exceeds 10 MB. Supports JPEG, PNG, WebP and GIF up to 10 MB.",
     inputSchema: {
       filename: z.string().min(1).max(160),
       mimeType: z.enum(["image/jpeg","image/png","image/webp","image/gif"]),
