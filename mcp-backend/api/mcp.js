@@ -200,7 +200,7 @@ async function uploadImageToGetPronto({ filename, mimeType, imageBase64 }) {
 
 
 function normalizeZipPath(value) {
-  return String(value || "").replace(/\\\\/g, "/").replace(/^\\.\\//, "").replace(/\\/+/g, "/").toLowerCase();
+  return String(value || "").replace(/\\/g, "/").replace(/^\.\//, "").replace(/\/+/g, "/").toLowerCase();
 }
 function zipImageMime(name) {
   const ext = String(name).split(".").pop().toLowerCase();
@@ -219,15 +219,15 @@ function extractQuestionArray(data) {
 function normalizeZipQuestion(raw, index) {
   if (!raw || typeof raw !== "object" || Array.isArray(raw)) throw new Error("Question " + (index + 1) + " is not an object.");
   const first = (...keys) => { for (const key of keys) if (raw[key] !== undefined && raw[key] !== null && raw[key] !== "") return raw[key]; };
-  const clean = value => value == null ? "" : String(value).replace(/[\\u200B-\\u200D\\uFEFF]/g, "").replace(/\\s+/g, " ").trim();
+  const clean = value => value == null ? "" : String(value).replace(/[\u200B-\u200D\uFEFF]/g, "").replace(/\s+/g, " ").trim();
   const question = clean(first("question","questionText","question_text","text","prompt","q"));
   if (!question) throw new Error("Question " + (index + 1) + " has no question text.");
   const inputOptions = first("options","choices","optionList","answers");
   const options = {};
-  const strip = value => clean(value && typeof value === "object" ? (value.text || value.value || value.option || "") : value).replace(/^\\(?\\s*[A-Da-d]\\s*[)\\.:-]\\s+/, "");
+  const strip = value => clean(value && typeof value === "object" ? (value.text || value.value || value.option || "") : value).replace(/^\(?\s*[A-Da-d]\s*[)\.:-]\s+/, "");
   if (Array.isArray(inputOptions)) inputOptions.forEach((v,i)=>{ if (i<4 && strip(v)) options["ABCD"[i]]=strip(v); });
   else if (inputOptions && typeof inputOptions === "object") Object.entries(inputOptions).forEach(([k,v],i)=>{
-    const m=clean(k).match(/^\\(?([A-Da-d])\\)?$/)||clean(k).match(/^option\\s*([A-Da-d1-4])$/i);
+    const m=clean(k).match(/^\(?([A-Da-d])\)?$/)||clean(k).match(/^option\s*([A-Da-d1-4])$/i);
     let label=m?m[1].toUpperCase():"ABCD"[i];
     if (/^[1-4]$/.test(label)) label="ABCD"[Number(label)-1];
     if ("ABCD".includes(label) && strip(v) && !options[label]) options[label]=strip(v);
@@ -238,7 +238,7 @@ function normalizeZipQuestion(raw, index) {
   if (typeof answerRaw === "number" && Number.isInteger(answerRaw)) answer="ABCD"[answerRaw] || "";
   else {
     const ans=clean(answerRaw);
-    let m=ans.match(/^\\(?\\s*(?:option\\s*)?([A-Da-d])\\s*\\)?\\.?$/i);
+    let m=ans.match(/^\(?\s*(?:option\s*)?([A-Da-d])\s*\)?\.?$/i);
     if (m && options[m[1].toUpperCase()]) answer=m[1].toUpperCase();
     else if (/^[1-4]$/.test(ans) && options["ABCD"[Number(ans)-1]]) answer="ABCD"[Number(ans)-1];
     else answer=Object.keys(options).find(k=>options[k].toLowerCase()===ans.toLowerCase()) || "";
@@ -266,7 +266,7 @@ function normalizeZipQuestion(raw, index) {
   };
 }
 async function processQuestionZip({ zipBase64 }) {
-  const encoded=String(zipBase64||"").replace(/\\s/g,"");
+  const encoded=String(zipBase64||"").replace(/\s/g,"");
   if (!encoded || encoded.length > 12500000 || !/^[A-Za-z0-9+/]*={0,2}$/.test(encoded)) throw new Error("ZIP must be valid base64 and no larger than about 9 MB.");
   const zipBytes=Buffer.from(encoded,"base64");
   if (zipBytes.length < 4 || zipBytes.length > 9*1024*1024 || zipBytes[0]!==0x50 || zipBytes[1]!==0x4b) throw new Error("Invalid ZIP or compressed ZIP exceeds 9 MB.");
@@ -299,7 +299,7 @@ async function processQuestionZip({ zipBase64 }) {
   if (!questions.length) throw new Error("No questions found in ZIP JSON files.");
   const matched=new Map(), missing=[];
   questions.forEach((q,index)=>{
-    if (!q.imageRef || /^https:\\/\\//i.test(q.imageRef)) return;
+    if (!q.imageRef || /^https:\/\//i.test(q.imageRef)) return;
     const ref=normalizeZipPath(q.imageRef);
     let entry=imageEntries.get(ref);
     if (!entry) {
@@ -309,7 +309,7 @@ async function processQuestionZip({ zipBase64 }) {
     if (!entry) {
       const id=String(q.originalId||"").toLowerCase();
       const stems=[id,"q"+(index+1),"question"+(index+1),String(index+1)].filter(Boolean);
-      entry=[...imageEntries.values()].find(x=>stems.includes(normalizeZipPath(x.name).split("/").pop().replace(/\\.[^.]+$/,"")));
+      entry=[...imageEntries.values()].find(x=>stems.includes(normalizeZipPath(x.name).split("/").pop().replace(/\.[^.]+$/,"")));
     }
     if (!entry) { missing.push({questionIndex:index+1,imageRef:q.imageRef}); return; }
     matched.set(entry.name,entry);
