@@ -7,7 +7,7 @@ import pdf from "pdf-parse";
 import crypto from "node:crypto";
 import { registerAdminTools } from "./admin-tools.js";
 
-export const config = { api: { bodyParser: { sizeLimit: "4mb" } } };
+export const config = { api: { bodyParser: { sizeLimit: "16mb" } } };
 
 const PROJECT = "quiznew-30700";
 const DEFAULT_ADMINS = ["mN6M8SImQzXE8qEtJF2MJ2XV8SG3","Fjoi3zeE3bNOO1eQDmIolZzjIs03","soQBFdrszGg3UTvAQSgys0TIUTz2"];
@@ -128,11 +128,11 @@ async function uploadImageToGetPronto({ filename, mimeType, imageBase64 }) {
   if (!allowed.has(safeMime)) throw new Error("Unsupported image type. Use JPEG, PNG, WebP, or GIF.");
   const cleanName = String(filename || "question-image").replace(/[^a-zA-Z0-9._-]/g, "_").slice(0, 120) || "question-image";
   const encoded = String(imageBase64 || "").replace(/^data:image\/[a-zA-Z0-9.+-]+;base64,/, "").replace(/\s/g, "");
-  if (!encoded || encoded.length > 3600000 || !/^[A-Za-z0-9+/]*={0,2}$/.test(encoded)) {
-    throw new Error("Image data must be valid base64 and no larger than 2.5 MB.");
+  if (!encoded || encoded.length > 14000000 || !/^[A-Za-z0-9+/]*={0,2}$/.test(encoded)) {
+    throw new Error("Image data must be valid base64 and no larger than 10 MB.");
   }
   const bytes = Buffer.from(encoded, "base64");
-  if (!bytes.length || bytes.length > 2.5 * 1024 * 1024) throw new Error("Image must be no larger than 2.5 MB for MCP upload.");
+  if (!bytes.length || bytes.length > 10 * 1024 * 1024) throw new Error("Image must be no larger than 10 MB for MCP upload.");
   const signatureOk =
     (safeMime === "image/png" && bytes.subarray(0, 8).equals(Buffer.from([137,80,78,71,13,10,26,10]))) ||
     (safeMime === "image/jpeg" && bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff) ||
@@ -203,11 +203,11 @@ function createServer(user) {
   registerAdminTools(s, user, { galleryDb: gallery().db, quizDb: db(), admin });
 
   s.registerTool("upload_question_image_to_getpronto", {
-    description: "Upload an image to NEELAXMI's existing Get Pronto image storage. Returns a permanent HTTPS imageUrl; pass that URL as imageUrl when saving the question with save_questions_to_question_bank or save_admin_quiz. Reads upload-only pronto_pk_ keys from quiznew-30700/question_bank_meta/pronto_keys; never reveals keys. Accepts JPEG, PNG, WebP or GIF up to 2.5 MB.",
+    description: "Upload an image to NEELAXMI's existing Get Pronto image storage. Returns a permanent HTTPS imageUrl; pass that URL as imageUrl when saving the question with save_questions_to_question_bank or save_admin_quiz. Reads upload-only pronto_pk_ keys from quiznew-30700/question_bank_meta/pronto_keys; never reveals keys. Accepts original JPEG, PNG, WebP or GIF image files up to 10 MB; upload bytes are stored as the actual image, not as a text document.",
     inputSchema: {
       filename: z.string().min(1).max(160),
       mimeType: z.enum(["image/jpeg","image/png","image/webp","image/gif"]),
-      imageBase64: z.string().min(1).max(3600000)
+      imageBase64: z.string().min(1).max(14000000)
     }
   }, async ({ filename, mimeType, imageBase64 }) => result(await uploadImageToGetPronto({ filename, mimeType, imageBase64 })));
 
