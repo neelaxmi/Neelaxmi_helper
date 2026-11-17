@@ -5,6 +5,7 @@ import admin from "firebase-admin";
 import { google } from "googleapis";
 import pdf from "pdf-parse";
 import crypto from "node:crypto";
+import { unzipSync, strFromU8 } from "fflate";
 import { registerAdminTools } from "./admin-tools.js";
 
 export const config = { api: { bodyParser: { sizeLimit: "16mb" } } };
@@ -197,10 +198,155 @@ async function uploadImageToGetPronto({ filename, mimeType, imageBase64 }) {
   throw new Error("All configured Get Pronto upload keys failed: " + (lastError?.message || "unknown error"));
 }
 
+
+function normalizeZipPath(value) {
+  return String(value || "").replace(/\\\\/g, "/").replace(/^\\.\\//, "").replace(/\\/+/g, "/").toLowerCase();
+}
+function zipImageMime(name) {
+  const ext = String(name).split(".").pop().toLowerCase();
+  return ({ jpg:"image/jpeg", jpeg:"image/jpeg", png:"image/png", webp:"image/webp", gif:"image/gif" })[ext] || "";
+}
+function extractQuestionArray(data) {
+  if (Array.isArray(data)) return data;
+  if (data && typeof data === "object") {
+    for (const key of ["questions","questionBank","question_bank","items","data","results","records"]) {
+      if (Array.isArray(data[key])) return data[key];
+    }
+    if (data.question || data.questionText || data.text) return [data];
+  }
+  throw new Error("Each JSON must be an array or contain a questions/items/data array.");
+}
+function normalizeZipQuestion(raw, index) {
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) throw new Error("Question " + (index + 1) + " is not an object.");
+  const first = (...keys) => { for (const key of keys) if (raw[key] !== undefined && raw[key] !== null && raw[key] !== "") return raw[key]; };
+  const clean = value => value == null ? "" : String(value).replace(/[\\u200B-\\u200D\\uFEFF]/g, "").replace(/\\s+/g, " ").trim();
+  const question = clean(first("question","questionText","question_text","text","prompt","q"));
+  if (!question) throw new Error("Question " + (index + 1) + " has no question text.");
+  const inputOptions = first("options","choices","optionList","answers");
+  const options = {};
+  const strip = value => clean(value && typeof value === "object" ? (value.text || value.value || value.option || "") : value).replace(/^\\(?\\s*[A-Da-d]\\s*[)\\.:-]\\s+/, "");
+  if (Array.isArray(inputOptions)) inputOptions.forEach((v,i)=>{ if (i<4 && strip(v)) options["ABCD"[i]]=strip(v); });
+  else if (inputOptions && typeof inputOptions === "object") Object.entries(inputOptions).forEach(([k,v],i)=>{
+    const m=clean(k).match(/^\\(?([A-Da-d])\\)?$/)||clean(k).match(/^option\\s*([A-Da-d1-4])$/i);
+    let label=m?m[1].toUpperCase():"ABCD"[i];
+    if (/^[1-4]$/.test(label)) label="ABCD"[Number(label)-1];
+    if ("ABCD".includes(label) && strip(v) && !options[label]) options[label]=strip(v);
+  });
+  if (Object.keys(options).length < 2) throw new Error("Question " + (index + 1) + " needs at least two options.");
+  const answerRaw=first("answer","correctAnswer","correct_answer","correctOption","correct_option","correct","key");
+  let answer="";
+  if (typeof answerRaw === "number" && Number.isInteger(answerRaw)) answer="ABCD"[answerRaw] || "";
+  else {
+    const ans=clean(answerRaw);
+    let m=ans.match(/^\\(?\\s*(?:option\\s*)?([A-Da-d])\\s*\\)?\\.?$/i);
+    if (m && options[m[1].toUpperCase()]) answer=m[1].toUpperCase();
+    else if (/^[1-4]$/.test(ans) && options["ABCD"[Number(ans)-1]]) answer="ABCD"[Number(ans)-1];
+    else answer=Object.keys(options).find(k=>options[k].toLowerCase()===ans.toLowerCase()) || "";
+  }
+  if (!answer || !options[answer]) throw new Error("Question " + (index + 1) + " has an invalid or missing answer.");
+  const pyq=first("isPYQ","isPyq","pyq","questionsPyq","previousYearQuestion","previous_year_question");
+  const year=Number(first("questionYear","question_year","year","pyqYear","pyq_year"));
+  const level=clean(first("questionLevel","question_level","difficulty","level"));
+  const imageRef=clean(first("imageUrl","imageURL","image_url","imageFile","image_file","imageName","image_name","imagePath","image_path","image"));
+  return {
+    question, options, answer,
+    ...(first("chapter","chapterName","chapter_name") != null ? {chapter:clean(first("chapter","chapterName","chapter_name"))} : {}),
+    ...(first("subject","subjectName","subject_name") != null ? {subject:clean(first("subject","subjectName","subject_name"))} : {}),
+    ...(first("class","className","class_name","grade","standard") != null ? {class:clean(first("class","className","class_name","grade","standard"))} : {}),
+    ...(first("stream","academicStream","academic_stream") != null ? {stream:clean(first("stream","academicStream","academic_stream"))} : {}),
+    ...(first("examLevel","exam_level","exam","examName","exam_name") != null ? {examLevel:clean(first("examLevel","exam_level","exam","examName","exam_name"))} : {}),
+    ...(first("tag","collection","series") != null ? {tag:clean(first("tag","collection","series")).slice(0,60)} : {}),
+    ...(first("topic","subtopic","sub_topic") != null ? {topic:clean(first("topic","subtopic","sub_topic"))} : {}),
+    ...(level ? {questionLevel:level} : {}),
+    ...(Number.isInteger(year) && year>=1980 && year<=2100 ? {questionYear:year} : {}),
+    ...(pyq !== undefined ? {isPYQ:typeof pyq==="boolean"?pyq:/^(1|true|yes|y|pyq)$/i.test(String(pyq).trim())} : {}),
+    ...(first("explanation","solution","detailedSolution","detailed_solution","answerExplanation") != null ? {explanation:clean(first("explanation","solution","detailedSolution","detailed_solution","answerExplanation"))} : {}),
+    ...(imageRef ? {imageRef} : {}),
+    ...(first("id","questionId","question_id","uid") != null ? {originalId:clean(first("id","questionId","question_id","uid"))} : {})
+  };
+}
+async function processQuestionZip({ zipBase64 }) {
+  const encoded=String(zipBase64||"").replace(/\\s/g,"");
+  if (!encoded || encoded.length > 12500000 || !/^[A-Za-z0-9+/]*={0,2}$/.test(encoded)) throw new Error("ZIP must be valid base64 and no larger than about 9 MB.");
+  const zipBytes=Buffer.from(encoded,"base64");
+  if (zipBytes.length < 4 || zipBytes.length > 9*1024*1024 || zipBytes[0]!==0x50 || zipBytes[1]!==0x4b) throw new Error("Invalid ZIP or compressed ZIP exceeds 9 MB.");
+  const entries=unzipSync(zipBytes);
+  const names=Object.keys(entries).filter(name=>!name.endsWith("/") && !name.split("/").pop().startsWith("__MACOSX"));
+  if (names.length > 600) throw new Error("ZIP contains too many files (maximum 600).");
+  let totalBytes=0;
+  for (const name of names) {
+    totalBytes += entries[name].length;
+    if (totalBytes > 50*1024*1024) throw new Error("Expanded ZIP exceeds 50 MB safety limit.");
+  }
+  const imageEntries=new Map(), basenameCounts=new Map(), jsonNames=names.filter(n=>n.toLowerCase().endsWith(".json")).sort();
+  for (const name of names) {
+    if (!zipImageMime(name)) continue;
+    const key=normalizeZipPath(name);
+    imageEntries.set(key,{name,bytes:Buffer.from(entries[name]),mimeType:zipImageMime(name)});
+    const base=key.split("/").pop();
+    basenameCounts.set(base,(basenameCounts.get(base)||0)+1);
+  }
+  if (!jsonNames.length) throw new Error("ZIP must contain at least one JSON file.");
+  if (!imageEntries.size) throw new Error("ZIP contains no supported image files (JPG, PNG, WebP, GIF).");
+  const questions=[];
+  for (const jsonName of jsonNames) {
+    let data;
+    try { data=JSON.parse(strFromU8(entries[jsonName])); }
+    catch { throw new Error("Invalid JSON file: "+jsonName); }
+    const arr=extractQuestionArray(data);
+    for (const raw of arr) questions.push({...normalizeZipQuestion(raw,questions.length),_sourceJson:jsonName});
+  }
+  if (!questions.length) throw new Error("No questions found in ZIP JSON files.");
+  const matched=new Map(), missing=[];
+  questions.forEach((q,index)=>{
+    if (!q.imageRef || /^https:\\/\\//i.test(q.imageRef)) return;
+    const ref=normalizeZipPath(q.imageRef);
+    let entry=imageEntries.get(ref);
+    if (!entry) {
+      const base=ref.split("/").pop();
+      if (basenameCounts.get(base)===1) entry=[...imageEntries.values()].find(x=>normalizeZipPath(x.name).split("/").pop()===base);
+    }
+    if (!entry) {
+      const id=String(q.originalId||"").toLowerCase();
+      const stems=[id,"q"+(index+1),"question"+(index+1),String(index+1)].filter(Boolean);
+      entry=[...imageEntries.values()].find(x=>stems.includes(normalizeZipPath(x.name).split("/").pop().replace(/\\.[^.]+$/,"")));
+    }
+    if (!entry) { missing.push({questionIndex:index+1,imageRef:q.imageRef}); return; }
+    matched.set(entry.name,entry);
+    q._matchedImageName=entry.name;
+  });
+  if (!matched.size) throw new Error("No JSON image references matched files in images/. Set imageFile/imageName/imagePath in each question to its relative image path.");
+  const uploadedByName=new Map(), failures=[];
+  const uploadList=[...matched.values()];
+  let cursor=0;
+  const workers=Array.from({length:Math.min(3,uploadList.length)},async()=>{
+    while(cursor<uploadList.length){
+      const entry=uploadList[cursor++];
+      try {
+        if(entry.bytes.length>10*1024*1024) throw new Error("Image exceeds 10 MB.");
+        const response=await uploadImageToGetPronto({filename:entry.name.split("/").pop(),mimeType:entry.mimeType,imageBase64:entry.bytes.toString("base64")});
+        uploadedByName.set(entry.name,response.imageUrl);
+      } catch(e) { failures.push({filename:entry.name,error:String(e.message||e)}); }
+    }
+  });
+  await Promise.all(workers);
+  questions.forEach(q=>{
+    if(q._matchedImageName && uploadedByName.has(q._matchedImageName)) q.imageUrl=uploadedByName.get(q._matchedImageName);
+    delete q.imageRef; delete q.originalId; delete q._sourceJson; delete q._matchedImageName;
+  });
+  return {status:failures.length?"partial":"success",questionCount:questions.length,imageFilesFound:imageEntries.size,imagesMatched:matched.size,imagesUploaded:uploadedByName.size,missingImages:missing,uploadFailures:failures,questions};
+}
+
 function createServer(user) {
   const s = new McpServer({name:"neelaxmi-mcp",version:"1.0.0"});
   s.registerTool("get_mcp_identity",{description:"Show the verified MCP identity and mapped roles in both Firebase projects.",inputSchema:{}},async()=>result({uid:user.uid,email:user.email,project:PROJECT,galleryUid:user.galleryUid,galleryRole:user.galleryRole,projects:user.projects}));
   registerAdminTools(s, user, { galleryDb: gallery().db, quizDb: db(), admin });
+
+
+  s.registerTool("process_question_zip_images", {
+    description: "Process a ZIP prepared by Claude using NEELAXMI Admin Panel's existing Question Library ZIP format. ZIP must contain one or more JSON files plus images/ files. JSON questions use the existing aliases imageFile, imageName, imagePath, image, or imageUrl to point to a relative image filename such as images/q001.png. MCP reads the ZIP, normalizes questions using the existing Question Bank field conventions, matches referenced images, uploads each unique matched original image to Get Pronto using server-side Firebase pronto_sk_ keys, and returns canonical questions with imageUrl replaced by the returned HTTPS URL. It does NOT save to Firebase; review the returned questions and then use save_questions_to_question_bank with confirm=true. Supports JPG/JPEG, PNG, WebP and GIF. ZIP compressed size max about 9 MB; expanded total max 50 MB; each image max 10 MB. Existing HTTPS imageUrl values are preserved. Claude must create the ZIP from the actual original extracted image files, not image descriptions.",
+    inputSchema: { zipBase64: z.string().min(1).max(12500000).describe("Base64-encoded complete ZIP archive containing JSON question files and image files.") }
+  }, async ({zipBase64}) => result(await processQuestionZip({zipBase64})));
 
   s.registerTool("upload_question_image_to_getpronto", {
     description: "Upload the REAL image file extracted from a source PDF (not a textual description, not a recreated drawing, and not a screenshot of the whole page unless that is the only source). Send the extracted image bytes as base64 with the matching MIME type. This tool decodes the base64 and uploads the actual binary image file to NEELAXMI Get Pronto storage using the configured Firebase Get Pronto secret keys (pronto_sk_) on the secure MCP server. Returns the HTTPS imageUrl to attach to that exact question. Preserve original resolution and aspect ratio; do not downscale or recompress unless the file exceeds 10 MB. Supports JPEG, PNG, WebP and GIF up to 10 MB.",
