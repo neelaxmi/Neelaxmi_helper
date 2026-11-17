@@ -121,10 +121,96 @@ function validate(q, i=0) {
   return out;
 }
 const result = value => ({ content:[{type:"text",text:JSON.stringify(value,null,2)}] });
+
+async function uploadImageToGetPronto({ filename, mimeType, imageBase64 }) {
+  const safeMime = String(mimeType || "").toLowerCase().split(";")[0].trim();
+  const allowed = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
+  if (!allowed.has(safeMime)) throw new Error("Unsupported image type. Use JPEG, PNG, WebP, or GIF.");
+  const cleanName = String(filename || "question-image").replace(/[^a-zA-Z0-9._-]/g, "_").slice(0, 120) || "question-image";
+  const encoded = String(imageBase64 || "").replace(/^data:image\/[a-zA-Z0-9.+-]+;base64,/, "").replace(/\s/g, "");
+  if (!encoded || encoded.length > 3600000 || !/^[A-Za-z0-9+/]*={0,2}$/.test(encoded)) {
+    throw new Error("Image data must be valid base64 and no larger than 2.5 MB.");
+  }
+  const bytes = Buffer.from(encoded, "base64");
+  if (!bytes.length || bytes.length > 2.5 * 1024 * 1024) throw new Error("Image must be no larger than 2.5 MB for MCP upload.");
+  const signatureOk =
+    (safeMime === "image/png" && bytes.subarray(0, 8).equals(Buffer.from([137,80,78,71,13,10,26,10]))) ||
+    (safeMime === "image/jpeg" && bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff) ||
+    (safeMime === "image/gif" && ["GIF87a", "GIF89a"].includes(bytes.subarray(0, 6).toString("ascii"))) ||
+    (safeMime === "image/webp" && bytes.subarray(0, 4).toString("ascii") === "RIFF" && bytes.subarray(8, 12).toString("ascii") === "WEBP");
+  if (!signatureOk) throw new Error("Image bytes do not match the declared image type.");
+
+  const keyDoc = await db().collection("question_bank_meta").doc("pronto_keys").get();
+  const keys = keyDoc.exists && Array.isArray(keyDoc.data().keys) ? keyDoc.data().keys : [];
+  const usableKeys = keys.map(v => String(v || "").trim()).filter(v => v.startsWith("pronto_pk_"));
+  if (!usableKeys.length) throw new Error("No Get Pronto upload-only keys (pronto_pk_) are configured in quiznew-30700/question_bank_meta/pronto_keys.");
+
+  const customFilename = Date.now() + "-" + cleanName;
+  let lastError;
+  for (let i = 0; i < usableKeys.length; i++) {
+    const key = usableKeys[i];
+    let pendingUploadId = null;
+    try {
+      const presignResponse = await fetch("https://api.getpronto.io/v1/upload/presign", {
+        method: "POST",
+        headers: { Authorization: "ApiKey " + key, Accept: "application/json", "Content-Type": "application/json" },
+        body: JSON.stringify({ filename: cleanName, mimetype: safeMime, size: bytes.length, customFilename }),
+        signal: AbortSignal.timeout(30000)
+      });
+      const presignData = await presignResponse.json().catch(() => ({}));
+      if (!presignResponse.ok) {
+        const detail = presignData?.error?.message || presignData?.message || "HTTP " + presignResponse.status;
+        throw new Error("Get Pronto presign failed: " + String(detail).slice(0, 200));
+      }
+      const p = presignData.data || presignData.result || presignData;
+      const uploadUrl = p.uploadUrl || p.uploadURL || p.url;
+      pendingUploadId = p.pendingUploadId || p.pending_upload_id || p.id;
+      if (!uploadUrl || !/^https:\/\//i.test(uploadUrl) || !pendingUploadId) throw new Error("Get Pronto returned an incomplete upload reservation.");
+
+      const put = await fetch(uploadUrl, {
+        method: "PUT",
+        headers: { "Content-Type": safeMime },
+        body: bytes,
+        signal: AbortSignal.timeout(60000)
+      });
+      if (!put.ok) throw new Error("Get Pronto storage upload failed with HTTP " + put.status);
+
+      const confirmResponse = await fetch("https://api.getpronto.io/v1/upload/confirm", {
+        method: "POST",
+        headers: { Authorization: "ApiKey " + key, Accept: "application/json", "Content-Type": "application/json" },
+        body: JSON.stringify({ pendingUploadId }),
+        signal: AbortSignal.timeout(30000)
+      });
+      const confirmData = await confirmResponse.json().catch(() => ({}));
+      if (!confirmResponse.ok) {
+        const detail = confirmData?.error?.message || confirmData?.message || "HTTP " + confirmResponse.status;
+        throw new Error("Get Pronto confirmation failed: " + String(detail).slice(0, 200));
+      }
+      const item = confirmData.file || confirmData.data?.file || confirmData.data || confirmData;
+      const imageUrl = item.rawUrl || item.secureUrl || item.url || item.imageUrl;
+      if (!imageUrl || !/^https:\/\//i.test(imageUrl)) throw new Error("Get Pronto confirmed the upload but returned no HTTPS image URL.");
+      return { imageUrl, filename: cleanName, mimeType: safeMime, size: bytes.length, storage: "getpronto" };
+    } catch (error) {
+      lastError = error;
+    }
+  }
+  throw new Error("All configured Get Pronto upload keys failed: " + (lastError?.message || "unknown error"));
+}
+
 function createServer(user) {
   const s = new McpServer({name:"neelaxmi-mcp",version:"1.0.0"});
   s.registerTool("get_mcp_identity",{description:"Show the verified MCP identity and mapped roles in both Firebase projects.",inputSchema:{}},async()=>result({uid:user.uid,email:user.email,project:PROJECT,galleryUid:user.galleryUid,galleryRole:user.galleryRole,projects:user.projects}));
   registerAdminTools(s, user, { galleryDb: gallery().db, quizDb: db(), admin });
+
+  s.registerTool("upload_question_image_to_getpronto", {
+    description: "Upload an image to NEELAXMI's existing Get Pronto image storage. Returns a permanent HTTPS imageUrl; pass that URL as imageUrl when saving the question with save_questions_to_question_bank or save_admin_quiz. Reads upload-only pronto_pk_ keys from quiznew-30700/question_bank_meta/pronto_keys; never reveals keys. Accepts JPEG, PNG, WebP or GIF up to 2.5 MB.",
+    inputSchema: {
+      filename: z.string().min(1).max(160),
+      mimeType: z.enum(["image/jpeg","image/png","image/webp","image/gif"]),
+      imageBase64: z.string().min(1).max(3600000)
+    }
+  }, async ({ filename, mimeType, imageBase64 }) => result(await uploadImageToGetPronto({ filename, mimeType, imageBase64 })));
+
   s.registerTool("list_drive_pdfs",{description:"List PDF files visible to the configured read-only Google Drive service account.",inputSchema:{query:z.string().optional(),pageSize:z.number().int().min(1).max(100).optional()}},async({query="",pageSize=50})=>{
     const terms=["trashed=false","mimeType='application/pdf'"];
     if(process.env.GOOGLE_DRIVE_FOLDER_ID) terms.push("'"+process.env.GOOGLE_DRIVE_FOLDER_ID+"' in parents");
