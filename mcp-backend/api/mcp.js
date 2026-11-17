@@ -69,7 +69,7 @@ async function resolveAdminIdentity(identity) {
   try { galleryUser = await galleryAuth.getUserByEmail(email); }
   catch { throw new Error("This email does not have an account in Gallery Firebase (gallery-83144)."); }
   const superEmails = (process.env.GALLERY_SUPER_ADMIN_EMAILS || "sak06gupta@gmail.com").split(",").map(v => v.trim().toLowerCase()).filter(Boolean);
-  const superUids = (process.env.GALLERY_SUPER_ADMIN_UIDS || "CTLJaK6d1rZLS2JHXhOquZ6Asek2").split(",").map(v => v.trim()).filter(Boolean);
+  const superUids = (process.env.GALLERY_SUPER_ADMIN_UIDS || "").split(",").map(v => v.trim()).filter(Boolean);
   const subUids = (process.env.GALLERY_SUB_ADMIN_UIDS || "Md455pzr0VfEoGkmiVyDhjuDH8m2,j2Br2h6fpGbQgq71HlqSlWVVcaF2,9FRgUCZIivduw1jEjenKqLDj3B72").split(",").map(v => v.trim()).filter(Boolean);
   let galleryRole = "none";
   if (superEmails.includes(email) || superUids.includes(galleryUser.uid)) galleryRole = "super_admin";
